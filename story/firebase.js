@@ -9,7 +9,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore()
 
-window.createNewRoom = async function(name) {
+window.createRoom = async function(name) {
   const db = firebase.firestore();  
   const docRef = await db.collection("rooms").add({
     name: name,

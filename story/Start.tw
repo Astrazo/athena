@@ -1,27 +1,7 @@
 :: Start
-Main Menu
-
-Enter name for room:
-<<textbox "$roomName" "">>
-<<button "Create Room">>
-    <<script>>
-        // Get the name of the room
-        const name = State.variables.roomName.trim();
-        if (name) {
-            // Create the new room
-            createNewRoom(name).then(roomId => {
-                State.variables.roomID = roomId;
-                Engine.play("Lobby"); // Load the lobby
-            }).catch(err => {
-                alert("Firebase error: " + err.message);
-            });
-        }
-        else {
-            alert("Please enter a room name.");
-        }
-    <</script>>
-<</button>>
-
-
-
-
+<div class="menu-container">
+	<h2>Main Menu</h2>
+	<<button "Create Room">><<goto "CreateRoom">><</button>>
+	<<button "Join Room">><<goto "CreateRoom">><</button>>
+	<<button "Credits">><<goto "CreateRoom">><</button>>
+</div>

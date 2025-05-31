@@ -1,0 +1,27 @@
+:: StoryStylesheet [stylesheet]
+.menu-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+}
+
+.menu-container h2 {
+	font-size: 2em;
+}
+
+.menu-container button {
+	font-size: 1.2em;
+	padding: 0.4em 1.2em;
+	margin: 2px 0; /* Tighter vertical spacing */
+	background-color: #3498db;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+.menu-container button:hover {
+	background-color: #2980b9;
+}
