@@ -1,10 +1,37 @@
 :: SelectRoom
+Enter your nickname:
+<<textbox "$currentUsername" "">>
+
 <<for _room range $availableRooms>>
 	<<capture _room>>
-		<<button _room.name>>   
-			<<set $connectedRoomId   = _room.id>>
-			<<set $connectedRoomName = _room.name>>
-			<<goto "RoomLobby">>
+		<<button _room.name>>
+			<<if $currentUsername.trim()>>
+				<<set $connectedRoomId   = _room.id>>
+				<<set $connectedRoomName = _room.name>>
+
+				<<script>>
+				const roomId   = State.variables.connectedRoomId;
+				const roomName = State.variables.connectedRoomName;
+				const userName = State.variables.currentUsername.trim();
+
+				createUser(userName, roomName, roomId)
+					.then(userId => {
+						State.variables.connectedUserId = userId;
+						return addUserToRoom(userId, userName, roomId);
+					})
+					.then(() => {
+						Engine.play("LoadRoomLobby");   // navigate only on success
+					})
+					.catch(err => {
+						console.error("Join failed:", err);
+						UI.alert("Couldn’t join the room. Please try again.");
+					});
+				<</script>>
+			<<else>>
+				<<script>>
+				UI.alert("Please enter a room nickname before joining a room!");
+				<</script>>
+			<</if>>
 		<</button>>
 	<</capture>>
 <</for>>

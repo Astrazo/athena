@@ -263,12 +263,39 @@ Enter your nickname:
     &lt;&lt;for _p range $roomPlayerNames&gt;&gt;
         &lt;li&gt;&lt;&lt;= _p&gt;&gt;&lt;/li&gt;
     &lt;&lt;/for&gt;&gt;
-&lt;/ul&gt;</tw-passagedata><tw-passagedata pid="4" name="SelectRoom" tags="" position="475,100" size="100,100">&lt;&lt;for _room range $availableRooms&gt;&gt;
+&lt;/ul&gt;</tw-passagedata><tw-passagedata pid="4" name="SelectRoom" tags="" position="475,100" size="100,100">Enter your nickname:
+&lt;&lt;textbox &quot;$currentUsername&quot; &quot;&quot;&gt;&gt;
+
+&lt;&lt;for _room range $availableRooms&gt;&gt;
 	&lt;&lt;capture _room&gt;&gt;
-		&lt;&lt;button _room.name&gt;&gt;   
-			&lt;&lt;set $connectedRoomId   = _room.id&gt;&gt;
-			&lt;&lt;set $connectedRoomName = _room.name&gt;&gt;
-			&lt;&lt;goto &quot;RoomLobby&quot;&gt;&gt;
+		&lt;&lt;button _room.name&gt;&gt;
+			&lt;&lt;if $currentUsername.trim()&gt;&gt;
+				&lt;&lt;set $connectedRoomId   = _room.id&gt;&gt;
+				&lt;&lt;set $connectedRoomName = _room.name&gt;&gt;
+
+				&lt;&lt;script&gt;&gt;
+				const roomId   = State.variables.connectedRoomId;
+				const roomName = State.variables.connectedRoomName;
+				const userName = State.variables.currentUsername.trim();
+
+				createUser(userName, roomName, roomId)
+					.then(userId =&gt; {
+						State.variables.connectedUserId = userId;
+						return addUserToRoom(userId, userName, roomId);
+					})
+					.then(() =&gt; {
+						Engine.play(&quot;LoadRoomLobby&quot;);   // navigate only on success
+					})
+					.catch(err =&gt; {
+						console.error(&quot;Join failed:&quot;, err);
+						UI.alert(&quot;Couldn’t join the room. Please try again.&quot;);
+					});
+				&lt;&lt;/script&gt;&gt;
+			&lt;&lt;else&gt;&gt;
+				&lt;&lt;script&gt;&gt;
+				UI.alert(&quot;Please enter a room nickname before joining a room!&quot;);
+				&lt;&lt;/script&gt;&gt;
+			&lt;&lt;/if&gt;&gt;
 		&lt;&lt;/button&gt;&gt;
 	&lt;&lt;/capture&gt;&gt;
 &lt;&lt;/for&gt;&gt;</tw-passagedata><tw-passagedata pid="5" name="LoadRoomLobby" tags="" position="600,100" size="100,100">Loading lobby...
