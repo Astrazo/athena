@@ -149,74 +149,146 @@ window.createRoom = async function(name) {
     return docRef.id;
 };
 
+// Add nickname to the users collection
+window.createUser = async function (userName, roomName, roomId) {
+    const docRef = await db.collection("users").add({
+        userName: userName,
+        created: firebase.firestore.FieldValue.serverTimestamp(),
+        roomName: roomName,
+        roomId: roomId
+    })
+
+    console.log("User created with ID", docRef.id);
+    return docRef.id;
+}
+
+window.addUserToRoom = async function (userId, userName, roomId) {
+    const roomRef = db.collection("rooms").doc(roomId)
+    const playerEntry = {
+        id: userId,
+        name: userName
+    }
+    await roomRef.update({
+        players: firebase.firestore.FieldValue.arrayUnion(playerEntry)
+    });
+    console.log("Added player", userName, "to", roomRef.roomName, ".")
+}
+
 // Load all current rooms by status
-window.loadRooms = async function (status) {
-    const rooms = [];
+window.loadRooms = async function (status, roomId) {
     try {
-        const snapshot = await db.collection("rooms")
-        .where("status", "==", status)
-        .orderBy("created", "desc")
-        .get();
-        snapshot.forEach(doc => {
-            rooms.push({
-                id: doc.id,
-                name: doc.data().name
-            })
-        })
-        return rooms
+        if (roomId) {
+            const snapshot = await db.collection("rooms")
+                .where("__name__", "==", roomId)
+                .get();
+
+            const doc = snapshot.docs[0];
+            if (!doc) return null; // room not found
+
+            return {
+                roomName: doc.data().name,
+                roomPlayers: doc.data().players
+            };
+        }
+        else if (status) {
+            const snapshot = await db.collection("rooms")
+                .where("status", "==", status)
+                .orderBy("created", "desc")
+                .get();
+
+            const rooms = [];
+            snapshot.forEach(doc => {
+                rooms.push({
+                    id: doc.id,
+                    name: doc.data().name,
+                    players: doc.data().players
+                });
+            });
+            return rooms;
+        }
+
+        return [];
+
     } catch (err) {
         console.error("Error loading rooms:", err);
         return [];
     }
-}
+};
+
+
+
 
 
 
 </script><tw-passagedata pid="1" name="CreateRoom" tags="" position="100,100" size="100,100">Enter name for room:
 &lt;&lt;textbox &quot;$connectedRoomName&quot; &quot;&quot;&gt;&gt;
+
+Enter your nickname:
+&lt;&lt;textbox &quot;$currentUsername&quot; &quot;&quot;&gt;&gt;
+
 &lt;&lt;button &quot;Create Room&quot;&gt;&gt;
     &lt;&lt;script&gt;&gt;
-        // Get the name of the room
-        const name = State.variables.roomName.trim();
-        if (name) {
-            // Create the new room
-            createRoom(name).then(roomId =&gt; {
-                State.variables.connectedRoomId = roomId;
-                Engine.play(&quot;RoomLobby&quot;); // Load the lobby of the created room
-            }).catch(err =&gt; {
-                alert(&quot;Firebase error: &quot; + err.message);
-            });
+        // Get the name of the room and user
+        const roomName = State.variables.connectedRoomName.trim();
+        const userName = State.variables.currentUsername.trim();
+
+        if (roomName &amp;&amp; userName) {
+            createRoom(roomName)
+                .then(roomId =&gt; {
+                    State.variables.connectedRoomId = roomId;
+                    return createUser(userName, roomName, roomId);
+                })
+                .then((userId) =&gt; {
+                    State.variables.connectedUserId = userId;
+                    return addUserToRoom(userId, userName, State.variables.connectedRoomId)
+                })
+                .then(() =&gt; {
+                    Engine.play(&quot;LoadRoomLobby&quot;);
+                })
+                .catch(err =&gt; {
+                    alert(&quot;Firebase error: &quot; + err.message);
+                });
         }
         else {
-            alert(&quot;Please enter a room name.&quot;);
+            alert(&quot;Please enter a room name and a nickname!&quot;);
         }
     &lt;&lt;/script&gt;&gt;
 &lt;&lt;/button&gt;&gt;</tw-passagedata><tw-passagedata pid="2" name="Start" tags="" position="225,100" size="100,100">&lt;div class=&quot;menu-container&quot;&gt;
 	&lt;h2&gt;Main Menu&lt;/h2&gt;
 	&lt;&lt;button &quot;Create Room&quot;&gt;&gt;&lt;&lt;goto &quot;CreateRoom&quot;&gt;&gt;&lt;&lt;/button&gt;&gt;
 	&lt;&lt;button &quot;Join Room&quot;&gt;&gt;&lt;&lt;goto &quot;LoadRooms&quot;&gt;&gt;&lt;&lt;/button&gt;&gt;
-&lt;/div&gt;</tw-passagedata><tw-passagedata pid="3" name="RoomLobby" tags="" position="350,100" size="100,100">Welcome to $connectedRoomName</tw-passagedata><tw-passagedata pid="4" name="SelectRoom" tags="" position="475,100" size="100,100">&lt;&lt;for _room range $availableRooms&gt;&gt;
-    &lt;&lt;=_room.id&gt;&gt;
-    &lt;&lt;=_room.name&gt;&gt;
-    &lt;button class=&quot;join-room-btn&quot; data-id=&quot;&lt;&lt;=_room.id&gt;&gt;&quot; data-name=&quot;&lt;&lt;=_room.name&gt;&gt;&quot;&gt;
-        Join &lt;&lt;=_room.name&gt;&gt;
-    &lt;/button&gt;
-&lt;&lt;/for&gt;&gt;
-
+&lt;/div&gt;</tw-passagedata><tw-passagedata pid="3" name="RoomLobby" tags="" position="350,100" size="100,100">&lt;p&gt;Welcome to &lt;&lt;= $connectedRoomName&gt;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Joined players:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+    &lt;&lt;for _p range $roomPlayerNames&gt;&gt;
+        &lt;li&gt;&lt;&lt;= _p&gt;&gt;&lt;/li&gt;
+    &lt;&lt;/for&gt;&gt;
+&lt;/ul&gt;</tw-passagedata><tw-passagedata pid="4" name="SelectRoom" tags="" position="475,100" size="100,100">&lt;&lt;for _room range $availableRooms&gt;&gt;
+	&lt;&lt;capture _room&gt;&gt;
+		&lt;&lt;button _room.name&gt;&gt;   
+			&lt;&lt;set $connectedRoomId   = _room.id&gt;&gt;
+			&lt;&lt;set $connectedRoomName = _room.name&gt;&gt;
+			&lt;&lt;goto &quot;RoomLobby&quot;&gt;&gt;
+		&lt;&lt;/button&gt;&gt;
+	&lt;&lt;/capture&gt;&gt;
+&lt;&lt;/for&gt;&gt;</tw-passagedata><tw-passagedata pid="5" name="LoadRoomLobby" tags="" position="600,100" size="100,100">Loading lobby...
 &lt;&lt;script&gt;&gt;
-document.addEventListener(&#39;click&#39;, function (event) {
-    if (event.target.classList.contains(&#39;join-room-btn&#39;)) {
-        console.log(&quot;DATA:&quot;, event.target.dataset);
-        const button = event.target;
-        State.variables.connectedRoomId = button.dataset.id;
-        State.variables.connectedRoomName = button.dataset.name;
-        Engine.play(&quot;RoomLobby&quot;);
-    }
-});
-&lt;&lt;/script&gt;&gt;</tw-passagedata><tw-passagedata pid="5" name="LoadRooms" tags="" position="600,100" size="100,100">Loading available rooms...
+    loadRooms(undefined, State.variables.connectedRoomId)
+        .then(room =&gt; {
+            State.variables.roomPlayers = room.roomPlayers;
+            State.variables.roomPlayerNames = room.roomPlayers.map(player =&gt; player.name);
+            Engine.play(&quot;RoomLobby&quot;)
+        })
+        .catch(err =&gt; {
+            console.error(err);
+            State.variables.roomPlayers = [];
+            Engine.play(&quot;RoomLobby&quot;);
+        });
+&lt;&lt;/script&gt;&gt;</tw-passagedata><tw-passagedata pid="6" name="LoadRooms" tags="" position="725,100" size="100,100">Loading available rooms...
 &lt;&lt;script&gt;&gt;
-    loadRooms(&quot;waiting&quot;).then(rooms =&gt; {
+    loadRooms(&quot;waiting&quot;, undefined).then(rooms =&gt; {
         State.variables.availableRooms = rooms;
+        console.log(rooms);
         Engine.play(&quot;SelectRoom&quot;)
     });
 &lt;&lt;/script&gt;&gt;</tw-passagedata></tw-storydata>

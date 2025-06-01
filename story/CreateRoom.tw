@@ -2,21 +2,35 @@
 
 Enter name for room:
 <<textbox "$connectedRoomName" "">>
+
+Enter your nickname:
+<<textbox "$currentUsername" "">>
+
 <<button "Create Room">>
     <<script>>
-        // Get the name of the room
-        const name = State.variables.roomName.trim();
-        if (name) {
-            // Create the new room
-            createRoom(name).then(roomId => {
-                State.variables.connectedRoomId = roomId;
-                Engine.play("RoomLobby"); // Load the lobby of the created room
-            }).catch(err => {
-                alert("Firebase error: " + err.message);
-            });
+        // Get the name of the room and user
+        const roomName = State.variables.connectedRoomName.trim();
+        const userName = State.variables.currentUsername.trim();
+
+        if (roomName && userName) {
+            createRoom(roomName)
+                .then(roomId => {
+                    State.variables.connectedRoomId = roomId;
+                    return createUser(userName, roomName, roomId);
+                })
+                .then((userId) => {
+                    State.variables.connectedUserId = userId;
+                    return addUserToRoom(userId, userName, State.variables.connectedRoomId)
+                })
+                .then(() => {
+                    Engine.play("LoadRoomLobby");
+                })
+                .catch(err => {
+                    alert("Firebase error: " + err.message);
+                });
         }
         else {
-            alert("Please enter a room name.");
+            alert("Please enter a room name and a nickname!");
         }
     <</script>>
 <</button>>

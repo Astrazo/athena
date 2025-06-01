@@ -1,4 +1,8 @@
 :: RoomLobby
-Welcome to $connectedRoomName
-
-
+<p>Welcome to <<= $connectedRoomName>></p>
+<p><strong>Joined players:</strong></p>
+<ul>
+    <<for _p range $roomPlayerNames>>
+        <li><<= _p>></li>
+    <</for>>
+</ul>

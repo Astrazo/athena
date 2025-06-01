@@ -1,0 +1,15 @@
+:: LoadRoomLobby
+Loading lobby...
+<<script>>
+    loadRooms(undefined, State.variables.connectedRoomId)
+        .then(room => {
+            State.variables.roomPlayers = room.roomPlayers;
+            State.variables.roomPlayerNames = room.roomPlayers.map(player => player.name);
+            Engine.play("RoomLobby")
+        })
+        .catch(err => {
+            console.error(err);
+            State.variables.roomPlayers = [];
+            Engine.play("RoomLobby");
+        });
+<</script>>
