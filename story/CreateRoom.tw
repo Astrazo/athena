@@ -1,7 +1,7 @@
 :: CreateRoom
 
 Enter name for room:
-<<textbox "$roomName" "">>
+<<textbox "$connectedRoomName" "">>
 <<button "Create Room">>
     <<script>>
         // Get the name of the room
@@ -9,8 +9,8 @@ Enter name for room:
         if (name) {
             // Create the new room
             createRoom(name).then(roomId => {
-                State.variables.roomID = roomId;
-                Engine.play("Lobby"); // Load the lobby
+                State.variables.connectedRoomId = roomId;
+                Engine.play("RoomLobby"); // Load the lobby of the created room
             }).catch(err => {
                 alert("Firebase error: " + err.message);
             });

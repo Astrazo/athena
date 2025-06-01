@@ -1,0 +1,8 @@
+:: LoadRooms
+Loading available rooms...
+<<script>>
+    loadRooms("waiting").then(rooms => {
+        State.variables.availableRooms = rooms;
+        Engine.play("SelectRoom")
+    });
+<</script>>

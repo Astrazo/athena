@@ -1,0 +1,20 @@
+:: SelectRoom
+<<for _room range $availableRooms>>
+    <<=_room.id>>
+    <<=_room.name>>
+    <button class="join-room-btn" data-id="<<=_room.id>>" data-name="<<=_room.name>>">
+        Join <<=_room.name>>
+    </button>
+<</for>>
+
+<<script>>
+document.addEventListener('click', function (event) {
+    if (event.target.classList.contains('join-room-btn')) {
+        console.log("DATA:", event.target.dataset);
+        const button = event.target;
+        State.variables.connectedRoomId = button.dataset.id;
+        State.variables.connectedRoomName = button.dataset.name;
+        Engine.play("RoomLobby");
+    }
+});
+<</script>>

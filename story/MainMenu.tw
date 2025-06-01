@@ -2,6 +2,5 @@
 <div class="menu-container">
 	<h2>Main Menu</h2>
 	<<button "Create Room">><<goto "CreateRoom">><</button>>
-	<<button "Join Room">><<goto "CreateRoom">><</button>>
-	<<button "Credits">><<goto "CreateRoom">><</button>>
+	<<button "Join Room">><<goto "LoadRooms">><</button>>
 </div>
