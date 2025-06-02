@@ -174,6 +174,18 @@ window.addUserToRoom = async function (userId, userName, roomId) {
     console.log("Added player", userName, "to", roomRef.roomName, ".")
 }
 
+window.removeUserFromRoom = async function (userId, userName, roomId) {
+    const roomRef = db.collection("rooms").doc(roomId)
+    const playerRemoval = {
+        id: userId,
+        name: userName
+    }
+    await roomRef.update({
+        players: firebase.firestore.FieldValue.arrayRemove(playerRemoval)
+    });
+    console.log("Added player", userName, "to", roomRef.roomName, ".")
+}
+
 // Load all current rooms by status
 window.loadRooms = async function (status, roomId) {
     try {
@@ -199,14 +211,13 @@ window.loadRooms = async function (status, roomId) {
             const rooms = [];
             snapshot.forEach(doc => {
                 rooms.push({
-                    id: doc.id,
-                    name: doc.data().name,
-                    players: doc.data().players
+                    roomId: doc.id,
+                    roomName: doc.data().name,
+                    roomPlayers: doc.data().players
                 });
             });
             return rooms;
         }
-
         return [];
 
     } catch (err) {
@@ -224,13 +235,13 @@ window.loadRooms = async function (status, roomId) {
 &lt;&lt;textbox &quot;$connectedRoomName&quot; &quot;&quot;&gt;&gt;
 
 Enter your nickname:
-&lt;&lt;textbox &quot;$currentUsername&quot; &quot;&quot;&gt;&gt;
+&lt;&lt;textbox &quot;$connectedUsername&quot; &quot;&quot;&gt;&gt;
 
 &lt;&lt;button &quot;Create Room&quot;&gt;&gt;
     &lt;&lt;script&gt;&gt;
         // Get the name of the room and user
         const roomName = State.variables.connectedRoomName.trim();
-        const userName = State.variables.currentUsername.trim();
+        const userName = State.variables.connectedUsername.trim();
 
         if (roomName &amp;&amp; userName) {
             createRoom(roomName)
@@ -257,26 +268,47 @@ Enter your nickname:
 	&lt;h2&gt;Main Menu&lt;/h2&gt;
 	&lt;&lt;button &quot;Create Room&quot;&gt;&gt;&lt;&lt;goto &quot;CreateRoom&quot;&gt;&gt;&lt;&lt;/button&gt;&gt;
 	&lt;&lt;button &quot;Join Room&quot;&gt;&gt;&lt;&lt;goto &quot;LoadRooms&quot;&gt;&gt;&lt;&lt;/button&gt;&gt;
-&lt;/div&gt;</tw-passagedata><tw-passagedata pid="3" name="RoomLobby" tags="" position="350,100" size="100,100">&lt;p&gt;Welcome to &lt;&lt;= $connectedRoomName&gt;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Joined players:&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-    &lt;&lt;for _p range $roomPlayerNames&gt;&gt;
-        &lt;li&gt;&lt;&lt;= _p&gt;&gt;&lt;/li&gt;
-    &lt;&lt;/for&gt;&gt;
-&lt;/ul&gt;</tw-passagedata><tw-passagedata pid="4" name="SelectRoom" tags="" position="475,100" size="100,100">Enter your nickname:
-&lt;&lt;textbox &quot;$currentUsername&quot; &quot;&quot;&gt;&gt;
+&lt;/div&gt;</tw-passagedata><tw-passagedata pid="3" name="RoomLobby" tags="" position="350,100" size="100,100">&lt;&lt;= $connectedRoomName&gt;&gt;
+Joined players:
+&lt;div id=&quot;playerList&quot;&gt;&lt;/div&gt;
+
+&lt;&lt;nobr&gt;&gt;
+&lt;&lt;repeat 1s&gt;&gt;
+	&lt;&lt;run
+		loadRooms(undefined, $connectedRoomId).then(room =&gt; {
+            console.log(room);
+			const names = room.roomPlayers.map(p =&gt; p.name);
+			State.variables.connectedRoomPlayerNames = names;
+
+			const markup = &#39;&lt;ul&gt;&#39; + names.map(n =&gt; `&lt;li&gt;${n}&lt;/li&gt;`).join(&#39;&#39;) + &#39;&lt;/ul&gt;&#39;;
+			$(&#39;#playerList&#39;).empty().wiki(markup);
+		})
+	&gt;&gt;
+&lt;&lt;/repeat&gt;&gt;
+&lt;&lt;/nobr&gt;&gt;
+
+&lt;&lt;button &quot;Leave Room&quot;&gt;&gt;
+    &lt;&lt;script&gt;&gt;
+        removeUserFromRoom(
+            State.variables.connectedUserId, 
+            State.variables.connectedUsername,
+            State.variables.connectedRoomId);
+        Engine.play(&quot;SelectRoom&quot;)
+    &lt;&lt;/script&gt;&gt;
+&lt;&lt;/button&gt;&gt;</tw-passagedata><tw-passagedata pid="4" name="SelectRoom" tags="" position="475,100" size="100,100">Enter your nickname:
+&lt;&lt;textbox &quot;$connectedUsername&quot; &quot;&quot;&gt;&gt;
 
 &lt;&lt;for _room range $availableRooms&gt;&gt;
 	&lt;&lt;capture _room&gt;&gt;
-		&lt;&lt;button _room.name&gt;&gt;
-			&lt;&lt;if $currentUsername.trim()&gt;&gt;
-				&lt;&lt;set $connectedRoomId   = _room.id&gt;&gt;
-				&lt;&lt;set $connectedRoomName = _room.name&gt;&gt;
+		&lt;&lt;button _room.roomName&gt;&gt;
+			&lt;&lt;if $connectedUsername.trim()&gt;&gt;
+				&lt;&lt;set $connectedRoomId   = _room.roomId&gt;&gt;
+				&lt;&lt;set $connectedRoomName = _room.roomName&gt;&gt;
 
 				&lt;&lt;script&gt;&gt;
 				const roomId   = State.variables.connectedRoomId;
 				const roomName = State.variables.connectedRoomName;
-				const userName = State.variables.currentUsername.trim();
+				const userName = State.variables.connectedUsername.trim();
 
 				createUser(userName, roomName, roomId)
 					.then(userId =&gt; {
@@ -284,7 +316,7 @@ Enter your nickname:
 						return addUserToRoom(userId, userName, roomId);
 					})
 					.then(() =&gt; {
-						Engine.play(&quot;LoadRoomLobby&quot;);   // navigate only on success
+						Engine.play(&quot;LoadRoomLobby&quot;);
 					})
 					.catch(err =&gt; {
 						console.error(&quot;Join failed:&quot;, err);
@@ -302,8 +334,8 @@ Enter your nickname:
 &lt;&lt;script&gt;&gt;
     loadRooms(undefined, State.variables.connectedRoomId)
         .then(room =&gt; {
-            State.variables.roomPlayers = room.roomPlayers;
-            State.variables.roomPlayerNames = room.roomPlayers.map(player =&gt; player.name);
+            State.variables.connectedRoomPlayers = room.roomPlayers;
+            State.variables.connectedRoomPlayerNames = room.roomPlayers.map(player =&gt; player.name);
             Engine.play(&quot;RoomLobby&quot;)
         })
         .catch(err =&gt; {

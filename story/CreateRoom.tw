@@ -4,13 +4,13 @@ Enter name for room:
 <<textbox "$connectedRoomName" "">>
 
 Enter your nickname:
-<<textbox "$currentUsername" "">>
+<<textbox "$connectedUsername" "">>
 
 <<button "Create Room">>
     <<script>>
         // Get the name of the room and user
         const roomName = State.variables.connectedRoomName.trim();
-        const userName = State.variables.currentUsername.trim();
+        const userName = State.variables.connectedUsername.trim();
 
         if (roomName && userName) {
             createRoom(roomName)

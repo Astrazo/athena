@@ -1,18 +1,18 @@
 :: SelectRoom
 Enter your nickname:
-<<textbox "$currentUsername" "">>
+<<textbox "$connectedUsername" "">>
 
 <<for _room range $availableRooms>>
 	<<capture _room>>
-		<<button _room.name>>
-			<<if $currentUsername.trim()>>
-				<<set $connectedRoomId   = _room.id>>
-				<<set $connectedRoomName = _room.name>>
+		<<button _room.roomName>>
+			<<if $connectedUsername.trim()>>
+				<<set $connectedRoomId   = _room.roomId>>
+				<<set $connectedRoomName = _room.roomName>>
 
 				<<script>>
 				const roomId   = State.variables.connectedRoomId;
 				const roomName = State.variables.connectedRoomName;
-				const userName = State.variables.currentUsername.trim();
+				const userName = State.variables.connectedUsername.trim();
 
 				createUser(userName, roomName, roomId)
 					.then(userId => {
@@ -20,7 +20,7 @@ Enter your nickname:
 						return addUserToRoom(userId, userName, roomId);
 					})
 					.then(() => {
-						Engine.play("LoadRoomLobby");   // navigate only on success
+						Engine.play("LoadRoomLobby");
 					})
 					.catch(err => {
 						console.error("Join failed:", err);

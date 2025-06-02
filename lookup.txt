@@ -1,0 +1,6 @@
+$connectedUsername
+$connectedRoomName
+$connectedRoomId
+$connectedUserId
+$connectedRoomPlayerNames
+$connectedRoomPlayers

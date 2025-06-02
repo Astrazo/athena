@@ -3,8 +3,8 @@ Loading lobby...
 <<script>>
     loadRooms(undefined, State.variables.connectedRoomId)
         .then(room => {
-            State.variables.roomPlayers = room.roomPlayers;
-            State.variables.roomPlayerNames = room.roomPlayers.map(player => player.name);
+            State.variables.connectedRoomPlayers = room.roomPlayers;
+            State.variables.connectedRoomPlayerNames = room.roomPlayers.map(player => player.name);
             Engine.play("RoomLobby")
         })
         .catch(err => {

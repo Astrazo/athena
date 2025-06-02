@@ -1,8 +1,29 @@
 :: RoomLobby
-<p>Welcome to <<= $connectedRoomName>></p>
-<p><strong>Joined players:</strong></p>
-<ul>
-    <<for _p range $roomPlayerNames>>
-        <li><<= _p>></li>
-    <</for>>
-</ul>
+<<= $connectedRoomName>>
+Joined players:
+<div id="playerList"></div>
+
+<<nobr>>
+<<repeat 1s>>
+	<<run
+		loadRooms(undefined, $connectedRoomId).then(room => {
+            console.log(room);
+			const names = room.roomPlayers.map(p => p.name);
+			State.variables.connectedRoomPlayerNames = names;
+
+			const markup = '<ul>' + names.map(n => `<li>${n}</li>`).join('') + '</ul>';
+			$('#playerList').empty().wiki(markup);
+		})
+	>>
+<</repeat>>
+<</nobr>>
+
+<<button "Leave Room">>
+    <<script>>
+        removeUserFromRoom(
+            State.variables.connectedUserId, 
+            State.variables.connectedUsername,
+            State.variables.connectedRoomId);
+        Engine.play("SelectRoom")
+    <</script>>
+<</button>>

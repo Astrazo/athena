@@ -47,6 +47,18 @@ window.addUserToRoom = async function (userId, userName, roomId) {
     console.log("Added player", userName, "to", roomRef.roomName, ".")
 }
 
+window.removeUserFromRoom = async function (userId, userName, roomId) {
+    const roomRef = db.collection("rooms").doc(roomId)
+    const playerRemoval = {
+        id: userId,
+        name: userName
+    }
+    await roomRef.update({
+        players: firebase.firestore.FieldValue.arrayRemove(playerRemoval)
+    });
+    console.log("Added player", userName, "to", roomRef.roomName, ".")
+}
+
 // Load all current rooms by status
 window.loadRooms = async function (status, roomId) {
     try {
@@ -72,14 +84,13 @@ window.loadRooms = async function (status, roomId) {
             const rooms = [];
             snapshot.forEach(doc => {
                 rooms.push({
-                    id: doc.id,
-                    name: doc.data().name,
-                    players: doc.data().players
+                    roomId: doc.id,
+                    roomName: doc.data().name,
+                    roomPlayers: doc.data().players
                 });
             });
             return rooms;
         }
-
         return [];
 
     } catch (err) {
