@@ -1,6 +1,6 @@
 :: Start
 <div class="menu-container">
-	<h2>Main Menu</h2>
+    <h1>Athena</h1>
 	<<button "Create Room">><<goto "CreateRoom">><</button>>
 	<<button "Join Room">><<goto "LoadRooms">><</button>>
 </div>
