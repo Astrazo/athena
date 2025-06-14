@@ -1,9 +1,0 @@
-:: LoadRooms
-Loading available rooms...
-<<script>>
-    loadRooms("waiting", undefined).then(rooms => {
-        State.variables.availableRooms = rooms;
-        console.log(rooms);
-        Engine.play("JoinRoom")
-    });
-<</script>>

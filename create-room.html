@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <button class="back-button" onclick="window.location.href='index.html'">← Back</button>
     <div class="form-container">
         <h1>Create Room</h1>
         <form id="createRoomForm">
@@ -23,7 +24,9 @@
         </form>
     </div>
 
-    <script>
+    <script type="module">
+        import { createRoom, createUser, addUserToRoom } from './main.js';
+
         document.getElementById('createRoomForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -47,14 +50,14 @@
                 // Add user to room
                 await addUserToRoom(userId, userName, roomId);
 
-                // Store data in localStorage for persistence
+                // Store data in localStorage for persi stence
                 localStorage.setItem('connectedRoomId', roomId);
                 localStorage.setItem('connectedUserId', userId);
                 localStorage.setItem('connectedRoomName', roomName);
                 localStorage.setItem('connectedUsername', userName);
 
                 // Redirect to lobby
-                window.location.href = 'LoadRoomLobby.html';
+                window.location.href = 'load-room-lobby.html';
             } catch (err) {
                 errorMessage.textContent = "Error: " + err.message;
                 errorMessage.style.display = 'block';

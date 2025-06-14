@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Lobby - Athena</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="menu-container">
+        <h1 id="lobbyHeader"></h1>
+        <div id="roomInfo" class="room-info">
+            <h2 id="roomName">Lobby</h2>
+            <div id="playerCount">Players: 0/4</div>
+        </div>
+
+        <div id="playerList" class="player-list">
+            <h3>Players</h3>
+            <ul id="players"></ul>
+        </div>
+
+        <div class="button-container">
+            <button id="startGame" class="std-button" disabled>Start Game</button>
+            <button id="leaveRoom" class="std-button">Leave Room</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { loadRooms, removeUserFromRoom, startGame } from './main.js';
+
+        // Get room data from localStorage
+        const roomId = localStorage.getItem('connectedRoomId');
+        const userId = localStorage.getItem('connectedUserId');
+        const roomName = localStorage.getItem('connectedRoomName');
+        const username = localStorage.getItem('connectedUsername');
+        const roomData = JSON.parse(localStorage.getItem('roomData') || '{}');
+
+        // Check if we have all required data
+        if (!roomId || !userId || !roomName || !username || !roomData) {
+            console.error('Missing required data:', { roomId, userId, roomName, username, roomData });
+            window.location.href = 'index.html';
+            throw new Error('Missing required data');
+        }
+
+        // Update room info
+        document.getElementById('lobbyHeader').textContent = roomName;
+        document.getElementById('playerCount').textContent = `Players: ${roomData.roomPlayers?.length || 0}/4`;
+
+        // Update player list
+        const playersList = document.getElementById('players');
+        if (roomData.roomPlayers) {
+            roomData.roomPlayers.forEach(player => {
+                const li = document.createElement('li');
+                li.textContent = player.name;
+                if (player.id === userId) {
+                    li.classList.add('current-player');
+                }
+                playersList.appendChild(li);
+            });
+        }
+
+        // Enable start game button if user is the host
+        const startGameButton = document.getElementById('startGame');
+        if (roomData.roomHost === userId) {
+            startGameButton.disabled = false;
+            startGameButton.addEventListener('click', async () => {
+                try {
+                    await startGame(roomId);
+                    window.location.href = 'game.html';
+                } catch (error) {
+                    console.error('Error starting game:', error);
+                    alert('Failed to start game. Please try again.');
+                }
+            });
+        }
+
+        // Handle leave room
+        document.getElementById('leaveRoom').addEventListener('click', async () => {
+            try {
+                // Remove user from room
+                const userId = localStorage.getItem('connectedUserId');
+                const roomId = localStorage.getItem('connectedRoomId');
+                const userName = localStorage.getItem('connectedUsername');
+                
+                await removeUserFromRoom(userId, userName, roomId);
+
+                // Clear room data
+                localStorage.removeItem('connectedRoomId');
+                localStorage.removeItem('connectedUserId');
+                localStorage.removeItem('connectedRoomName');
+                localStorage.removeItem('connectedUsername');
+                localStorage.removeItem('roomData');
+                
+                // Redirect to index
+                window.location.href = 'load-rooms.html';
+            } catch (error) {
+                console.error('Error leaving room:', error);
+                alert('Failed to leave room. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html> 

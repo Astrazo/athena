@@ -1,7 +1,0 @@
-:: Start
-:: Start
-<div class="menu-container">
-    <h1>Athena</h1>
-    <button class="std-button" onclick="Engine.play('CreateRoom')">Create Room</button>
-    <button class="std-button" onclick="Engine.play('LoadRooms')">Join Room</button>
-</div>
