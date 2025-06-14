@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Room - Athena</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="form-container">
+        <h1>Create Room</h1>
+        <form id="createRoomForm">
+            <div class="form-group">
+                <label for="roomName">Enter name for room:</label>
+                <input type="text" id="roomName" name="roomName" required>
+            </div>
+            <div class="form-group">
+                <label for="username">Enter your nickname:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <button type="submit" class="std-button">Create Room</button>
+            <div id="errorMessage" class="error-message"></div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('createRoomForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const roomName = document.getElementById('roomName').value.trim();
+            const userName = document.getElementById('username').value.trim();
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (!roomName || !userName) {
+                errorMessage.textContent = "Please enter a room name and a nickname!";
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            try {
+                // Create room
+                const roomId = await createRoom(roomName);
+                
+                // Create user
+                const userId = await createUser(userName, roomName, roomId);
+                
+                // Add user to room
+                await addUserToRoom(userId, userName, roomId);
+
+                // Store data in localStorage for persistence
+                localStorage.setItem('connectedRoomId', roomId);
+                localStorage.setItem('connectedUserId', userId);
+                localStorage.setItem('connectedRoomName', roomName);
+                localStorage.setItem('connectedUsername', userName);
+
+                // Redirect to lobby
+                window.location.href = 'LoadRoomLobby.html';
+            } catch (err) {
+                errorMessage.textContent = "Error: " + err.message;
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html> 
