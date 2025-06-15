@@ -28,23 +28,20 @@
             throw new Error('Missing required data');
         }
 
-        // Get room data
-        loadRooms(undefined, roomId)
-            .then(roomData => {
-                if (!roomData) {
-                    throw new Error('Room not found');
-                }
-
-                // Store room data
+        // Load room data
+        try {
+            const roomData = await loadRooms(null, roomId);
+            if (roomData) {
                 localStorage.setItem('roomData', JSON.stringify(roomData));
-
-                // Redirect to room lobby
                 window.location.href = 'room-lobby.html';
-            })
-            .catch(error => {
-                console.error('Error loading room:', error);
-                window.location.href = 'index.html';
-            });
+            } else {
+                throw new Error('Failed to load room data');
+            }
+        } catch (error) {
+            console.error('Error loading room data:', error);
+            alert('Failed to load room data. Please try again.');
+            window.location.href = 'index.html';
+        }
     </script>
 </body>
 </html> 

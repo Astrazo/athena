@@ -4,3 +4,8 @@ $connectedRoomId
 $connectedUserId
 $connectedRoomPlayerNames
 $connectedRoomPlayers
+
+sessionStorage.setItem('connectedRoomId', roomId);
+sessionStorage.setItem('connectedUserId', userId);
+sessionStorage.setItem('connectedRoomName', roomName);
+sessionStorage.setItem('connectedUsername', username);

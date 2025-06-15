@@ -50,13 +50,14 @@
                 // Add user to room
                 await addUserToRoom(userId, userName, roomId);
 
-                // Store data in localStorage for persi stence
+                // Store data in localStorage for persistence
                 localStorage.setItem('connectedRoomId', roomId);
                 localStorage.setItem('connectedUserId', userId);
                 localStorage.setItem('connectedRoomName', roomName);
                 localStorage.setItem('connectedUsername', userName);
+                localStorage.setItem('readyStatus', '0');
 
-                // Redirect to lobby
+                // Redirect to room lobby
                 window.location.href = 'load-room-lobby.html';
             } catch (err) {
                 errorMessage.textContent = "Error: " + err.message;
