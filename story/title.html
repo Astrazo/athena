@@ -1,1 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Lobby - Athena</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
 <p>Hello!. Please pick a role.</p>
+<div class="button-container">
+    <button id="selectDSRole" class="std-button" style="width: 200px; max-width: 100%;">Data Scientist</button>
+    <button id="selectSWERole" class="std-button" style="width: 200px;">Software Engineer</button>
+    <button id="selectNERole" class="std-button" style="width: 200px; max-width: 100%;">Network Engineer</button>
+    <button id="selectCSAERole" class="std-button" style="width: 200px;">Cybersecurity Analyst</button>
+</div>
+    <script type="module">
+        import { loadRooms } from "./main.js"
+
+        // Get room data from localStorage
+        const roomId = localStorage.getItem("connectedRoomId");
+        const userId = localStorage.getItem("connectedUserId");
+        const roomName = localStorage.getItem("connectedRoomName");
+        const username = localStorage.getItem("connectedUsername");
+        const roomData = JSON.parse(localStorage.getItem("roomData") || "{}");
+
+        async function updateRolesSelected() {
+            const updatedRoom = await loadRooms(null, roomId);
+            if (updatedRoom) {
+
+            }
+        }
+    </script>
+
+
+
+</body>
+

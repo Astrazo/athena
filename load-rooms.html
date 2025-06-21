@@ -16,22 +16,21 @@
         import { loadRooms } from "./main.js" 
 
         // Load available rooms
-        loadRooms("waiting", undefined)
-            .then(rooms => {
-                // Store rooms in localStorage
-                localStorage.setItem("availableRooms", JSON.stringify(rooms));
-                
-                // Redirect to join room page
-                window.location.href = "join-room.html";
-            })
-            .catch(err => {
-                console.error("Error loading rooms:", err);
-                // Clear rooms data
-                localStorage.removeItem("availableRooms");
-                
-                // Redirect to join room page anyway (it will handle the error state)
-                window.location.href = "join-room.html";
-            });
+        try {
+            const rooms = await loadRooms("waiting", undefined);
+            // Store rooms in localStorage
+            localStorage.setItem("availableRooms", JSON.stringify(rooms));
+            // Redirect to join room page
+            window.location.href = "join-room.html";
+        }
+        catch (error) {
+            console.error("Error loading rooms:", err);
+            // Clear rooms data
+            localStorage.removeItem("availableRooms");
+            
+            // Redirect to join room page anyway (it will handle the error state)
+            window.location.href = "join-room.html";
+        }
     </script>
 </body>
 </html>     

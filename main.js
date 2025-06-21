@@ -39,14 +39,14 @@ export async function createUser(userName, roomName, roomId) {
 export async function addUserToRoom(userId, userName, roomId) {
     const roomRef = doc(db, "rooms", roomId);
     await updateDoc(roomRef, {
-        players: arrayUnion({ id: userId, name: userName, readyStatus: "0" })
+        players: arrayUnion({ id: userId, name: userName, role: "None", readyStatus: "0" })
     });
 }
 
-export async function removeUserFromRoom(userId, userName, roomId) {
+export async function removeUserFromRoom(userId, userName, userRole, roomId) {
     const roomRef = doc(db, "rooms", roomId);
     await updateDoc(roomRef, {
-        players: arrayRemove({ id: userId, name: userName, readyStatus: localStorage.getItem("readyStatus") || "0" })
+        players: arrayRemove({ id: userId, name: userName, userRole: userRole, readyStatus: localStorage.getItem("readyStatus") || "0" })
     });
 }
 
