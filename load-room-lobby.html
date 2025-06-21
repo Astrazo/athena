@@ -28,14 +28,13 @@
             throw new Error("Missing required data");
         }
 
-        // Get room data
+        // Get room data (need to load again as data in local storage may not be up to date when user clicks join)
         loadRooms(undefined, roomId)
             .then(roomData => {
                 if (!roomData) {
                     throw new Error("Room not found");
                 }
 
-                // Store room data
                 localStorage.setItem("roomData", JSON.stringify(roomData));
 
                 // Redirect to room lobby

@@ -8,6 +8,7 @@
 </head>
 <body>
     <button class="back-button" onclick="window.location.href='index.html'">← Back</button>
+    <button class="back-button" style="left: auto; right: 20px;" onclick="window.location.href='load-rooms.html'">Refresh ↻</button>
 
     <div class="menu-container">
         <h1>Join Room</h1>
@@ -42,20 +43,20 @@
             
             // Create room cards
             availableRooms.forEach(room => {
-                const playerCount = room.roomPlayers ? room.roomPlayers.length : 0;
+                const playerCount = room["roomPlayers"] ? room["roomPlayers"].length : 0;
                 const canJoin = playerCount < 4;
                 
                 const roomCard = document.createElement("div");
                 roomCard.className = "room-card";
                 roomCard.innerHTML = `
                     <div class="room-name">
-                        <h3>${room.roomName}</h3>
+                        <h3>${room["roomName"]}</h3>
                     </div>
                     <div class="room-info">
                         Players: ${playerCount}/4
                     </div>
                     ${canJoin ? 
-                        `<button class="std-button join-button" data-room-id="${room.roomId}" data-room-name="${room.roomName}">Join Room</button>` :
+                        `<button class="std-button join-button" data-room-id="${room["roomId"]}" data-room-name="${room["roomName"]}">Join Room</button>` :
                         `<button class="std-button" disabled>Can't Join</button>`
                     }
                 `;
@@ -72,8 +73,8 @@
                         return;
                     }
 
-                    const roomId = button.dataset.roomId;
-                    const roomName = button.dataset.roomName;
+                    const roomId = button.dataset["roomId"];
+                    const roomName = button.dataset["roomName"];
 
                     try {
                         // Create user
