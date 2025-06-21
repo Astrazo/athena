@@ -26,27 +26,27 @@
     </div>
 
     <script type="module">
-        import { createUser, addUserToRoom } from './main.js';
+        import { createUser, addUserToRoom } from "./main.js";
 
         // Get available rooms from localStorage
-        const availableRooms = JSON.parse(localStorage.getItem('availableRooms') || '[]');
-        const noRoomsDiv = document.getElementById('noRooms');
-        const roomContentDiv = document.getElementById('roomContent');
-        const roomsGrid = document.getElementById('roomsGrid');
+        const availableRooms = JSON.parse(localStorage.getItem("availableRooms") || "[]");
+        const noRoomsDiv = document.getElementById("noRooms");
+        const roomContentDiv = document.getElementById("roomContent");
+        const roomsGrid = document.getElementById("roomsGrid");
 
         // Show appropriate content based on available rooms
         if (availableRooms.length === 0) {
-            noRoomsDiv.style.display = 'block';
+            noRoomsDiv.style.display = "block";
         } else {
-            roomContentDiv.style.display = 'block';
+            roomContentDiv.style.display = "block";
             
             // Create room cards
             availableRooms.forEach(room => {
                 const playerCount = room.roomPlayers ? room.roomPlayers.length : 0;
                 const canJoin = playerCount < 4;
                 
-                const roomCard = document.createElement('div');
-                roomCard.className = 'room-card';
+                const roomCard = document.createElement("div");
+                roomCard.className = "room-card";
                 roomCard.innerHTML = `
                     <div class="room-name">
                         <h3>${room.roomName}</h3>
@@ -56,19 +56,19 @@
                     </div>
                     ${canJoin ? 
                         `<button class="std-button join-button" data-room-id="${room.roomId}" data-room-name="${room.roomName}">Join Room</button>` :
-                        `<button class="std-button" disabled>Room Full</button>`
+                        `<button class="std-button" disabled>Can't Join</button>`
                     }
                 `;
                 roomsGrid.appendChild(roomCard);
             });
 
             // Add click handlers for join buttons
-            document.querySelectorAll('.join-button').forEach(button => {
-                button.addEventListener('click', async () => {
-                    const username = document.getElementById('username').value.trim();
+            document.querySelectorAll(".join-button").forEach(button => {
+                button.addEventListener("click", async () => {
+                    const username = document.getElementById("username").value.trim();
                     
                     if (!username) {
-                        alert('Please enter a room nickname before joining a room!');
+                        alert("Please enter a room nickname before joining a room!");
                         return;
                     }
 
@@ -83,17 +83,16 @@
                         await addUserToRoom(userId, username, roomId);
 
                         // Store data in localStorage
-                        localStorage.setItem('connectedRoomId', roomId);
-                        localStorage.setItem('connectedUserId', userId);
-                        localStorage.setItem('connectedRoomName', roomName);
-                        localStorage.setItem('connectedUsername', username);
-                        localStorage.setItem('readyStatus', '0');
+                        localStorage.setItem("connectedRoomId", roomId);
+                        localStorage.setItem("connectedUserId", userId);
+                        localStorage.setItem("connectedRoomName", roomName);
+                        localStorage.setItem("connectedUsername", username);
 
                         // Redirect to room lobby
-                        window.location.href = 'load-room-lobby.html';
+                        window.location.href = "load-room-lobby.html";
                     } catch (err) {
-                        console.error('Join failed:', err);
-                        alert('Couldn\'t join the room. Please try again.');
+                        console.error("Join failed:", err);
+                        alert("Couldn't join the room. Please try again.");
                     }
                 });
             });

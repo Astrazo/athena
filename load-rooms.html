@@ -13,24 +13,24 @@
     </div>
 
     <script type="module">
-        import { loadRooms } from './main.js' 
+        import { loadRooms } from "./main.js" 
 
         // Load available rooms
         loadRooms("waiting", undefined)
             .then(rooms => {
                 // Store rooms in localStorage
-                localStorage.setItem('availableRooms', JSON.stringify(rooms));
+                localStorage.setItem("availableRooms", JSON.stringify(rooms));
                 
                 // Redirect to join room page
-                window.location.href = 'join-room.html';
+                window.location.href = "join-room.html";
             })
             .catch(err => {
-                console.error('Error loading rooms:', err);
+                console.error("Error loading rooms:", err);
                 // Clear rooms data
-                localStorage.removeItem('availableRooms');
+                localStorage.removeItem("availableRooms");
                 
                 // Redirect to join room page anyway (it will handle the error state)
-                window.location.href = 'join-room.html';
+                window.location.href = "join-room.html";
             });
     </script>
 </body>

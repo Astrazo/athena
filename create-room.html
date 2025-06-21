@@ -25,18 +25,18 @@
     </div>
 
     <script type="module">
-        import { createRoom, createUser, addUserToRoom } from './main.js';
+        import { createRoom, createUser, addUserToRoom } from "./main.js";
 
-        document.getElementById('createRoomForm').addEventListener('submit', async function(e) {
+        document.getElementById("createRoomForm").addEventListener("submit", async function(e) {
             e.preventDefault();
             
-            const roomName = document.getElementById('roomName').value.trim();
-            const userName = document.getElementById('username').value.trim();
-            const errorMessage = document.getElementById('errorMessage');
+            const roomName = document.getElementById("roomName").value.trim();
+            const userName = document.getElementById("username").value.trim();
+            const errorMessage = document.getElementById("errorMessage");
 
             if (!roomName || !userName) {
                 errorMessage.textContent = "Please enter a room name and a nickname!";
-                errorMessage.style.display = 'block';
+                errorMessage.style.display = "block";
                 return;
             }
 
@@ -51,17 +51,17 @@
                 await addUserToRoom(userId, userName, roomId);
 
                 // Store data in localStorage for persistence
-                localStorage.setItem('connectedRoomId', roomId);
-                localStorage.setItem('connectedUserId', userId);
-                localStorage.setItem('connectedRoomName', roomName);
-                localStorage.setItem('connectedUsername', userName);
-                localStorage.setItem('readyStatus', '0');
+                localStorage.setItem("connectedRoomId", roomId);
+                localStorage.setItem("connectedUserId", userId);
+                localStorage.setItem("connectedRoomName", roomName);
+                localStorage.setItem("connectedUsername", userName);
+                localStorage.setItem("readyStatus", "0");
 
                 // Redirect to room lobby
-                window.location.href = 'load-room-lobby.html';
+                window.location.href = "load-room-lobby.html";
             } catch (err) {
                 errorMessage.textContent = "Error: " + err.message;
-                errorMessage.style.display = 'block';
+                errorMessage.style.display = "block";
             }
         });
     </script>

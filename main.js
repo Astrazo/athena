@@ -1,8 +1,8 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp } from "firebase/app";
 import {
     getFirestore, collection, doc, addDoc, updateDoc,
     query, where, orderBy, getDocs, arrayUnion, arrayRemove, getDoc
-} from 'firebase/firestore';
+} from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDzgDI28nu9RGm32mJH-1tvkZCQOdEjdrk",
@@ -17,17 +17,17 @@ const db  = getFirestore(app);
 
 /* ─── helper functions ─── */
 export async function createRoom(name) {
-    const docRef = await addDoc(collection(db, 'rooms'), {
+    const docRef = await addDoc(collection(db, "rooms"), {
         name,
         created: Date.now(),
-        status: 'waiting',
+        status: "waiting",
         players: []
     });
     return docRef.id;
 }
 
 export async function createUser(userName, roomName, roomId) {
-    const docRef = await addDoc(collection(db, 'users'), {
+    const docRef = await addDoc(collection(db, "users"), {
         userName,
         created: Date.now(),
         roomName,
@@ -37,31 +37,33 @@ export async function createUser(userName, roomName, roomId) {
 }
 
 export async function addUserToRoom(userId, userName, roomId) {
-    const roomRef = doc(db, 'rooms', roomId);
+    const roomRef = doc(db, "rooms", roomId);
     await updateDoc(roomRef, {
-        players: arrayUnion({ id: userId, name: userName, readyStatus: '0' })
+        players: arrayUnion({ id: userId, name: userName, readyStatus: "0" })
     });
 }
 
 export async function removeUserFromRoom(userId, userName, roomId) {
-    const roomRef = doc(db, 'rooms', roomId);
+    const roomRef = doc(db, "rooms", roomId);
     await updateDoc(roomRef, {
-        players: arrayRemove({ id: userId, name: userName, readyStatus: localStorage.getItem('readyStatus') || '0' })
+        players: arrayRemove({ id: userId, name: userName, readyStatus: localStorage.getItem("readyStatus") || "0" })
     });
 }
 
 export async function loadRooms(status = null, roomId = null) {
     if (roomId) {
-        const dSnap = await getDoc(doc(db, 'rooms', roomId));
+        const dSnap = await getDoc(doc(db, "rooms", roomId));
         if (!dSnap.exists()) return null;
         const data = dSnap.data();
         return { roomName: data.name, roomPlayers: data.players };
     }
+
+    // For each document in the rooms collection, return it's ID, name, and players list
     if (status) {
         const snap = await getDocs(
-        query(collection(db, 'rooms'),
-                where('status', '==', status),
-                orderBy('created', 'desc'))
+        query(collection(db, "rooms"),
+                where("status", "==", status),
+                orderBy("created", "desc"))
         );
         return snap.docs.map(d => ({
         roomId: d.id,
@@ -73,7 +75,7 @@ export async function loadRooms(status = null, roomId = null) {
 }
 
 export async function updatePlayerReadyStatus(userId, roomId, newStatus) {
-    const roomRef = doc(db, 'rooms', roomId);
+    const roomRef = doc(db, "rooms", roomId);
     const roomSnap = await getDoc(roomRef);
 
     if (roomSnap.exists()) {
