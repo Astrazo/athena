@@ -126,17 +126,21 @@ h1 {
 }
 
 .loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #4CAF50;
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #4CAF50;
     border-radius: 50%;
+    width: 60px;
+    height: 60px;
     animation: spin 1s linear infinite;
+    position: fixed; /* <--- This is the key! */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2000;
 }
-
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% { transform: rotate(0deg);}
+    100% { transform: rotate(360deg);}
 }
 
 /* Join Room styles */
@@ -213,4 +217,25 @@ h1 {
 
 .back-button:hover {
     background-color: #555;
+}
+
+.game-info {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 1000;
+    min-width: 150px;
+}
+
+.game-info div {
+    margin-bottom: 5px;
+}
+
+.game-info div:last-child {
+    margin-bottom: 0;
 }

@@ -7,13 +7,15 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Game Info Display -->
+    <div id="gameInfo" class="game-info">
+        <div id="roomName">Room: Loading...</div>
+        <div id="playerCount">Players: Loading...</div>
+        <div id="yourName">You: Loading...</div>
+    </div>
+
     <div class="menu-container">
         <h1 id="lobbyHeader"></h1>
-        <div id="roomInfo" class="room-info">
-            <h2 id="roomName">Lobby</h2>
-            <div id="playerCount">Players: 0/4</div>
-        </div>
-
         <div id="playerList" class="player-list">
             <h3>Players</h3>
             <ul id="players"></ul>
@@ -25,164 +27,225 @@
         </div>
     </div>
 
+    <div id="loadingContainer" class="loading-container" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+
     <script type="module">
-        import { loadRooms, removeUserFromRoom, startGame, updatePlayerReadyStatus } from './main.js';
+        import { loadRooms, removeUserFromRoom, updatePlayer, listenToRoom, deleteRoom } from "./main.js";
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
         const userId = localStorage.getItem("connectedUserId");
         const roomName = localStorage.getItem("connectedRoomName");
         const username = localStorage.getItem("connectedUsername");
-        const roomData = JSON.parse(localStorage.getItem("roomData") || "{}");
+        const localRoomData = JSON.parse(localStorage.getItem("localRoomData") || "{}");
 
         // Check if we have all required data
-        if (!roomId || !userId || !roomName || !username || !roomData) {
-            console.error("Missing required data:", { roomId, userId, roomName, username, roomData });
+        if (!roomId || !userId || !roomName || !username || !localRoomData) {
+            console.error("Missing required data:", { roomId, userId, roomName, username, localRoomData });
             window.location.href = "index.html";
             throw new Error("Missing required data");
         }
 
-        // Update room info
-        document.getElementById("lobbyHeader").textContent = roomName;
-        document.getElementById("playerCount").textContent = `Players: ${roomData["roomPlayers"] ? roomData["roomPlayers"].length : 0}/4`;
-
-        // Set consts
-        const playersList = document.getElementById("players");
-
-        // Update player list first
-        if (roomData) {
-            roomData["roomPlayers"].forEach(player => {
-                const li = document.createElement("li");
-                const readyStatus = player["readyStatus"] === "1" ? ("ready") : ("(not ready)");
-                li.textContent = `${player["name"]} ${readyStatus}${player["id"] === userId ? " (you)" : ""}`;
-                if (player["playerId"] === userId) {
-                    li.classList.add("current-player");
-                }
-                playersList.appendChild(li);
-            })
-        }
-
-        // Function to update room data
-        async function updateRoomData() {
-            try {
-                const updatedRoom = await loadRooms(null, localStorage.getItem("connectedRoomId"));
-                if (updatedRoom) {
-                    // Update player count
-                    document.getElementById("playerCount").textContent = `Players: ${updatedRoom["roomPlayers"] ? updatedRoom["roomPlayers"].length : 0}/4`;
-                    
-                    // Update player list
-                    playersList.innerHTML = ""; // Clear current list
-                    if (updatedRoom["roomPlayers"]) {
-                        updatedRoom["roomPlayers"].forEach(player => {
-                            const li = document.createElement("li");
-                            const readyStatus = player["readyStatus"] === "1" ? "(ready)" : "(not ready)";
-                            li.textContent = `${player["name"]} ${readyStatus}${player["id"] === userId ? " (you)" : ""}`;
-                            if (player["playerId"] === userId) {
-                                li.classList.add("current-player");
-                            }
-                            playersList.appendChild(li);
-                        });
-
-                        // Check if there's 4 players, and they're all ready
-                        const allReady = updatedRoom["roomPlayers"].length === 4 && 
-                                       updatedRoom["roomPlayers"].every(player => player["readyStatus"] === '1');
-                        
-                        // If all ready, start the countdown
-                        if (allReady && !window.countdownStarted) {
-                            window.countdownStarted = true;
-                            let countdownValue = 5;
-                            
-                            // Create countdown element if it doesn't exist
-                            let countdownElement = document.getElementById("countdown");
-                            if (!countdownElement) {
-                                countdownElement = document.createElement("div");
-                                countdownElement.id = "countdown";
-                                countdownElement.style.position = "fixed";
-                                countdownElement.style.top = "50%";
-                                countdownElement.style.left = "50%";
-                                countdownElement.style.transform = "translate(-50%, -50%)";
-                                countdownElement.style.fontSize = "48px";
-                                countdownElement.style.fontWeight = "bold";
-                                countdownElement.style.color = "#4CAF50";
-                                document.body.appendChild(countdownElement);
-                            }
-
-                            // Start countdown
-                            const countdownInterval = setInterval(() => {
-                                countdownElement.textContent = countdownValue;
-                                countdown--;
-                                
-                                // Load title page
-                                if (countdown < 0) {
-                                    clearInterval(countdownInterval);
-                                    window.location.href = 'title.html';
-                                }
-                            }, 1000);
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('Error updating room data:', error);
+        // Function to update game info
+        function updateGameInfo(roomData) {
+            if (roomData) {
+                document.getElementById("roomName").textContent = `Room: ${roomData["roomName"]}`;
+                document.getElementById("playerCount").textContent = `Players: ${roomData["roomPlayers"] ? roomData["roomPlayers"].length : 0}/4`;
+                document.getElementById("yourName").textContent = `You: ${username}`;
             }
         }
 
-        // Initial update
-        //updateRoomData();
+        // Update room info
+        document.getElementById("lobbyHeader").textContent = roomName;
+        document.getElementById("playerCount").textContent = `Players: ${localRoomData["roomPlayers"] ? localRoomData["roomPlayers"].length : 0}/4`;
 
-        // Set up periodic updates
-        const updateInterval = setInterval(() => updateRoomData(), 2000);
+        // Function to update room data
+        function updateRoomData(updatedRoom) {
+            if (updatedRoom) {
+                // Update game info
+                updateGameInfo(updatedRoom);
+                
+                // Update player count
+                document.getElementById("playerCount").textContent = `Players: ${updatedRoom["roomPlayers"] ? updatedRoom["roomPlayers"].length : 0}/4`;
+                
+                // Update player list
+                const playersList = document.getElementById("players");
+                playersList.innerHTML = ""; // Clear current list
+                if (updatedRoom["roomPlayers"]) {
+                    updatedRoom["roomPlayers"].forEach(player => {
+                        const li = document.createElement("li");
+                        const readyStatus = player["readyStatus"] === "1" ? "(ready)" : "(not ready)";
+                        li.textContent = `${player["name"]} ${readyStatus}`;
+                        if (player["playerId"] === userId) {
+                            li.classList.add("current-player");
+                        }
+                        playersList.appendChild(li);
+                    });
 
-        // Clean up interval when leaving the page
-        window.addEventListener('beforeunload', () => {
-            clearInterval(updateInterval);
+                    // Check if there's 4 players, and they're all ready
+                    const allReady = updatedRoom["roomPlayers"].length >= 2 && 
+                                   updatedRoom["roomPlayers"].some(player => player["readyStatus"] === "1");
+                    
+                    // If all ready, start the countdown
+                    if (allReady && !window.countdownStarted) {
+                        window.countdownStarted = true;
+                        const countdownDuration = 5;
+                        let countdownValue = countdownDuration;
+                        
+                        // Create countdown element if it doesn't exist
+                        let countdownElement = document.getElementById("countdown");
+                        if (!countdownElement) {
+                            countdownElement = document.createElement("div");
+                            countdownElement.id = "countdown";
+                            countdownElement.style.position = "fixed";
+                            countdownElement.style.top = "50%";
+                            countdownElement.style.left = "50%";
+                            countdownElement.style.transform = "translate(-50%, -50%)";
+                            countdownElement.style.fontSize = "48px";
+                            countdownElement.style.fontWeight = "bold";
+                            countdownElement.style.color = "#4CAF50";
+                            document.body.appendChild(countdownElement);
+                        }
+
+                        // Start countdown
+                        const countdownInterval = setInterval(() => {
+                            countdownElement.textContent = `Game starting in ${countdownValue}`;
+                            countdownValue--;
+                            
+                            // Load title page
+                            if (countdownValue <= 0) {
+                                clearInterval(countdownInterval);
+                                if (countdownElement) {
+                                    countdownElement.remove();
+                                }
+                                console.log("Game has commenced.")
+                                window.location.href = "story/title.html";
+                            }
+                        }, 1000);
+                        
+                        // Store the interval ID so we can clear it later
+                        window.countdownIntervalId = countdownInterval;
+                    }
+                    // If countdown is running but conditions are no longer met, stop it
+                    else if (window.countdownStarted && !allReady) {
+                        window.countdownStarted = false;
+                        
+                        // Clear the countdown interval
+                        if (window.countdownIntervalId) {
+                            clearInterval(window.countdownIntervalId);
+                            window.countdownIntervalId = null;
+                        }
+                        
+                        // Remove countdown element
+                        const countdownElement = document.getElementById("countdown");
+                        if (countdownElement) {
+                            countdownElement.remove();
+                        }
+                    }
+                }
+            }
+        }
+
+        // Real-time listener for the room
+        const unsubscribe = listenToRoom(roomId, (roomData) => {
+            if (roomData) {
+                console.log(`Room ${roomData.roomId} updated:`);
+                updateRoomData(roomData);
+                localStorage.setItem("localRoomData", JSON.stringify(roomData));
+            }
+            else {
+                console.error("Room not found");
+                window.location.href = "index.html";
+            }
+        });
+
+        // Initial update with stored data
+        updateGameInfo({ roomName: roomName, roomPlayers: localRoomData["roomPlayers"] });
+
+        // Clean up listener when leaving the page
+        window.addEventListener("beforeunload", () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
         });
 
         // Handle ready up
         const readyButton = document.getElementById("readyUp");
-        readyButton.addEventListener('click', async () => {
+        readyButton.addEventListener("click", async () => {
             try {
-                const newStatus = readyButton.textContent === 'Ready Up' ? '1' : '0';
-                await updatePlayerReadyStatus(userId, roomId, newStatus);
-                updateRoomData(); // Force update 
+                const newStatus = readyButton.textContent === "Ready Up" ? "1" : "0";
+                await updatePlayer(userId, roomId, "readyStatus", newStatus);
+                // No need to call updateRoomData() - the listener will handle it automatically!
+                
                 // Toggle button text and class to show ready status
-                if (readyButton.textContent === 'Ready Up') {
-                    readyButton.textContent = 'Not Ready';
-                    readyButton.classList.add('ready');
+                if (readyButton.textContent === "Ready Up") {
+                    readyButton.textContent = "Not Ready";
+                    readyButton.classList.add("ready");
                 } else {
-                    readyButton.textContent = 'Ready Up';
-                    readyButton.classList.remove('ready');
+                    readyButton.textContent = "Ready Up";
+                    readyButton.classList.remove("ready");
                 }
                 // Set local storage to know what ready status this player is
-                localStorage.setItem('readyStatus', newStatus);
+                localStorage.setItem("readyStatus", newStatus);
             } catch (error) {
-                console.error('Error updating ready status:', error);
-                alert('Failed to update ready status. Please try again.');
+                console.error("Error updating ready status:", error);
+                alert("Failed to update ready status. Please try again.");
             }
         });
 
         // Handle leave room
-        document.getElementById("leaveRoom").addEventListener('click', async () => {
+        document.getElementById("leaveRoom").addEventListener("click", async () => {
             try {
+
                 // Remove user from room
-                const userId = localStorage.getItem('connectedUserId');
-                const roomId = localStorage.getItem('connectedRoomId');
-                const userName = localStorage.getItem('connectedUsername');
+                const userId = localStorage.getItem("connectedUserId");
+                const roomId = localStorage.getItem("connectedRoomId");
+                const userName = localStorage.getItem("connectedUsername");
+                const localRoomData = JSON.parse(localStorage.getItem("localRoomData"));
+
+                // If only one player left
+                if (localRoomData["roomPlayers"].length === 1) {
+                    const confirmDelete = confirm("You are the last player in this room. Would you like to delete the room?");
+                    if (confirmDelete) {
+                        // Delete the room
+                        await deleteRoom(roomId);
+                        console.log(`Room ${roomId} deleted successfully.`);
+                    }
+                    else {
+                        return;
+                    }
+                }
                 
-                await removeUserFromRoom(userId, userName, roomId);
+                await removeUserFromRoom(userId, userName, "None", roomId); // role will always be none in this room
 
                 // Clear room data
-                localStorage.removeItem('connectedRoomId');
-                localStorage.removeItem('connectedUserId');
-                localStorage.removeItem('connectedRoomName');
-                localStorage.removeItem('connectedUsername');
-                localStorage.removeItem('readyStatus');
-                localStorage.removeItem('roomData');
+                localStorage.removeItem("connectedRoomId");
+                localStorage.removeItem("connectedUserId");
+                localStorage.removeItem("connectedRoomName");
+                localStorage.removeItem("connectedUsername");
+                localStorage.removeItem("readyStatus");
+                localStorage.removeItem("roomData");
                 
-                // Redirect to index
-                window.location.href = 'load-rooms.html';
+                // Unsubscribe from listener
+                if (unsubscribe) {
+                    unsubscribe();
+                }
+                
+                // Show spinner
+                document.getElementById("loadingContainer").style.display = "flex";
+                try {
+                    const rooms = await loadRooms("waiting", undefined);
+                    localStorage.setItem("availableRooms", JSON.stringify(rooms));
+                    window.location.href = "room-select.html";
+                } catch (err) {
+                    console.error("Error loading rooms:", err);
+                    localStorage.removeItem("availableRooms");
+                }
             } catch (error) {
-                console.error('Error leaving room:', error);
-                alert('Failed to leave room. Please try again.');
+                console.error("Error leaving room:", error);
+                alert("Failed to leave room. Please try again.");
             }
         });
     </script>

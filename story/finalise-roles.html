@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Athena</title>
-    <link rel="stylesheet" href="..\styles.css">
-</head>
+    <link rel="stylesheet" href="../styles.css">
 
+</head>
 <body>
     <!-- Game Info Display -->
     <div id="gameInfo" class="game-info">
@@ -16,7 +16,16 @@
     </div>
 
     <div class="menu-container">
-        <h1>Welcome to the game.</h1>
+        <h1 id="lobbyHeader"></h1>
+        <div id="roomInfo" class="room-info">
+            <h2 id="roomName">Finalise Roles</h2>
+        </div>
+
+        <div id="playerList" class="player-list">
+            <h3>Roles</h3>
+            <ul id="players"></ul>
+        </div>
+
         <div class="button-container">
             <button id="dsBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Data Scientist</button>
             <button id="seBtn" class="std-button role-button" style="width: 250px;">Software Engineer</button>
@@ -24,12 +33,9 @@
             <button id="caBtn" class="std-button role-button" style="width: 250px;">Cybersecurity Analyst</button>
         </div>
     </div>
-    <div class="menu-container">
-        <div id="spinner" class="loading-spinner" style="display: none;"></div>
-    </div>
 
     <script type="module">
-        import { updatePlayer, listenToRoom } from "../main.js"
+        import { updatePlayer, listenToRoom } from "../main.js";
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
@@ -38,8 +44,6 @@
         const username = localStorage.getItem("connectedUsername");
         const roomData = JSON.parse(localStorage.getItem("roomData") || "{}");
 
-        document.getElementById("roomName").textContent = roomName;
-        
         // Function to update game info
         function updateGameInfo(roomData) {
             if (roomData) {
@@ -55,7 +59,7 @@
                 updateGameInfo(roomData);
             } else {
                 console.error("Room not found");
-                window.location.href = "index.html";
+                window.location.href = "../index.html";
             }
         });
 
@@ -68,19 +72,7 @@
                 unsubscribe();
             }
         });
-
-        // Button listners
-        document.querySelectorAll(".role-button").forEach(button => {
-            button.addEventListener("click", async () => {
-                // Show spinner
-                document.getElementById("spinner").style.display = "block";
-                // Put spinner here <div class="loading-spinner"></div>
-                await updatePlayer(userId, roomId, "role", button.id.slice(0, 2));
-                window.location.href = "finalise-roles.html"
-            })
-        })
-
-
     </script>
 </body>
+</html>
 

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Room - Athena</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='index.html'">← Back</button>
+
+    <div class="menu-container">
+        <h1>Join Room</h1>
+    </div>
+
+    <div id="noRooms" class="no-rooms" style="display: none;">
+        No rooms available. Create a new room to start playing!
+    </div>
+
+    <div id="roomContent" style="display: none;">
+        <div class="nickname-section">
+            <h2>Enter Your Nickname</h2>
+            <input type="text" id="username" class="std-input" placeholder="Enter your nickname" autofocus>
+        </div>
+        <div id="roomsGrid" class="rooms-grid"></div>
+    </div>
+    <div id="loadingContainer" class="loading-container" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script type="module">
+        import { createUser, addUserToRoom, listenToAllRooms, loadRooms } from "./main.js";
+    
+        const noRoomsDiv = document.getElementById("noRooms");
+        const roomContentDiv = document.getElementById("roomContent");
+        const roomsGrid = document.getElementById("roomsGrid");
+    
+        // Function to update the rooms display
+        function updateRoomsDisplay(availableRooms) {
+            // Clear current display
+            roomsGrid.innerHTML = "";
+            
+            // Show appropriate content based on available rooms
+            if (availableRooms.length === 0) {
+                noRoomsDiv.style.display = "block";
+                roomContentDiv.style.display = "none";
+            } else {
+                noRoomsDiv.style.display = "none";
+                roomContentDiv.style.display = "block";
+                
+                // Create room cards
+                availableRooms.forEach(room => {
+                    const playerCount = room["roomPlayers"] ? room["roomPlayers"].length : 0;
+                    const canJoin = playerCount < 4;
+                    
+                    const roomCard = document.createElement("div");
+                    roomCard.className = "room-card";
+                    roomCard.innerHTML = `
+                        <div class="room-name">
+                            <h3>${room["roomName"]}</h3>
+                        </div>
+                        <div class="room-info">
+                            Players: ${playerCount}/4
+                        </div>
+                        ${canJoin ? 
+                            `<button class="std-button join-button" data-room-id="${room["roomId"]}" data-room-name="${room["roomName"]}">Join Room</button>` :
+                            `<button class="std-button" disabled>Can't Join</button>`
+                        }
+                    `;
+                    roomsGrid.appendChild(roomCard);
+                });
+    
+                // Add click handlers for join buttons
+                document.querySelectorAll(".join-button").forEach(button => {
+                    button.addEventListener("click", async () => {
+                        const username = document.getElementById("username").value.trim();
+                        
+                        if (!username) {
+                            alert("Please enter a room nickname before joining a room!");
+                            return;
+                        }
+    
+                        const roomId = button.dataset["roomId"];
+                        const roomName = button.dataset["roomName"];
+    
+                        try {
+                            document.getElementById("loadingContainer").style.display = "flex";
+                            // Create user
+                            const userId = await createUser(username, roomName, roomId);
+                            
+                            // Add user to room
+                            await addUserToRoom(userId, username, roomId);
+    
+                            // Store data in localStorage
+                            localStorage.setItem("connectedRoomId", roomId);
+                            localStorage.setItem("connectedUserId", userId);
+                            localStorage.setItem("connectedRoomName", roomName);
+                            localStorage.setItem("connectedUsername", username);
+    
+                            // Get updated room data data
+                            try {
+                                const roomData = await loadRooms(undefined, roomId);
+                                localStorage.setItem("localRoomData", JSON.stringify(roomData));
+                                // Redirect to room lobby
+                                window.location.href = "room-lobby.html";
+                            }
+                            catch (error) {
+                                console.error("Error loading room:", error);
+                                window.location.href = "index.html";
+                            }
+                        } catch (err) {
+                            console.error("Join failed:", err);
+                            alert("Couldn't join the room. Please try again.");
+                        }
+                    });
+                });
+            }
+        }
+    
+        // Set up real-time listener for all rooms
+        const unsubscribe = listenToAllRooms((rooms) => {
+            updateRoomsDisplay(rooms);
+        });
+    
+        // Clean up listener when leaving the page
+        window.addEventListener("beforeunload", () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        });
+    </script>
+</body>
+</html> 

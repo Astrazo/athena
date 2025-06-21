@@ -10,7 +10,25 @@
     <div class="menu-container">
         <h1>Athena</h1>
         <button class="std-button" onclick="window.location.href='create-room.html'">Create Room</button>
-        <button class="std-button" onclick="window.location.href='load-rooms.html'">Join Room</button>
+        <button class="std-button" id="joinRoomBtn">Join Room</button>
     </div>
+    <div id="loadingContainer" class="loading-container" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+    <script type="module">
+        import { loadRooms } from "./main.js";
+        document.getElementById("joinRoomBtn").addEventListener("click", async () => {
+            // Show spinner
+            document.getElementById("loadingContainer").style.display = "flex";
+            try {
+                const rooms = await loadRooms("waiting", undefined);
+                localStorage.setItem("availableRooms", JSON.stringify(rooms));
+                window.location.href = "room-select.html";
+            } catch (err) {
+                console.error("Error loading rooms:", err);
+                localStorage.removeItem("availableRooms");
+            }
+        });
+        </script>
 </body>
 </html> 

@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import {
     getFirestore, collection, doc, addDoc, updateDoc,
-    query, where, orderBy, getDocs, arrayUnion, arrayRemove, getDoc
+    query, where, orderBy, getDocs, arrayUnion, arrayRemove, getDoc, onSnapshot, deleteDoc
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -15,7 +15,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-/* ─── helper functions ─── */
 export async function createRoom(name) {
     const docRef = await addDoc(collection(db, "rooms"), {
         name,
@@ -45,9 +44,15 @@ export async function addUserToRoom(userId, userName, roomId) {
 
 export async function removeUserFromRoom(userId, userName, userRole, roomId) {
     const roomRef = doc(db, "rooms", roomId);
+    
+    // Remove from room
     await updateDoc(roomRef, {
-        players: arrayRemove({ id: userId, name: userName, userRole: userRole, readyStatus: localStorage.getItem("readyStatus") || "0" })
+        players: arrayRemove({ id: userId, name: userName, role: userRole, readyStatus: localStorage.getItem("readyStatus") || "0" })
     });
+    
+    // Remove from users (if not in a room, the user should not exist)
+    //const userRef = doc(db, "users", userId);
+    //await deleteDoc(userRef);
 }
 
 export async function loadRooms(status = null, roomId = null) {
@@ -74,7 +79,7 @@ export async function loadRooms(status = null, roomId = null) {
   return [];
 }
 
-export async function updatePlayerReadyStatus(userId, roomId, newStatus) {
+export async function updatePlayer(userId, roomId, key, value) {
     const roomRef = doc(db, "rooms", roomId);
     const roomSnap = await getDoc(roomRef);
 
@@ -84,8 +89,8 @@ export async function updatePlayerReadyStatus(userId, roomId, newStatus) {
         // For each player, if the ID is the player that needs to be updated, return the new object
         // Otherwise, just return the player
         const updatedPlayers = players.map(player => {
-            if (player.id === userId) {
-                return { ...player, readyStatus: newStatus };
+            if (player["id"] === userId) {
+                return { ...player, [key]: value };
             }
             return player;
         });
@@ -94,7 +99,33 @@ export async function updatePlayerReadyStatus(userId, roomId, newStatus) {
     }
 }
 
+export async function deleteRoom(roomId) {
+    const roomRef = doc(db, "rooms", roomId);
+    await deleteDoc(roomRef);
+}
 
-export function startGame() {
-    console.log("Working");
+export function listenToRoom(roomId, callback) {
+    const roomRef = doc(db, "rooms", roomId);
+    return onSnapshot(roomRef, (doc) => {
+        if (doc.exists()) {
+            const data = doc.data();
+            callback({ roomId: roomId, roomName: data.name, roomPlayers: data.players });
+        } else {
+            callback(null);
+        }
+    });
+}
+
+export function listenToAllRooms(callback) {
+    const roomsRef = collection(db, "rooms");
+    const q = query(roomsRef, where("status", "==", "waiting"), orderBy("created", "desc"));
+    
+    return onSnapshot(q, (snapshot) => {
+        const rooms = snapshot.docs.map(doc => ({
+            roomId: doc.id,
+            roomName: doc.data().name,
+            roomPlayers: doc.data().players
+        }));
+        callback(rooms);
+    });
 }
