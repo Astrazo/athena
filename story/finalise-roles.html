@@ -16,26 +16,24 @@
     </div>
 
     <div class="menu-container">
-        <h1 id="lobbyHeader"></h1>
+        <h1 id="lobbyHeader">Team Assembly Complete</h1>
         <div id="roomInfo" class="room-info">
             <h2 id="roomName">Finalise Roles</h2>
         </div>
 
         <div id="playerList" class="player-list">
-            <h3>Roles</h3>
+            <h3>Team Composition</h3>
             <ul id="players"></ul>
         </div>
 
         <div class="button-container">
-            <button id="dsBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Data Scientist</button>
-            <button id="seBtn" class="std-button role-button" style="width: 250px;">Software Engineer</button>
-            <button id="neBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Network Engineer</button>
-            <button id="caBtn" class="std-button role-button" style="width: 250px;">Cybersecurity Analyst</button>
+            <button id="startGameBtn" class="std-button" style="width: 300px; font-size: 18px; padding: 15px;">Begin Mission</button>
         </div>
     </div>
 
     <script type="module">
         import { updatePlayer, listenToRoom } from "../main.js";
+        import TypewriterDialogue from "../typewriter.js";
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
@@ -47,9 +45,35 @@
         // Function to update game info
         function updateGameInfo(roomData) {
             if (roomData) {
+
+                // Update general room info
                 document.getElementById("roomName").textContent = `Room: ${roomData.roomName}`;
-                document.getElementById("playerCount").textContent = `Players: ${roomData.roomPlayers ? roomData.roomPlayers.length : 0}/4`;
+                const playersArray = roomData["roomPlayers"] ? Object.values(roomData["roomPlayers"]) : [];
+                document.getElementById("playerCount").textContent = `Players: ${playersArray.length}/4`;
                 document.getElementById("yourName").textContent = `You: ${username}`;
+
+                // Update role list
+                const playersList = document.getElementById("players");
+                playersList.innerHTML = "";
+                if (roomData && roomData.roomPlayers) {
+                    Object.entries(roomData.roomPlayers).forEach(([playerId, player]) => {
+                        const li = document.createElement("li");
+                        const roleNames = {
+                            'ds': 'Data Scientist',
+                            'se': 'Software Engineer',
+                            'ne': 'Network Engineer',
+                            'ca': 'Cybersecurity Analyst'
+                        };
+                        const roleName = roleNames[player.role] || 'Unassigned';
+                        li.textContent = `${player.name} - ${roleName}`;
+                        if (playerId === userId) {
+                            li.classList.add("current-player");
+                            li.style.fontWeight = "bold";
+                            li.style.color = "#4CAF50";
+                        }
+                        playersList.appendChild(li);
+                    });
+                }        
             }
         }
 
@@ -64,7 +88,37 @@
         });
 
         // Initial update with stored data
-        updateGameInfo({ roomName: roomName, roomPlayers: roomData.roomPlayers });
+        //updateGameInfo({ roomName: roomName, roomPlayers: roomData.roomPlayers });
+
+        // Show welcome dialogue when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            typewriter.showSequence([
+                "Team assembly complete. All roles have been assigned.",
+                "Your specialized skills will be essential for the challenges ahead.",
+                "The digital escape room awaits your expertise.",
+                "Are you ready to begin the mission?"
+            ], {
+                speed: 40
+            });
+        });
+
+        // Start game button listener
+        document.getElementById("startGameBtn").addEventListener("click", () => {
+            typewriter.show("Initiating mission sequence...", {
+                onComplete: () => {
+                    setTimeout(() => {
+                        // Here you would redirect to the first puzzle/room
+                        // For now, we'll just show a placeholder message
+                        typewriter.show("Mission sequence initiated. First puzzle loading...", {
+                            onComplete: () => {
+                                // Placeholder - replace with actual puzzle page
+                                alert("Puzzle system coming soon!");
+                            }
+                        });
+                    }, 1000);
+                }
+            });
+        });
 
         // Clean up listener when leaving the page
         window.addEventListener("beforeunload", () => {

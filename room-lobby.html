@@ -52,14 +52,16 @@
         function updateGameInfo(roomData) {
             if (roomData) {
                 document.getElementById("roomName").textContent = `Room: ${roomData["roomName"]}`;
-                document.getElementById("playerCount").textContent = `Players: ${roomData["roomPlayers"] ? roomData["roomPlayers"].length : 0}/4`;
+                const playersArray = roomData["roomPlayers"] ? Object.values(roomData["roomPlayers"]) : [];
+                document.getElementById("playerCount").textContent = `Players: ${playersArray.length}/4`;
                 document.getElementById("yourName").textContent = `You: ${username}`;
             }
         }
 
         // Update room info
         document.getElementById("lobbyHeader").textContent = roomName;
-        document.getElementById("playerCount").textContent = `Players: ${localRoomData["roomPlayers"] ? localRoomData["roomPlayers"].length : 0}/4`;
+        const localPlayersArray = localRoomData["roomPlayers"] ? Object.values(localRoomData["roomPlayers"]) : [];
+        document.getElementById("playerCount").textContent = `Players: ${localPlayersArray.length}/4`;
 
         // Function to update room data
         function updateRoomData(updatedRoom) {
@@ -68,25 +70,26 @@
                 updateGameInfo(updatedRoom);
                 
                 // Update player count
-                document.getElementById("playerCount").textContent = `Players: ${updatedRoom["roomPlayers"] ? updatedRoom["roomPlayers"].length : 0}/4`;
+                const playersArray = updatedRoom["roomPlayers"] ? Object.values(updatedRoom["roomPlayers"]) : [];
+                document.getElementById("playerCount").textContent = `Players: ${playersArray.length}/4`;
                 
                 // Update player list
                 const playersList = document.getElementById("players");
                 playersList.innerHTML = ""; // Clear current list
                 if (updatedRoom["roomPlayers"]) {
-                    updatedRoom["roomPlayers"].forEach(player => {
+                    Object.entries(updatedRoom["roomPlayers"]).forEach(([playerId, player]) => {
                         const li = document.createElement("li");
                         const readyStatus = player["readyStatus"] === "1" ? "(ready)" : "(not ready)";
                         li.textContent = `${player["name"]} ${readyStatus}`;
-                        if (player["playerId"] === userId) {
+                        if (playerId === userId) {
                             li.classList.add("current-player");
                         }
                         playersList.appendChild(li);
                     });
 
                     // Check if there's 4 players, and they're all ready
-                    const allReady = updatedRoom["roomPlayers"].length >= 2 && 
-                                   updatedRoom["roomPlayers"].some(player => player["readyStatus"] === "1");
+                    const allReady = playersArray.length >= 2 && 
+                                   playersArray.some(player => player["readyStatus"] === "1");
                     
                     // If all ready, start the countdown
                     if (allReady && !window.countdownStarted) {
@@ -121,7 +124,7 @@
                                     countdownElement.remove();
                                 }
                                 console.log("Game has commenced.")
-                                window.location.href = "story/title.html";
+                                window.location.href = "story/role-select.html";
                             }
                         }, 1000);
                         
@@ -206,7 +209,8 @@
                 const localRoomData = JSON.parse(localStorage.getItem("localRoomData"));
 
                 // If only one player left
-                if (localRoomData["roomPlayers"].length === 1) {
+                const localPlayersArray = localRoomData["roomPlayers"] ? Object.values(localRoomData["roomPlayers"]) : [];
+                if (localPlayersArray.length === 1) {
                     const confirmDelete = confirm("You are the last player in this room. Would you like to delete the room?");
                     if (confirmDelete) {
                         // Delete the room

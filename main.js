@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import {
     getFirestore, collection, doc, addDoc, updateDoc,
-    query, where, orderBy, getDocs, arrayUnion, arrayRemove, getDoc, onSnapshot, deleteDoc
+    query, where, orderBy, getDocs, arrayUnion, arrayRemove, getDoc, onSnapshot, deleteDoc, deleteField
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -20,7 +20,7 @@ export async function createRoom(name) {
         name,
         created: Date.now(),
         status: "waiting",
-        players: []
+        players: {}
     });
     return docRef.id;
 }
@@ -38,7 +38,8 @@ export async function createUser(userName, roomName, roomId) {
 export async function addUserToRoom(userId, userName, roomId) {
     const roomRef = doc(db, "rooms", roomId);
     await updateDoc(roomRef, {
-        players: arrayUnion({ id: userId, name: userName, role: "None", readyStatus: "0" })
+        [`players.${userId}`]: { name: userName, role: "None", readyStatus: "0" } // need dot notation here for Firebase because it thinks it's special
+        //players: arrayUnion({ id: userId, name: userName, role: "None", readyStatus: "0" })
     });
 }
 
@@ -47,7 +48,8 @@ export async function removeUserFromRoom(userId, userName, userRole, roomId) {
     
     // Remove from room
     await updateDoc(roomRef, {
-        players: arrayRemove({ id: userId, name: userName, role: userRole, readyStatus: localStorage.getItem("readyStatus") || "0" })
+        [`players.${userId}`]: deleteField()
+        //players: arrayRemove({ id: userId, name: userName, role: userRole, readyStatus: localStorage.getItem("readyStatus") || "0" })
     });
     
     // Remove from users (if not in a room, the user should not exist)
@@ -84,18 +86,11 @@ export async function updatePlayer(userId, roomId, key, value) {
     const roomSnap = await getDoc(roomRef);
 
     if (roomSnap.exists()) {
-        const players = roomSnap.data().players || [];
+        const players = roomSnap.data().players || {};
 
-        // For each player, if the ID is the player that needs to be updated, return the new object
-        // Otherwise, just return the player
-        const updatedPlayers = players.map(player => {
-            if (player["id"] === userId) {
-                return { ...player, [key]: value };
-            }
-            return player;
+        await updateDoc(roomRef, {
+            [`players.${userId}.${key}`]: value
         });
-
-        await updateDoc(roomRef, { players: updatedPlayers });
     }
 }
 

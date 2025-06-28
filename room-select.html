@@ -50,7 +50,8 @@
                 
                 // Create room cards
                 availableRooms.forEach(room => {
-                    const playerCount = room["roomPlayers"] ? room["roomPlayers"].length : 0;
+                    const playersArray = room["roomPlayers"] ? Object.values(room["roomPlayers"]) : [];
+                    const playerCount = playersArray.length;
                     const canJoin = playerCount < 4;
                     
                     const roomCard = document.createElement("div");

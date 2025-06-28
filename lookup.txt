@@ -15,3 +15,18 @@ FORMAT A ROOM IS RETURNED IN
 roomId: d.id,
 roomName: d.data().name,
 roomPlayers: d.data().players
+
+
+// rooms/{roomId}
+{
+  "name":   "Room 42",
+
+  "players": {
+    "uidA": { "name": "Alice",   "role": "DS"   },
+    "uidB": { "name": "Bob",     "role": "SE"   },
+    "uidC": { "name": "Charlie", "role": "None" },
+    "uidD": { "name": "Dana",    "role": "None" }
+  }
+}
+
+callback({ roomId: roomId, roomName: data.name, roomPlayers: data.players }); Roomdata is returned like this onSnapshot change.  Data is a dictionary

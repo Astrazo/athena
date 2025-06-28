@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athena</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+
+<body>
+    <!-- Game Info Display -->
+    <div id="gameInfo" class="game-info">
+        <div id="roomName">Room: Loading...</div>
+        <div id="playerCount">Players: Loading...</div>
+        <div id="yourName">You: Loading...</div>
+    </div>
+
+    <div class="menu-container">
+        <h1>Welcome to the Digital Escape Room</h1>
+        <div class="button-container">
+            <button id="dsBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Data Scientist</button>
+            <button id="seBtn" class="std-button role-button" style="width: 250px;">Software Engineer</button>
+            <button id="neBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Network Engineer</button>
+            <button id="caBtn" class="std-button role-button" style="width: 250px;">Cybersecurity Analyst</button>
+        </div>
+    </div>
+    
+    <div class="menu-container">
+        <div id="waitingSection" style="display: none;">
+            <div id="spinner" class="loading-spinner"></div>
+            <p id="waitingText">Waiting for others to choose their role...</p>
+            <button id="changeMindBtn" class="std-button" style="margin-top: 20px;">Change Your Mind</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { updatePlayer, listenToRoom } from "../main.js";
+        import TypewriterDialogue from "../typewriter.js";
+
+        // Get room data from localStorage
+        const roomId = localStorage.getItem("connectedRoomId");
+        const userId = localStorage.getItem("connectedUserId");
+        const roomName = localStorage.getItem("connectedRoomName");
+        const username = localStorage.getItem("connectedUsername");
+        const roomData = JSON.parse(localStorage.getItem("roomData") || "{}");
+        
+        // Flag to prevent navigation during updates
+        let isUpdatingRole = false;
+
+        document.getElementById("roomName").textContent = roomName;
+        
+        // Function to update game info
+        function updateGameInfo(roomData) {
+            if (roomData) {
+                document.getElementById("roomName").textContent = `Room: ${roomData.roomName}`;
+                const playersArray = roomData["roomPlayers"] ? Object.values(roomData["roomPlayers"]) : [];
+                document.getElementById("playerCount").textContent = `Players: ${playersArray.length}/4`;
+                document.getElementById("yourName").textContent = `You: ${username}`;
+                
+                // Check if all players have selected roles (but not during updates)
+                if (playersArray.length > 0) {
+                    const allHaveRoles = playersArray.every(player => player["role"] && player["role"] !== "None");
+                    if (allHaveRoles) {
+                        console.log("All roles selected");
+                        // UPDATEGAMEINFO ONLY CALLED ONSNAPSHOT CHANGE, YET SOMEHOW RUNS BEFORE WRITE IS COMPLETE
+                        // RENDERING ALL OTHER PLAYERS STUCK ON ROLE-SELECT SCREEN 
+                        // A FUNCTION THAT ONLY RUNS WHEN DATABASE CHANGE IS DETECTED, RUNS BEFORE CHANGE TO DATABASE IS MADE
+                        // BECAUSE THIS FUNCTION SOMEHOW GETS THE INSIDE SCOOP, NEED TO WAIT BEFORE WRITE IS FINALISED BEFORE MOVING TO NEXT SCREEN
+                        // Show completion dialogue before moving to next screen
+                        typewriter.showSequence([
+                            "All team members have selected their roles.",
+                            "The digital escape room is now ready to begin.",
+                            "Prepare yourselves for the challenge ahead..."
+                        ], {
+                            onComplete: () => {
+                                setTimeout(() => {
+                                    window.location.href = "finalise-roles.html";
+                                }, 2000);
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+        // Function to show waiting state
+        function showWaitingState() {
+            document.querySelector(".button-container").style.display = "none";
+            document.getElementById("waitingSection").style.display = "block";
+        }
+
+        // Function to hide waiting state
+        function hideWaitingState() {
+            document.querySelector(".button-container").style.display = "block";
+            document.getElementById("waitingSection").style.display = "none";
+        }
+
+        // Function to check if current user has a role
+        function hasCurrentUserRole(roomData) {
+            if (roomData && roomData.roomPlayers) {
+                const currentPlayer = roomData.roomPlayers[userId];
+                return currentPlayer && currentPlayer.role && currentPlayer.role !== "None";
+            }
+            return false;
+        }
+
+        // Set up real-time listener for game info updates
+        const unsubscribe = listenToRoom(roomId, (roomData) => {
+            if (roomData) {
+                console.log("Firebase listener fired with data:", roomData);
+                updateGameInfo(roomData);
+                
+                // Show/hide waiting state based on current user's role selection
+                if (hasCurrentUserRole(roomData)) {
+                    showWaitingState();
+                } else {
+                    hideWaitingState();
+                }
+            } else {
+                console.error("Room not found");
+                window.location.href = "../index.html";
+            }
+        });
+
+        // Initial update with stored data
+        //updateGameInfo({ roomName: roomName, roomPlayers: roomData["roomPlayers"] });
+
+        // Show welcome dialogue when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            typewriter.showSequence([
+                "Welcome to the Digital Escape Room, team.",
+                "You have been selected for a critical mission.",
+                "Each of you must choose your specialised role to proceed.",
+                "The fate of the digital world depends on your cooperation."
+            ], {
+                speed: 40
+            });
+        });
+
+        // Button listeners
+        document.querySelectorAll(".role-button").forEach(button => {
+            button.addEventListener("click", async () => {
+                console.log("Button clicked:", button.id);
+                
+                const roleNames = {
+                    'dsBtn': 'Data Scientist',
+                    'seBtn': 'Software Engineer', 
+                    'neBtn': 'Network Engineer',
+                    'caBtn': 'Cybersecurity Analyst'
+                };
+                
+                const roleName = roleNames[button.id];
+                
+                try {
+                    // Show role selection dialogue
+                    typewriter.showWithCharacter("System", `Role selected: ${roleName}. Your expertise will be crucial for this mission.`, {
+                        onComplete: () => {
+                            // Update player role after dialogue
+                            updatePlayer(userId, roomId, "role", button.id.slice(0, 2));
+                        }
+                    });
+                } catch (error) {
+                    console.error("Error in updatePlayer:", error);
+                }
+            });
+        });
+
+        // Change mind button listener
+        document.getElementById("changeMindBtn").addEventListener("click", async () => {
+            // Show dialogue about changing mind
+            typewriter.show("Role reset. Please select a new role.", {
+                onComplete: () => {
+                    // Reset role to None after dialogue
+                    updatePlayer(userId, roomId, "role", "None");
+                }
+            });
+        });
+
+        // Clean up listener when leaving the page
+        window.addEventListener("beforeunload", () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        });
+
+    </script>
+</body>
+</html>
+
