@@ -35,10 +35,10 @@ export async function createUser(userName, roomName, roomId) {
     return docRef.id;
 }
 
-export async function addUserToRoom(userId, userName, roomId) {
+export async function addUserToRoom(userId, userName, roomId, isHost) {
     const roomRef = doc(db, "rooms", roomId);
     await updateDoc(roomRef, {
-        [`players.${userId}`]: { name: userName, role: "None", readyStatus: "0" } // need dot notation here for Firebase because it thinks it's special
+        [`players.${userId}`]: { name: userName, role: "None", readyStatus: "0", isHost } // need dot notation here for Firebase because it thinks it's special
         //players: arrayUnion({ id: userId, name: userName, role: "None", readyStatus: "0" })
     });
 }
@@ -86,8 +86,6 @@ export async function updatePlayer(userId, roomId, key, value) {
     const roomSnap = await getDoc(roomRef);
 
     if (roomSnap.exists()) {
-        const players = roomSnap.data().players || {};
-
         await updateDoc(roomRef, {
             [`players.${userId}.${key}`]: value
         });

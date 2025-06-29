@@ -13,13 +13,20 @@
         <div id="roomName">Room: Loading...</div>
         <div id="playerCount">Players: Loading...</div>
         <div id="yourName">You: Loading...</div>
-    </div>
-
-    <div class="menu-container">
-        <h1 id="lobbyHeader">Team Assembly Complete</h1>
         <div id="playerList" class="player-list">
             <h3>Team Composition</h3>
             <ul id="players"></ul>
+        </div>
+    </div>
+
+    <div class="menu-container">
+        <h1 id="lobbyHeader">Situation Room</h1>
+        <h2 id="lobbySubheader">Pick a room to explore</h2>
+        <div class="button-container">
+            <button id="serverBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Server Room</button>
+            <button id="researchBtn" class="std-button role-button" style="width: 250px;">Research Lab</button>
+            <button id="commandBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Command Centre</button>
+            <button id="developerBtn" class="std-button role-button" style="width: 250px;">Developer Hub</button>
         </div>
     </div>
 
@@ -58,7 +65,6 @@
                 document.getElementById("yourName").textContent = `You: ${username}`;
             }
         }
-
         function updateRoleList(roomData) {
             // Update role list
             const playersList = document.getElementById("players");
@@ -82,18 +88,6 @@
                         li.style.color = "#4CAF50";
                     }
                     playersList.appendChild(li);
-                });
-                
-                // Check for duplicates
-                Object.entries(roomData["roomPlayers"]).forEach(([playerId, player]) => {
-                    const role = player["role"];
-                    if (role && role !== "None") {
-                        rolesPicked[role]["count"] = (rolesPicked[role]["count"] || 0) + 1;
-                        rolesPicked[role]["users"].push(playerId);
-                        if (rolesPicked[role]["count"] > 1) {
-                            hasDuplicateRoles = true;
-                        }
-                    }
                 });
             }
         }
@@ -146,37 +140,26 @@
                     "Good work team",
                     "Lets get to work!"
                 ], 
-                {
-                    speed: 40, 
-                    onContinue: () => {window.location.href = "situation-room.html"}
-                }); 
+                {speed: 40, onComplete: () => console.log("Lets ride")}); 
             }
-        }
-
-        function handleRoleReasignmentDialogue(roomData) {
-            typewriter.showSequence([
-                    "Now that that's sorted, lets get to work.",
-                    "Your communication skills can surely only get better from here.",
-                    "Right?"
-                ], 
-                {speed: 40});    
         }
 
         // Set up real-time listener for game info updates
         const unsubscribe = listenToRoom(roomId, (roomData) => {
             if (roomData) {
+                console.log("Room updated.")
                 currentRoomData = roomData;
                 updateGameInfo(roomData);
-                updateRoleList(roomData);
+                updateRoleList(roomData)
 
-                if (isInitialLoad) {
+                /*if (isInitialLoad) {
                     handleDialogue(roomData)
                     isInitialLoad = false
                 }
                 else if (isRoleReassignmentLoad) {
                     handleRoleReasignmentDialogue(roomData)
                     isRoleReassignmentLoad = false;
-                }
+                }*/
             } else {
                 console.error("Room not found");
                 window.location.href = "../index.html";
@@ -187,17 +170,14 @@
         //updateGameInfo({ roomName: roomName, roomPlayers: roomData.roomPlayers });
 
         // Show welcome dialogue when page loads
-        /*document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => {
             typewriter.showSequence([
-                "Team assembly complete. All roles have been assigned.",
-                "Your specialized skills will be essential for the challenges ahead.",
-                "The digital escape room awaits your expertise.",
-                "Are you ready to begin the mission?"
+                "Welcome to the situation room.",
+                "Please pick a room to explore."
             ], {
                 speed: 40
             });
-            console.log(hasDuplicateRoles)
-        });*/
+        });
 
         // Start game button listener
         /*document.getElementById("startGameBtn").addEventListener("click", () => {

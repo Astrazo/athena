@@ -90,13 +90,15 @@
                             const userId = await createUser(username, roomName, roomId);
                             
                             // Add user to room
-                            await addUserToRoom(userId, username, roomId);
+                            await addUserToRoom(userId, username, roomId, "0");
     
                             // Store data in localStorage
                             localStorage.setItem("connectedRoomId", roomId);
                             localStorage.setItem("connectedUserId", userId);
                             localStorage.setItem("connectedRoomName", roomName);
                             localStorage.setItem("connectedUsername", username);
+                            localStorage.setItem("isHost", "0");
+                            localStorage.setItem("readyStatus", "0");
     
                             // Get updated room data data
                             try {

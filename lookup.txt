@@ -29,4 +29,22 @@ roomPlayers: d.data().players
   }
 }
 
+roomData {
+    roomId: "id",
+    roomName: "name",
+    roomPlayers: {
+        playerId1: {
+            role: "role",
+            name: "name",
+            readyStatus: "status"
+        },
+        playerId2: {
+            role: "role",
+            name: "name",
+            readyStatus: "status"
+        },
+        etc.
+    }
+}
+
 callback({ roomId: roomId, roomName: data.name, roomPlayers: data.players }); Roomdata is returned like this onSnapshot change.  Data is a dictionary

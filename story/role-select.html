@@ -44,15 +44,16 @@
         const username = localStorage.getItem("connectedUsername");
         const roomData = JSON.parse(localStorage.getItem("roomData") || "{}");
         
-        // Flag to prevent navigation during updates
-        let isUpdatingRole = false;
+        // Local, global, trackers 
+        let isInitialLoad = true;
+        let currentRoomData = null;
 
         document.getElementById("roomName").textContent = roomName;
         
         // Function to update game info
         function updateGameInfo(roomData) {
             if (roomData) {
-                document.getElementById("roomName").textContent = `Room: ${roomData.roomName}`;
+                document.getElementById("roomName").textContent = `Room: ${roomData["roomName"]}`;
                 const playersArray = roomData["roomPlayers"] ? Object.values(roomData["roomPlayers"]) : [];
                 document.getElementById("playerCount").textContent = `Players: ${playersArray.length}/4`;
                 document.getElementById("yourName").textContent = `You: ${username}`;
@@ -62,12 +63,16 @@
                     const allHaveRoles = playersArray.every(player => player["role"] && player["role"] !== "None");
                     if (allHaveRoles) {
                         console.log("All roles selected");
+                        setTimeout(() => {
+                            window.location.href = "finalise-roles.html"
+                        }, 2000)
+                        //window.location.href = "finalise-roles.html";
                         // UPDATEGAMEINFO ONLY CALLED ONSNAPSHOT CHANGE, YET SOMEHOW RUNS BEFORE WRITE IS COMPLETE
                         // RENDERING ALL OTHER PLAYERS STUCK ON ROLE-SELECT SCREEN 
                         // A FUNCTION THAT ONLY RUNS WHEN DATABASE CHANGE IS DETECTED, RUNS BEFORE CHANGE TO DATABASE IS MADE
                         // BECAUSE THIS FUNCTION SOMEHOW GETS THE INSIDE SCOOP, NEED TO WAIT BEFORE WRITE IS FINALISED BEFORE MOVING TO NEXT SCREEN
                         // Show completion dialogue before moving to next screen
-                        typewriter.showSequence([
+                        /*typewriter.showSequence([
                             "All team members have selected their roles.",
                             "The digital escape room is now ready to begin.",
                             "Prepare yourselves for the challenge ahead..."
@@ -77,7 +82,7 @@
                                     window.location.href = "finalise-roles.html";
                                 }, 2000);
                             }
-                        });
+                        });*/
                     }
                 }
             }
@@ -107,7 +112,9 @@
         // Set up real-time listener for game info updates
         const unsubscribe = listenToRoom(roomId, (roomData) => {
             if (roomData) {
-                console.log("Firebase listener fired with data:", roomData);
+                currentRoomData = roomData;
+                //console.log(roomData);
+                //console.log(roomData["roomPlayers"]["NIRGBxG21vn5Q03cOCzz"]["name"])
                 updateGameInfo(roomData);
                 
                 // Show/hide waiting state based on current user's role selection
@@ -127,21 +134,19 @@
 
         // Show welcome dialogue when page loads
         document.addEventListener('DOMContentLoaded', () => {
-            typewriter.showSequence([
+            /*typewriter.showSequence([
                 "Welcome to the Digital Escape Room, team.",
                 "You have been selected for a critical mission.",
                 "Each of you must choose your specialised role to proceed.",
                 "The fate of the digital world depends on your cooperation."
             ], {
                 speed: 40
-            });
+            });*/
         });
 
         // Button listeners
         document.querySelectorAll(".role-button").forEach(button => {
             button.addEventListener("click", async () => {
-                console.log("Button clicked:", button.id);
-                
                 const roleNames = {
                     'dsBtn': 'Data Scientist',
                     'seBtn': 'Software Engineer', 
@@ -152,13 +157,15 @@
                 const roleName = roleNames[button.id];
                 
                 try {
+                    // Update player role after dialogue
+                    updatePlayer(userId, roomId, "role", button.id.slice(0, 2));
                     // Show role selection dialogue
-                    typewriter.showWithCharacter("System", `Role selected: ${roleName}. Your expertise will be crucial for this mission.`, {
+                    /*typewriter.showWithCharacter("System", `Role selected: ${roleName}. Your expertise will be crucial for this mission.`, {
                         onComplete: () => {
                             // Update player role after dialogue
-                            updatePlayer(userId, roomId, "role", button.id.slice(0, 2));
+                            //updatePlayer(userId, roomId, "role", button.id.slice(0, 2));
                         }
-                    });
+                    });*/
                 } catch (error) {
                     console.error("Error in updatePlayer:", error);
                 }
@@ -167,13 +174,15 @@
 
         // Change mind button listener
         document.getElementById("changeMindBtn").addEventListener("click", async () => {
+            // Reset role to None after dialogue
+            updatePlayer(userId, roomId, "role", "None");
             // Show dialogue about changing mind
-            typewriter.show("Role reset. Please select a new role.", {
+            /*typewriter.show("Role reset. Please select a new role.", {
                 onComplete: () => {
                     // Reset role to None after dialogue
                     updatePlayer(userId, roomId, "role", "None");
                 }
-            });
+            });*/
         });
 
         // Clean up listener when leaving the page

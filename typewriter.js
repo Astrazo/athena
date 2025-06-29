@@ -39,7 +39,13 @@ class TypewriterDialogue {
 
         // Add event listeners
         this.skipButton.addEventListener('click', () => this.skip());
-        this.continueButton.addEventListener('click', () => this.hide());
+        this.continueButton.addEventListener('click', () => {
+            if (this.onContinue) {
+                this.onContinue(); // Call custom continue function
+            } else {
+                this.hide(); // Default behavior
+            }
+        });
         
         // Allow clicking overlay to continue
         this.overlay.addEventListener('click', () => {
@@ -63,6 +69,7 @@ class TypewriterDialogue {
         this.currentIndex = 0;
         this.speed = options.speed || 50;
         this.onComplete = options.onComplete || null;
+        this.onContinue = options.onContinue || null;
         this.onSkip = options.onSkip || null;
         this.isLastInSequence = options.isLastInSequence || false;
 
@@ -139,8 +146,8 @@ class TypewriterDialogue {
                 this.show(line, {
                     ...options,
                     isLastInSequence: isLast, // Pass this flag to show()
-                    onComplete: isLast ? options.onComplete : resolve,
-                    onSkip: isLast ? options.onSkip : resolve
+                    onComplete: isLast ? options.onComplete : resolve, // set what this.onComplete will do in complete function
+                    onSkip: isLast ? options.onSkip : resolve // set what this.onSkip will do in skip function
                 });
             });
 
