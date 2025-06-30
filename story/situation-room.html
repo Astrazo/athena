@@ -23,7 +23,8 @@
         <h1 id="lobbyHeader">Situation Room</h1>
         <h2 id="lobbySubheader">Pick a room to explore</h2>
         <div class="button-container">
-            <button id="serverBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Server Room</button>
+            <button id="serverBtn" class="std-button role-button" style="width: 250px; max-width: 100%;" 
+                onclick="window.location.href='rooms/server-room.html'">Server Room</button>
             <button id="researchBtn" class="std-button role-button" style="width: 250px;">Research Lab</button>
             <button id="commandBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Command Centre</button>
             <button id="developerBtn" class="std-button role-button" style="width: 250px;">Developer Hub</button>
@@ -40,22 +41,12 @@
         const roomName = localStorage.getItem("connectedRoomName");
         const username = localStorage.getItem("connectedUsername");
         const userRole = localStorage.getItem("connectedUserRole");
-
-        // Check for duplicate roles
-        let hasDuplicateRoles = false;
-        const rolesPicked = {
-            "ds": {"count": 0, "users": []},
-            "se": {"count": 0, "users": []},
-            "ne": {"count": 0, "users": []},
-            "ca": {"count": 0, "users": []}
-        }
         
         // Local, global, trackers 
         let isInitialLoad = true;
-        let isRoleReassignmentLoad = false;
         let currentRoomData = null;
 
-        // Function to update game info
+        // Function to update general game info in the top right
         function updateGameInfo(roomData) {
             if (roomData) {
                 // Update general room info
@@ -64,8 +55,7 @@
                 document.getElementById("playerCount").textContent = `Players: ${playersArray.length}/4`;
                 document.getElementById("yourName").textContent = `You: ${username}`;
             }
-        }
-        function updateRoleList(roomData) {
+
             // Update role list
             const playersList = document.getElementById("players");
             playersList.innerHTML = "";
@@ -93,70 +83,27 @@
         }
 
         function handleDialogue(roomData) {
-            if (hasDuplicateRoles) {
+            if (isInitialLoad) {
                 typewriter.showSequence([
-                    "You picked the same roles?!?!",
-                    "I thought you were the best?",
-                    "I guess I'll have to handle you myself..."
-                ], 
-                {
-                    speed: 40,
-                    onComplete: () => {
-                        // Remove the dialoge box
-                        typewriter.hide()
-
-                        // Set to true for all clients so the correct dialogue will play for all on reload
-                        isRoleReassignmentLoad = true;
-
-                        // Host client will now randomise the roles to players who duplicate their selection
-                        if (roomData["roomPlayers"][localUserId]["isHost"] === "1") {
-                            Object.entries(rolesPicked).forEach(([roleId, data]) => {
-                                console.log(rolesPicked)
-                                if (data["count"] > 1) {
-                                    // Get available roles (roles that haven't been selected)
-                                    const availableRoles = Object.keys(rolesPicked).filter(role => rolesPicked[role]["count"] === 0);
-                                    
-                                    // Grab the users who picked this role
-                                    const duplicateUsers = data.users.slice(1); // Skip first user who keeps their choice
-                                    
-                                    // Distribute available roles to the duplicate users
-                                    duplicateUsers.forEach((userId, index) => {
-                                        if (availableRoles.length > 0) {
-                                            // Randomly select an available role
-                                            const randomIndex = Math.floor(Math.random() * availableRoles.length);
-                                            const newRole = availableRoles.splice(randomIndex, 1)[0];
-                                            // Update the player's role in the database
-                                            updatePlayer(userId, roomId, "role", newRole);
-                                        }
-                                    });
-                                }
-                            })
-                        }
-                    }
-                }); 
-            }
-            else {
-                typewriter.showSequence([
-                    "Good work team",
-                    "Lets get to work!"
-                ], 
-                {speed: 40, onComplete: () => console.log("Lets ride")}); 
-            }
+                    "Welcome, team, to the situation room.",
+                    "From here, you can access these four rooms which may contain what you need to fix this.",
+                    "Good luck, and don't be afraid to ask for help if you need it."
+                ]);
+            }                   
         }
 
         // Set up real-time listener for game info updates
         const unsubscribe = listenToRoom(roomId, (roomData) => {
             if (roomData) {
-                console.log("Room updated.")
+                console.log("Room updated.");
                 currentRoomData = roomData;
                 updateGameInfo(roomData);
-                updateRoleList(roomData)
 
-                /*if (isInitialLoad) {
-                    handleDialogue(roomData)
-                    isInitialLoad = false
+                if (isInitialLoad) {
+                    handleDialogue(roomData);
+                    isInitialLoad = false;
                 }
-                else if (isRoleReassignmentLoad) {
+                /*else if (isRoleReassignmentLoad) {
                     handleRoleReasignmentDialogue(roomData)
                     isRoleReassignmentLoad = false;
                 }*/

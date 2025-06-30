@@ -79,7 +79,7 @@
                 if (updatedRoom["roomPlayers"]) {
                     Object.entries(updatedRoom["roomPlayers"]).forEach(([playerId, player]) => {
                         const li = document.createElement("li");
-                        const readyStatus = player["readyStatus"] === "1" ? "(ready)" : "(not ready)";
+                        const readyStatus = player["readyStatus"] === 1 ? "(ready)" : "(not ready)";
                         li.textContent = `${player["name"]} ${readyStatus}`;
                         if (playerId === userId) {
                             li.classList.add("current-player");
@@ -89,7 +89,7 @@
 
                     // Check if there's 4 players, and they're all ready
                     const allReady = playersArray.length >= 2 && 
-                                   playersArray.some(player => player["readyStatus"] === "1");
+                                   playersArray.some(player => player["readyStatus"] === 1);
                     
                     // If all ready, start the countdown
                     if (allReady && !window.countdownStarted) {
@@ -178,7 +178,7 @@
         const readyButton = document.getElementById("readyUp");
         readyButton.addEventListener("click", async () => {
             try {
-                const newStatus = readyButton.textContent === "Ready Up" ? "1" : "0";
+                const newStatus = readyButton.textContent === "Ready Up" ? 1 : 0;
                 await updatePlayer(userId, roomId, "readyStatus", newStatus);
                 // No need to call updateRoomData() - the listener will handle it automatically!
                 

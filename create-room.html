@@ -52,14 +52,14 @@
                 const userId = await createUser(userName, roomName, roomId);
                 
                 // Add user to room
-                await addUserToRoom(userId, userName, roomId, "1");
+                await addUserToRoom(userId, userName, roomId, 1);
 
                 // Store data in localStorage for persistence
                 localStorage.setItem("connectedRoomId", roomId);
                 localStorage.setItem("connectedUserId", userId);
                 localStorage.setItem("connectedRoomName", roomName);
                 localStorage.setItem("connectedUsername", userName);
-                localStorage.setItem("isHost", "1");
+                localStorage.setItem("isHost", 1);
                 localStorage.setItem("readyStatus", "0");
 
                 // Load latest room data and redirect to room lobby

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athena</title>
+    <link rel="stylesheet" href="/styles.css">
+
+</head>
+<body>
+    <!-- Game Info Display -->
+    <div id="gameInfo" class="game-info">
+        <div id="roomName">Room: Loading...</div>
+        <div id="playerCount">Players: Loading...</div>
+        <div id="yourName">You: Loading...</div>
+        <div id="playerList" class="player-list">
+            <h3>Team Composition</h3>
+            <ul id="players"></ul>
+        </div>
+    </div>
+
+    <div class="menu-container">
+        <h1 id="lobbyHeader">Server Room</h1>
+        <p>Puzzle here maybe?</p>
+    </div>
+
+    <script type="module">
+        import { updatePlayer, listenToRoom } from "/main.js";
+        import { dialogue } from "/dialogue.js"
+        import TypewriterDialogue from "/typewriter.js";
+
+        // Get room data from localStorage
+        const roomId = localStorage.getItem("connectedRoomId");
+        const localUserId = localStorage.getItem("connectedUserId");
+        const roomName = localStorage.getItem("connectedRoomName");
+        const username = localStorage.getItem("connectedUsername");
+        const userRole = localStorage.getItem("connectedUserRole")
+
+        // Check for duplicate roles
+        let hasDuplicateRoles = false;
+        const rolesPicked = {
+            "ds": {"count": 0, "users": []},
+            "se": {"count": 0, "users": []},
+            "ne": {"count": 0, "users": []},
+            "ca": {"count": 0, "users": []}
+        }
+        
+        // Local, global, trackers 
+        let isInitialLoad = true;
+        let isRoleReassignmentLoad = false;
+        let currentRoomData = null;
+
+        // Function to update game info
+        function updateGameInfo(roomData) {
+            if (roomData) {
+                // Update general room info
+                document.getElementById("roomName").textContent = `Room: ${roomData["roomName"]}`;
+                const playersArray = roomData["roomPlayers"] ? Object.values(roomData["roomPlayers"]) : [];
+                document.getElementById("playerCount").textContent = `Players: ${playersArray.length}/4`;
+                document.getElementById("yourName").textContent = `You: ${username}`;
+
+                // Update role list
+                const playersList = document.getElementById("players");
+                playersList.innerHTML = "";
+                
+                if (roomData && roomData["roomPlayers"]) {
+                    // Display player list
+                    Object.entries(roomData["roomPlayers"]).forEach(([playerId, player]) => {
+                        const li = document.createElement("li");
+                        const roleNames = {
+                            'ds': 'Data Scientist',
+                            'se': 'Software Engineer',
+                            'ne': 'Network Engineer',
+                            'ca': 'Cybersecurity Analyst'
+                        };
+                        const roleName = roleNames[player["role"]] || 'Unassigned';
+                        li.textContent = `${player["name"]} - ${roleName}`;
+                        if (playerId === localUserId) {
+                            li.classList.add("current-player");
+                            li.style.fontWeight = "bold";
+                            li.style.color = "#4CAF50";
+                        }
+                        playersList.appendChild(li);
+                    });
+                }
+            }
+        }
+
+        function handleDialogue(roomData) {
+            // if can do enabled role
+            showSequence([dialogue[currentRoomData[currentDay]]["server-room"][userRole]["canUse"]], {speed: 40}) 
+        }
+
+        // Set up real-time listener for game info updates
+        const unsubscribe = listenToRoom(roomId, (roomData) => {
+            if (roomData) {
+                console.log("Room updated.")
+                currentRoomData = roomData;
+                updateGameInfo(roomData);
+
+                if (isInitialLoad) {
+                    handleDialogue(roomData)
+                    isInitialLoad = false
+                }
+                /*
+                else if (isRoleReassignmentLoad) {
+                    handleRoleReasignmentDialogue(roomData)
+                    isRoleReassignmentLoad = false;
+                }*/
+            } else {
+                console.error("Room not found");
+                window.location.href = "../index.html";
+            }
+        });
+
+        // Initial update with stored data
+        //updateGameInfo({ roomName: roomName, roomPlayers: roomData.roomPlayers });
+
+        // Show welcome dialogue when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            typewriter.showSequence([
+                "Welcome to the situation room.",
+                "Please pick a room to explore."
+            ], {
+                speed: 40
+            });
+        });
+
+        // Start game button listener
+        /*document.getElementById("startGameBtn").addEventListener("click", () => {
+            typewriter.show("Initiating mission sequence...", {
+                onComplete: () => {
+                    setTimeout(() => {
+                        // Here you would redirect to the first puzzle/room
+                        // For now, we'll just show a placeholder message
+                        typewriter.show("Mission sequence initiated. First puzzle loading...", {
+                            onComplete: () => {
+                                // Placeholder - replace with actual puzzle page
+                                alert("Puzzle system coming soon!");
+                            }
+                        });
+                    }, 1000);
+                }
+            });
+        });*/
+
+        // Clean up listener when leaving the page
+        window.addEventListener("beforeunload", () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        });
+    </script>
+</body>
+</html>
+

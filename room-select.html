@@ -90,7 +90,7 @@
                             const userId = await createUser(username, roomName, roomId);
                             
                             // Add user to room
-                            await addUserToRoom(userId, username, roomId, "0");
+                            await addUserToRoom(userId, username, roomId, 0);
     
                             // Store data in localStorage
                             localStorage.setItem("connectedRoomId", roomId);

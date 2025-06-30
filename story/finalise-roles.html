@@ -24,7 +24,7 @@
     </div>
 
     <script type="module">
-        import { updatePlayer, listenToRoom } from "../main.js";
+        import { updatePlayer, listenToRoom, progressDay } from "../main.js";
         import TypewriterDialogue from "../typewriter.js";
 
         // Get room data from localStorage
@@ -117,7 +117,7 @@
                         isRoleReassignmentLoad = true;
 
                         // Host client will now randomise the roles to players who duplicate their selection
-                        if (roomData["roomPlayers"][localUserId]["isHost"] === "1") {
+                        if (roomData["roomPlayers"][localUserId]["isHost"] === 1) {
                             Object.entries(rolesPicked).forEach(([roleId, data]) => {
                                 console.log(rolesPicked)
                                 if (data["count"] > 1) {
@@ -150,7 +150,10 @@
                 ], 
                 {
                     speed: 40, 
-                    onContinue: () => {window.location.href = "situation-room.html"}
+                    onContinue: async () => {
+                        await progressDay(roomId);
+                        window.location.href = "situation-room.html"
+                    }
                 }); 
             }
         }
@@ -161,7 +164,13 @@
                     "Your communication skills can surely only get better from here.",
                     "Right?"
                 ], 
-                {speed: 40});    
+                {
+                    speed: 40, 
+                    onContinue: async () => {
+                        await progressDay(roomId);
+                        window.location.href = "situation-room.html"
+                    }
+                });     
         }
 
         // Set up real-time listener for game info updates

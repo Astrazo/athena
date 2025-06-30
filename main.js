@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
 import {
     getFirestore, collection, doc, addDoc, updateDoc,
-    query, where, orderBy, getDocs, arrayUnion, arrayRemove, getDoc, onSnapshot, deleteDoc, deleteField
+    query, where, orderBy, getDocs, arrayUnion, arrayRemove, getDoc, onSnapshot, deleteDoc, deleteField,
+    increment
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -20,6 +21,7 @@ export async function createRoom(name) {
         name,
         created: Date.now(),
         status: "waiting",
+        currentDay: 0,
         players: {}
     });
     return docRef.id;
@@ -38,7 +40,7 @@ export async function createUser(userName, roomName, roomId) {
 export async function addUserToRoom(userId, userName, roomId, isHost) {
     const roomRef = doc(db, "rooms", roomId);
     await updateDoc(roomRef, {
-        [`players.${userId}`]: { name: userName, role: "None", readyStatus: "0", isHost } // need dot notation here for Firebase because it thinks it's special
+        [`players.${userId}`]: { name: userName, role: "None", readyStatus: 0, isHost } // need dot notation here for Firebase because it thinks it's special
         //players: arrayUnion({ id: userId, name: userName, role: "None", readyStatus: "0" })
     });
 }
@@ -90,6 +92,13 @@ export async function updatePlayer(userId, roomId, key, value) {
             [`players.${userId}.${key}`]: value
         });
     }
+}
+
+export async function progressDay(roomId) {
+    const roomRef = doc(db, "rooms", roomId);
+    await updateDoc(roomRef, {
+        currentDay: increment(1)
+    });
 }
 
 export async function deleteRoom(roomId) {
