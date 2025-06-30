@@ -80,6 +80,8 @@
                         li.classList.add("current-player");
                         li.style.fontWeight = "bold";
                         li.style.color = "#4CAF50";
+                        // Set the role to local storage for easy reference later
+                        localStorage.setItem("connectedUserRole", player["role"])
                     }
                     playersList.appendChild(li);
                 });
