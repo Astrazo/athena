@@ -60,7 +60,7 @@
                 
                 // Check if all players have selected roles (but not during updates)
                 if (playersArray.length > 0) {
-                    const allHaveRoles = playersArray.every(player => player["role"] && player["role"] !== "None");
+                    const allHaveRoles = playersArray.every(player => player["role"] && player["role"] !== null);
                     if (allHaveRoles) {
                         console.log("All roles selected");
                         setTimeout(() => {
@@ -104,7 +104,7 @@
         function hasCurrentUserRole(roomData) {
             if (roomData && roomData.roomPlayers) {
                 const currentPlayer = roomData.roomPlayers[userId];
-                return currentPlayer && currentPlayer.role && currentPlayer.role !== "None";
+                return currentPlayer && currentPlayer.role && currentPlayer.role !== null;
             }
             return false;
         }
@@ -175,7 +175,7 @@
         // Change mind button listener
         document.getElementById("changeMindBtn").addEventListener("click", async () => {
             // Reset role to None after dialogue
-            updatePlayer(userId, roomId, "role", "None");
+            updatePlayer(userId, roomId, "role", null);
             // Show dialogue about changing mind
             /*typewriter.show("Role reset. Please select a new role.", {
                 onComplete: () => {

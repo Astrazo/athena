@@ -40,7 +40,14 @@ export async function createUser(userName, roomName, roomId) {
 export async function addUserToRoom(userId, userName, roomId, isHost) {
     const roomRef = doc(db, "rooms", roomId);
     await updateDoc(roomRef, {
-        [`players.${userId}`]: { name: userName, role: "None", readyStatus: 0, isHost } // need dot notation here for Firebase because it thinks it's special
+        [`players.${userId}`]: { 
+            name: userName,     
+            role: null, 
+            readyStatus: 0, 
+            isHost, 
+            enablerComplete: false,
+            enabledComplete: false,
+            enabledValue: null } // need dot notation here for Firebase because it thinks it's special
         //players: arrayUnion({ id: userId, name: userName, role: "None", readyStatus: "0" })
     });
 }

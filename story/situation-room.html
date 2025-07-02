@@ -23,11 +23,12 @@
         <h1 id="lobbyHeader">Situation Room</h1>
         <h2 id="lobbySubheader">Pick a room to explore</h2>
         <div class="button-container">
-            <button id="serverBtn" class="std-button role-button" style="width: 250px; max-width: 100%;" 
-                onclick="window.location.href='rooms/server-room.html'">Server Room</button>
-            <button id="researchBtn" class="std-button role-button" style="width: 250px;">Research Lab</button>
-            <button id="commandBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Command Centre</button>
-            <button id="developerBtn" class="std-button role-button" style="width: 250px;">Developer Hub</button>
+            <div class="button-container">
+                <button id="serverBtn" class="std-button role-button" style="width: 250px; max-width: 100%;" onclick="window.location.href='rooms/server-room.html'">Server Room</button>
+                <button id="researchBtn" class="std-button role-button" style="width: 250px;" onclick="window.location.href='rooms/research-lab.html'">Research Lab</button>
+                <button id="commandBtn" class="std-button role-button" style="width: 250px; max-width: 100%;" onclick="window.location.href='rooms/command-centre.html'">Command Centre</button>
+                <button id="developerBtn" class="std-button role-button" style="width: 250px;" onclick="window.location.href='rooms/developer-hub.html'">Developer Hub</button>
+            </div>
         </div>
     </div>
 
@@ -121,9 +122,7 @@
             typewriter.showSequence([
                 "Welcome to the situation room.",
                 "Please pick a room to explore."
-            ], {
-                speed: 40
-            });
+            ]);
         });
 
         // Start game button listener

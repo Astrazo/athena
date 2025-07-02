@@ -32,7 +32,7 @@
         const localUserId = localStorage.getItem("connectedUserId");
         const roomName = localStorage.getItem("connectedRoomName");
         const username = localStorage.getItem("connectedUsername");
-        //const roomData = JSON.parse(localStorage.getItem("roomData") || "{}");
+        const isHost = localStorage.getItem("isHost");
 
         // Check for duplicate roles
         let hasDuplicateRoles = false;
@@ -151,8 +151,13 @@
                 {
                     speed: 40, 
                     onContinue: async () => {
-                        await progressDay(roomId);
-                        window.location.href = "situation-room.html"
+                        if (isHost === "1") {
+                            await progressDay(roomId);
+                            window.location.href = "situation-room.html"
+                        }
+                        else {
+                            window.location.href = "situation-room.html"
+                        }
                     }
                 }); 
             }
@@ -167,8 +172,13 @@
                 {
                     speed: 40, 
                     onContinue: async () => {
-                        await progressDay(roomId);
-                        window.location.href = "situation-room.html"
+                        if (isHost === "1") {
+                            await progressDay(roomId);
+                            window.location.href = "situation-room.html"
+                        }
+                        else {
+                            window.location.href = "situation-room.html"
+                        }
                     }
                 });     
         }
