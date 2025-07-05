@@ -4,6 +4,7 @@ import {
     query, where, orderBy, getDocs, arrayUnion, arrayRemove, getDoc, onSnapshot, deleteDoc, deleteField,
     increment
 } from "firebase/firestore";
+import { roomActions } from "/room-actions.js"
 
 const firebaseConfig = {
     apiKey: "AIzaSyDzgDI28nu9RGm32mJH-1tvkZCQOdEjdrk",
@@ -103,6 +104,7 @@ export async function updatePlayer(userId, roomId, key, value) {
 
 export async function progressDay(roomId) {
     const roomRef = doc(db, "rooms", roomId);
+    localStorage.setItem("introDialogueSeen", "0")
     await updateDoc(roomRef, {
         currentDay: increment(1)
     });
@@ -118,7 +120,7 @@ export function listenToRoom(roomId, callback) {
     return onSnapshot(roomRef, (doc) => {
         if (doc.exists()) {
             const data = doc.data();
-            callback({ roomId: roomId, roomName: data.name, roomPlayers: data.players });
+            callback({ roomId: roomId, roomName: data.name, roomPlayers: data.players, currentDay: data.currentDay });
         } else {
             callback(null);
         }
@@ -138,3 +140,58 @@ export function listenToAllRooms(callback) {
         callback(rooms);
     });
 }
+
+export function generateActions(currentDay, roomName, actionsContainer) {
+    // Get the available actions
+    const availableActions = roomActions[currentDay][localStorage.getItem("connectedUserRole")][roomName];
+    
+    // Clear existing buttons
+    actionsContainer.innerHTML = "";
+
+    // Loop through each key in the action dictionary
+    for (const [actionKey, actionText] of Object.entries(availableActions)) {
+        const button = document.createElement("button");
+        button.id = actionKey.replace(/\s+/g, "").toLowerCase() + "Btn";
+        button.className = "std-button role-button";
+        button.style.width = "250px";
+        button.textContent = actionKey;
+        button.onclick = () => {
+            // Handle action click
+            console.log(`Action clicked: ${actionKey} – ${actionText}`);
+        };
+        actionsContainer.appendChild(button);
+    }
+}
+
+export function updateRoleList(roomData, playersList) {
+    // Clear role list
+    playersList.innerHTML = "";
+    
+    if (roomData && roomData["roomPlayers"]) {
+        // Display player list
+        Object.entries(roomData["roomPlayers"]).forEach(([playerId, player]) => {
+            const li = document.createElement("li");
+            const roleNames = {
+                "ds": "Data Scientist",
+                "se": "Software Engineer",
+                "ne": "Network Engineer",
+                "ca": "Cybersecurity Analyst"
+            };
+            const roleName = roleNames[player["role"]] || "Unassigned";
+            li.textContent = `${player["name"]} - ${roleName}`;
+            if (playerId === localStorage.getItem("connectedUserId")) {
+                li.classList.add("current-player");
+                li.style.fontWeight = "bold";
+                li.style.color = "#4CAF50";
+            }
+            playersList.appendChild(li);
+        });
+    }
+}
+
+export function generatePuzzle(puzzleDiv, ) {
+    
+}
+
+
+

@@ -7,7 +7,8 @@ export const dialogue = {
                     "You rush into the Server Room as alarms blare around you.",
                     "The Intrusion Detection System (IDS) urgently flashes red—the facility's experimental AI has gone rogue and infiltrated the network.",
                     "It's disguising its movements among normal system traffic.",
-                    "Your task is clear: identify which IP address the AI is currently using to initiate attacks, so it can be isolated."
+                    "Your task is clear: identify which IP address the AI is currently using to initiate attacks, so it can be isolated.",
+                    "What should you try first?"
                 ],
                 "enabler-complete": [
                     "Enabler complete dialogue."

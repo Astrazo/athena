@@ -24,7 +24,10 @@ class TypewriterDialogue {
         this.container = document.createElement('div');
         this.container.className = 'dialogue-container';
         this.container.innerHTML = `
-            <button class="dialogue-skip">Skip</button>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px; position: relative; justify-content: flex-start;">
+                <button id="skip" class="dialogue-skip" style="position: static;">Skip</button>
+                <button id="skip-all" class="dialogue-skip" style="position: static;">Skip All</button>
+            </div>
             <p class="dialogue-text"></p>
             <span class="dialogue-cursor"></span>
             <button class="dialogue-continue">Continue</button>
@@ -34,11 +37,13 @@ class TypewriterDialogue {
         // Get references to elements
         this.textElement = this.container.querySelector('.dialogue-text');
         this.cursorElement = this.container.querySelector('.dialogue-cursor');
-        this.skipButton = this.container.querySelector('.dialogue-skip');
+        this.skipButton = this.container.querySelector('#skip');
+        this.skipAllButton = this.container.querySelector('#skip-all');
         this.continueButton = this.container.querySelector('.dialogue-continue');
 
         // Add event listeners
         this.skipButton.addEventListener('click', () => this.skip());
+        this.skipAllButton.addEventListener('click', () => this.skipAll());
         this.continueButton.addEventListener('click', () => {
             if (this.onContinue) {
                 this.onContinue(); // Call custom continue function
@@ -96,17 +101,48 @@ class TypewriterDialogue {
     }
 
     skip() {
+        // Stop the typing animation timer
         if (this.interval) {
             clearInterval(this.interval);
         }
         
+        // Show the complete text immediately
         this.currentText = this.fullText;
         this.textElement.textContent = this.currentText;
+        // Mark as complete and show cursor
         this.complete();
         
+        // Call skip callback if provided
         if (this.onSkip) {
             this.onSkip();
         }
+    }
+
+    skipAll() {
+        // Stop the typing animation timer
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
+        
+        // Just hide the dialogue box
+        this.hide()
+    
+        /*
+        // Show the complete text immediately
+        this.currentText = this.fullText;
+        this.textElement.textContent = this.currentText;
+        // Mark as complete and show cursor
+        this.complete();
+        
+        // Call onComplete to finish the entire dialogue sequence
+        if (this.onComplete) {
+            this.onComplete();
+        }
+        
+        // Call skip callback if provided
+        if (this.onSkip) {
+            this.onSkip();
+        }*/
     }
 
     complete() {

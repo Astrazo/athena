@@ -23,18 +23,16 @@
     <div class="menu-container">
         <h1 id="lobbyHeader">Developer Hub</h1>
         <!--<h2 id="lobbySubheader">Pick a room to explore</h2>-->
-        <!--<div class="button-container">
-            <button id="serverBtn" class="std-button role-button" style="width: 250px; max-width: 100%;" onclick="window.location.href='server-room.html'">Server Room</button>
-            <button id="researchBtn" class="std-button role-button" style="width: 250px;" onclick="window.location.href='research-lab.html'">Research Lab</button>
-            <button id="commandBtn" class="std-button role-button" style="width: 250px; max-width: 100%;" onclick="window.location.href='command-centre.html'">Command Centre</button>
-            <button id="developerBtn" class="std-button role-button" style="width: 250px;" onclick="window.location.href='developer-hub.html'">Developer Hub</button>
-        </div>-->
+        <div id="availableActions" class="button-container">
+           
+        </div>
     </div>
 
     <script type="module">
-        import { updatePlayer, listenToRoom } from "/main.js";
+        import { updatePlayer, listenToRoom, generateActions, updateRoleList } from "/main.js";
         import TypewriterDialogue from "/typewriter.js";
         import { dialogue } from "/dialogue.js";
+        import { roomActions } from "/room-actions.js"
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
@@ -61,57 +59,29 @@
                 document.getElementById("yourName").textContent = `You: ${username}`;
 
                 // Figure out what puzzle status the player has 
-                enablerComplete = currentRoomData["roomPlayers"][localUserId]["enablerComplete"];
-                enabledComplete = currentRoomData["roomPlayers"][localUserId]["enabledComplete"];
+                enablerComplete = roomData["roomPlayers"][localUserId]["enablerComplete"];
+                enabledComplete = roomData["roomPlayers"][localUserId]["enabledComplete"];
 
                 // Can they complete the enabled puzzle yet?
-                canDoEnabled = currentRoomData["roomPlayers"][localUserId]["enabledValue"] != null;
+                canDoEnabled = roomData["roomPlayers"][localUserId]["enabledValue"] != null;
                  
                 // Grab current day
-                currentDay = currentRoomData["currentDay"];
+                currentDay = roomData["currentDay"];
 
             }
         }
-        function updateRoleList(roomData) {
-            // Update role list
-            const playersList = document.getElementById("players");
-            playersList.innerHTML = "";
-            
-            if (roomData && roomData["roomPlayers"]) {
-                // Display player list
-                Object.entries(roomData["roomPlayers"]).forEach(([playerId, player]) => {
-                    const li = document.createElement("li");
-                    const roleNames = {
-                        "ds": "Data Scientist",
-                        "se": "Software Engineer",
-                        "ne": "Network Engineer",
-                        "ca": "Cybersecurity Analyst"
-                    };
-                    const roleName = roleNames[player["role"]] || "Unassigned";
-                    li.textContent = `${player["name"]} - ${roleName}`;
-                    if (playerId === localUserId) {
-                        li.classList.add("current-player");
-                        li.style.fontWeight = "bold";
-                        li.style.color = "#4CAF50";
-                    }
-                    playersList.appendChild(li);
-                });
-            }
-        }
-
         // 
-        function handleDialogue(roomData) {
+        function handleDialogue() {
             // First, see if for this day, this role is supposed to be in this room
             const dialogueToShow = dialogue?.[currentDay]?.[userRole]?.["developer-hub"] || null;
 
             // If nothing has been returned, that means the user is in the wrong room
             if (dialogueToShow === null) {
                 typewriter.showSequence(dialogue["wrong-room"]);
+                return;
             }
-            // Otherwise, show the dialogue
-            else {
-                // If the user has an enabler task in here
-                if (dialogueToShow["enabler"]) {
+            // If the user has an enabler task in here
+            if (dialogueToShow["enabler"]) {
                     // Has it been completed already?
                     if (!enablerComplete) {
                         typewriter.showSequence(dialogueToShow["enabler"]);
@@ -120,16 +90,15 @@
                         typewriter.showSequence(dialogueToShow["enabler-complete"]);
                     }
                 }
-                else if (dialogueToShow["enabled"]) {
-                    if (canDoEnabled && !enabledComplete){
-                        typewriter.showSequence(dialogueToShow["enabled"])
-                    }
-                    else if (enabledComplete) {
-                        typewriter.showSequence(dialogueToShow["enabled-complete"])
-                    }
-                    else {
-                        typewriter.showSequence(dialogueToShow["enabled-not-available"])
-                    }
+            else if (dialogueToShow["enabled"]) {
+                if (canDoEnabled && !enabledComplete){
+                    typewriter.showSequence(dialogueToShow["enabled"])
+                }
+                else if (enabledComplete) {
+                    typewriter.showSequence(dialogueToShow["enabled-complete"])
+                }
+                else {
+                    typewriter.showSequence(dialogueToShow["enabled-not-available"])
                 }
             }
         }
@@ -140,8 +109,10 @@
                 console.log("Room updated.")
                 currentRoomData = roomData;
                 updateGameInfo(roomData);
-                updateRoleList(roomData);
+                updateRoleList(roomData, document.getElementById("players"));
+                generateActions(roomData["currentDay"], "developer-hub", document.getElementById("availableActions"));
                 handleDialogue();
+                
 
                 /*if (isInitialLoad) {
                     handleDialogue(roomData)
