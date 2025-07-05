@@ -1,57 +1,37 @@
 // dialogue.js
 export const dialogue = {
     1: { // Day 1
-        ca: {
+        "ca": {
             "server-room": {
-                enabler: [
-                    "You don't see anything here that can help you at this time."
+                "enabler": [
+                    "You rush into the Server Room as alarms blare around you.",
+                    "The Intrusion Detection System (IDS) urgently flashes red—the facility's experimental AI has gone rogue and infiltrated the network.",
+                    "It's disguising its movements among normal system traffic.",
+                    "Your task is clear: identify which IP address the AI is currently using to initiate attacks, so it can be isolated."
                 ],
-                enabled: [
-                    "You don't see anything here that can help you at this time."
+                "enabler-complete": [
+                    "Enabler complete dialogue."
                 ]
             },
             "research-lab": {
-                enabler: [
-                    "You don't see anything here that can help you at this time."
+                "enabled": [
+                    "The Data Scientist flagged a specific user for unusual activity.",
+                    "Your job: dig into the login logs and determine if this user’s account has been hijacked.",
+                    "If the behavior checks out, you can clear it.",
+                    "If not — you need to flag it for immediate lockdown before the AI spreads deeper."
                 ],
-                enabled: [
-                    "You don't see anything here that can help you at this time."
-                ]
-            },
-            "developer-hub": {
-                enabler: [
-                    "You dash into the Developer Hub, not knowing what you may find.",
-                    "The logs are clear: the AI’s embedded tokens grant it root access—every second counts.",
-                    "You open the token revocation tool, ready to isolate the rogue access, but your fingers freeze over the keys.",
-                    "You realize you're missing something critical: the exact token pattern required.",
-                    "Without it, revoking tokens blindly risks locking out every legitimate admin—or worse, tipping the AI off completely."
+                "enabled-complete": [
+                    "Enabled complete dialogue."
                 ],
-                enabled: [
-                    "The token flagged earlier wasn’t just used to log in, it was used to escalate privileges system-wide.",
-                    "Whatever inserted it had admin rights for 11 seconds, just long enough to pivot.",
-                    "You’ve traced it back to the Dev Hub, but the revocation system needs an exact pattern match, or it’ll fail silently.",
-                    "Now it’s a race. One wrong kill-switch and you could lock out legitimate users.", 
-                    "One delay, and the AI keeps spreading."
-                ]
-            },
-            "command-centre": {
-                enabler: [
-                    "The command centre is a mess. Failed logins, ghost sessions, and admin privileges shifting hands without trace.",
-                    "You're staring at a wall of corrupted logs and blinking red alerts. Whatever this is, it’s already inside.",
-                    "Your first move? Identify the compromised session tokens before they elevate to admin privileges.",
-                    "You’ve pulled the overnight session log. Four entries show successful logins, but only one exhibits classic indicators of credential misuse.",
-                    "Which session should you flag for further action?"
-                ],
-                enabled: [
-                    "You've identified the compromised session and flagged it for further investigation.",
-                    "You should see if you can help out in the other rooms."
+                "enabled-not-available": [
+                    "Enabled not avaiable dialogue."
                 ]
             }
         },
         "ne": {
-            "developer-hub": {
+            "command-centre": {
                 "enabler": [
-                    "You're inside the Developer Hub now.",
+                    "You're inside the Command Centre now.",
                     "It’s eerily quiet. Most systems are powered down, but the access logs are alive with chatter.",
                     "Your job is to figure out how the AI infiltrated the network. By comparing interface usage patterns and anomalies, you might just find the path it slipped through."
                 ],
@@ -61,7 +41,7 @@ export const dialogue = {
                     "That intel’s now with the Software Engineer. Hopefully they can figure out what the AI's doing with it."
                 ]
             },
-            "server-room": {
+            "developer-hub": {
                 "enabled": [
                     "The Cybersecurity Analyst has flagged a suspicious IP.",
                     "Your task: determine which internal systems this IP has touched.",
@@ -82,11 +62,58 @@ export const dialogue = {
                     "Hopefully someone upstream can pinpoint the breach origin... then you’ll be ready to map the damage."
                 ]
             }
+        },
+        "se": {
+            "research-lab": {
+                "enabler": [
+                    "Something doesn’t add up.",
+                    "A recent commit went into production just hours before the AI went rogue.",
+                    "Your task is to review the commit logs and identify which change may have enabled the breach."
+                ],
+                "enabler-complete": [
+                    "Enabler complete dialogue."
+                ]
+            },
+            "server-room": {
+                "enabled": [
+                    "The Network Engineer has traced unusual activity to {{network engineer enabler answer}}.",
+                    "You’ve got access to the runtime diagnostic tools in the Server Room, where the AI seems to be probing from.",
+                    "Several active windows services are bound to this interface, you need to identify which process on {{network engineer enabler answer}} is likely compromised."
+                ],
+                "enabled-complete": [
+                    "Enabled complete dialogue."
+                ],
+                "enabled-not-available": [
+                    "Enabled not avaiable dialogue."
+                ]
+            }
+        },
+        "ds": {
+            "development-hub": {
+                "enabler": [
+                    "System logs show every user session across the last 24 hours.",
+                    "Your task: analyse user activity patterns and identify which user deviates significantly from the norm.",
+                    "This could be a potential sign of account takeover or injection by the AI."
+                ],
+                "enabler-complete": [
+                    "Enabler complete dialogue."
+                ]
+            },
+            "command-centre": {
+                "enabled": [
+                    "You've been hnded a dataset tied to a recent commit.",
+                    "The Software Engineer believes it might be compromised.",
+                    "Before it can be used in any analysis, it needs to be cleaned and validated.",
+                    "Your job: apply basic cleaning checks to ensure the data is safe inside the system."
+                ],
+                "enabled-complete": [
+                    "Enabled complete dialogue."
+                ],
+                "enabled-not-available": [
+                    "Enabled not avaiable dialogue."
+                ]
+            }
         }
     },
-    "task-complete": [
-        "You've done all you can in this room for now.",  
-        "You should see if you can help out in the other rooms."
-    ],
     "wrong-room": ["You can't see anything useful for you to do in this room at the moment."]
   };
