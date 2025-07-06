@@ -250,5 +250,8 @@ export const roomActions = {
                 "CORRECT_ACTION": "Investigate Server Traffic Logs"
             }
         }
-    }
+    },
+    "NO-ACTION": [
+        "This doesn't seem to help right now. You should try looking in some other rooms"
+    ]
 }

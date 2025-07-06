@@ -5,7 +5,8 @@ class TypewriterDialogue {
         this.currentText = '';
         this.fullText = '';
         this.currentIndex = 0;
-        this.speed = 50; // milliseconds per character
+        this.speed = 30; // milliseconds per character
+        this.lineDelay = 3000; // milliseconds to wait before progressing to the next line
         this.interval = null;
         this.onLineComplete = null;
         this.onLineSkip = null;
@@ -96,7 +97,7 @@ class TypewriterDialogue {
 
     show(text, options = {}) {
         if (this.isActive) {
-            this.hide();
+            this.hide(true);
         }
 
         this.isActive = true;
@@ -104,8 +105,8 @@ class TypewriterDialogue {
         this.fullText = text;
         this.currentText = '';
         this.currentIndex = 0;
-        this.speed = options.speed || 50;
-        this.onLineComplete = options.onComplete || null;
+        this.speed = options.speed || this.speed;
+        this.onLineComplete = options.onLineComplete || null;
         this.onContinue = options.onContinue || null;
         this.onLineSkip = options.onLineSkip || null;
         this.isLastInSequence = options.isLastInSequence || false;
@@ -229,19 +230,17 @@ class TypewriterDialogue {
         
         // Only show continue button if this is the last line in sequence
         if (this.isLastInSequence) {
+            console.log("Last dialogue line completed.")
             this.continueButton.style.display = 'block';
         }
         
         if (this.onLineComplete) {
+            console.log("Dialogue line completed.")
             this.onLineComplete();
         }
     }
 
-    hide() {
-        this.isActive = false;
-        this.overlay.style.display = 'none';
-        this.container.style.display = 'none';
-
+    hide(clearTextOnly = false) {
         // Clear the text content
         this.textElement.textContent = '';
         this.currentText = '';
@@ -249,13 +248,20 @@ class TypewriterDialogue {
 
         // Hide cursor
         this.textElement.style.setProperty('--cursor-visible', 'none');
-        
+
         if (this.interval) {
             clearInterval(this.interval);
             this.interval = null;
         }
 
-        console.log("Dialogue hidden and cleared.")
+        console.log("Dialogue cleared.")
+        
+        if (!clearTextOnly) {
+            this.isActive = false;
+            this.overlay.style.display = 'none';
+            this.container.style.display = 'none';
+            console.log("Dialogue box hidden.")
+        }   
     }
 
     // Show multiple dialogue lines in sequence
@@ -263,12 +269,14 @@ class TypewriterDialogue {
         // Create an AbortController to cancel promises
         this.sequenceController = new AbortController();
 
+        // Handle both single string and array of strings
+        const lines = Array.isArray(dialogueLines) ? dialogueLines : [dialogueLines];
 
-        for (let i = 0; i < dialogueLines.length; i++) {
-            const line = dialogueLines[i];
-            const isLast = i === dialogueLines.length - 1;
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const isLast = i === lines.length - 1;
             
-            await new Promise((resolve) => {
+            await new Promise((resolve, reject) => {
                 // Check if cancelled before starting
                 if (this.sequenceController.signal.aborted) {
                     reject(new Error("Cancelled"));
@@ -278,8 +286,8 @@ class TypewriterDialogue {
                 this.show(line, {
                     ...options,
                     isLastInSequence: isLast, // Pass this flag to show()
-                    onComplete: isLast ? options.onComplete : resolve, // set what this.onComplete will do in complete function
-                    onLineSkip: isLast ? options.onLineSkip : resolve // set what this.onSkip will do in skip function
+                    onLineComplete: isLast ? (options["onLineComplete"] || resolve) : resolve, // set what this.onComplete will do in complete function
+                    onLineSkip: isLast ? (options["onLineSkip"] || resolve) : resolve // set what this.onSkip will do in skip function
                 });
             }).catch(() => {
                 return Promise.reject(new Error("Cancelled"))
@@ -294,7 +302,7 @@ class TypewriterDialogue {
                 try {
                     await new Promise((resolve, reject) => {
                         this.delayResolve = resolve;
-                        const timeout = setTimeout(resolve, 2000);
+                        const timeout = setTimeout(resolve, this.lineDelay);
                         
                         // Listen for abort signal
                         this.sequenceController.signal.addEventListener("abort", () => {

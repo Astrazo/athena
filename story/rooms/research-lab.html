@@ -78,7 +78,7 @@
 
             // If nothing has been returned, that means the user is in the wrong room
             if (dialogueToShow === null) {
-                typewriter.showSequence(dialogue["wrong-room"]);
+                typewriter.showSequence(dialogue["WRONG-ROOM"]);
             }
             // Otherwise, show the dialogue
             else {
@@ -113,7 +113,15 @@
                 currentRoomData = roomData;
                 updateGameInfo(roomData);
                 updateRoleList(roomData, document.getElementById("players"));
-                generateActions(currentDay["currentDay"], "research-lab", localStorage.getItem("connectedUserRole"), document.getElementById("availableActions"));
+                
+                // Load in actions this role can do during this run
+                generateActions(
+                    roomData, 
+                    "research-lab", 
+                    localStorage.getItem("connectedUserRole"), 
+                    document.getElementById("availableActions")
+                );
+
                 handleDialogue();
 
                 /*if (isInitialLoad) {

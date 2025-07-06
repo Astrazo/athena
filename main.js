@@ -4,8 +4,9 @@ import {
     query, where, orderBy, getDocs, arrayUnion, arrayRemove, getDoc, onSnapshot, deleteDoc, deleteField,
     increment
 } from "firebase/firestore";
-import { roomActions } from "/room-actions.js"
-import TypewriterDialogue from "./typewriter.js";
+import { roomActions } from "/room-actions.js";
+import { roomPuzzles } from "/room-puzzles.js";
+import { dialogue } from "./dialogue";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDzgDI28nu9RGm32mJH-1tvkZCQOdEjdrk",
@@ -142,12 +143,59 @@ export function listenToAllRooms(callback) {
     });
 }
 
-export function generateActions(currentDay, roomName, currentRole, actionsContainer) {
+// Function used show correct action dialogue and puzzles if they're in a room where the actions can do something
+function isRoomActionableRightNow(currentDay, currentRole, roomName, enablerComplete, enabledComplete, enabledPossible) {
+    // First, see if for this day, this role is ever in this room
+    const dialogueToShow = dialogue?.[currentDay]?.[currentRole]?.[roomName] || null;
+    // If nothing has been returned, that means the user is in the wrong room entirely
+    if (dialogueToShow === null) {
+        return [false, null];
+    }
+    // If something has been returned, we need to check if it's something they can do right now
+    else {
+        // Check what task they have in this room (enabler or enabled)
+        const enablerTask = dialogueToShow?.["enabler"] || false;
+
+        // If this room has an enabler task, check to see if they've already done it
+        if (enablerTask) {
+            return !enablerComplete ? [true, "enabler"] : [false, null];
+        }
+        // Otherwise if this room has an enabled task, check to see if it's already done, or if they're yet to be able to do it
+        else {
+            return (!enabledComplete && enabledPossible) ? [true, "enabled"] : [false, null];
+        }
+    }
+}
+
+export function generateActions(roomData, roomName, currentRole, actionsContainer) {
+    // Get current day
+    const currentDay = roomData["currentDay"]
+
+    // Get localUserId
+    const localUserId = localStorage.getItem("connectedUserId");
+
     // Get the available actions
     const availableActions = roomActions[currentDay][currentRole][roomName];
+
+    // Get puzzle status the player has for the current day
+    const enablerComplete = roomData["roomPlayers"][localUserId]["enablerComplete"];
+    const enabledComplete = roomData["roomPlayers"][localUserId]["enabledComplete"];
+    const enabledPossible = roomData["roomPlayers"][localUserId]["enabledValue"] != null;
+
     
     // Clear existing buttons
     actionsContainer.innerHTML = "";
+
+    // Check if room is actionable at this point in time
+    const [isRoomActionable, puzzleToGenerate] = isRoomActionableRightNow(
+        currentDay, 
+        currentRole, 
+        roomName, 
+        enablerComplete, 
+        enabledComplete, 
+        enabledPossible
+    );
+    console.log(`Player has entered an actionable room: ${isRoomActionable}`)
 
     // Loop through each key in the action dictionary
     for (const [actionKey, actionText] of Object.entries(availableActions)) {
@@ -159,19 +207,28 @@ export function generateActions(currentDay, roomName, currentRole, actionsContai
             button.className = "std-button role-button";
             button.style.width = "250px";
             button.textContent = actionKey;
-    
-            // Handle action click
-            button.onclick = () => {
-                // Show room-action dialogue for this button
-                typewriter.showSequence(
-                    availableActions[actionKey]
-                );
 
+            // If they're not in the correct room at the moment, all actions should be dead, so show the dialogue for that
+            if (!isRoomActionable) {
+                actionText = roomActions["NO-ACTION"]
+            }
+
+            // Handle action click
+            button.onclick = async () => {
+                // Show room-action dialogue for this button
+                await typewriter.showSequence(
+                    actionText
+                );
+                console.log("Made past dialogue");
                 // If this button is the correct action to take, show the puzzle
                 if (actionKey === availableActions["CORRECT_ACTION"]) {
                     console.log("Correct action clicked");
                     // Hide actions
+                    actionsContainer.innerHTML = "";
+
                     // Show puzzle
+                    const puzzleDiv = document.getElementById("availableActions");
+                    generatePuzzle(puzzleDiv, currentDay, roomName, currentRole, puzzleToGenerate);
                 }
                 else {
                     // Show dialogue
@@ -209,8 +266,162 @@ export function updateRoleList(roomData, playersList) {
     }
 }
 
-export function generatePuzzle(puzzleDiv, ) {
+export function generatePuzzle(puzzleDiv, currentDay, roomName, currentRole, puzzleType) {
+    // Get puzzle data
+    const puzzleData = roomPuzzles[currentDay]?.[currentRole]?.[roomName]?.[puzzleType];
     
+    if (!puzzleData) {
+        console.error("Puzzle data not found for:", { currentDay, roomName, currentRole, puzzleType });
+        return;
+    }
+
+    // Clear the puzzle div
+    puzzleDiv.innerHTML = "";
+
+    // Create puzzle container
+    const puzzleContainer = document.createElement("div");
+    puzzleContainer.className = "puzzle-container";
+
+    // Create puzzle title
+    const puzzleTitle = document.createElement("h2");
+    puzzleTitle.className = "puzzle-title";
+    puzzleTitle.textContent = "Security Analysis Task";
+    puzzleContainer.appendChild(puzzleTitle);
+
+    // Create puzzle description
+    const puzzleDescription = document.createElement("p");
+    puzzleDescription.className = "puzzle-description";
+    puzzleDescription.textContent = "Review the network activity log below and identify the suspicious entry that indicates automated reconnaissance activity.";
+    puzzleContainer.appendChild(puzzleDescription);
+
+    // Create table container
+    const tableContainer = document.createElement("div");
+    tableContainer.className = "puzzle-table-container";
+
+    // Create table
+    const table = document.createElement("table");
+    table.className = "puzzle-table";
+
+    // Create table header
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+    
+    puzzleData.tableHeaders.forEach(header => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+    
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Create table body
+    const tbody = document.createElement("tbody");
+    
+    puzzleData.tableRows.forEach((row, rowIndex) => {
+        const tr = document.createElement("tr");
+        tr.className = "puzzle-row";
+        tr.dataset.rowIndex = rowIndex;
+        
+        row.forEach(cellData => {
+            const td = document.createElement("td");
+            td.textContent = cellData;
+            tr.appendChild(td);
+        });
+        
+        // Add click handler for row selection
+        tr.addEventListener("click", () => {
+            // Remove previous selection
+            document.querySelectorAll(".puzzle-row.selected").forEach(row => {
+                row.classList.remove("selected");
+            });
+            
+            // Select this row
+            tr.classList.add("selected");
+        });
+        
+        tbody.appendChild(tr);
+    });
+    
+    table.appendChild(tbody);
+    tableContainer.appendChild(table);
+    puzzleContainer.appendChild(tableContainer);
+
+    // Create instruction text
+    const instruction = document.createElement("p");
+    instruction.className = "puzzle-instruction";
+    instruction.textContent = "Click on the suspicious activity entry, then click Submit Answer.";
+    puzzleContainer.appendChild(instruction);
+
+    // Create button container
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "puzzle-button-container";
+
+    // Create submit button
+    const submitButton = document.createElement("button");
+    submitButton.className = "std-button puzzle-submit";
+    submitButton.textContent = "Submit Answer";
+    
+    submitButton.addEventListener("click", async () => {
+        const selectedRow = document.querySelector(".puzzle-row.selected");
+        
+        if (!selectedRow) {
+            // Show error message
+            const errorMsg = document.createElement("div");
+            errorMsg.className = "puzzle-error";
+            errorMsg.textContent = "Please select a row first!";
+            puzzleContainer.appendChild(errorMsg);
+            
+            // Remove error after 3 seconds
+            setTimeout(() => {
+                if (errorMsg.parentNode) {
+                    errorMsg.remove();
+                }
+            }, 3000);
+            return;
+        }
+        
+        const selectedIndex = parseInt(selectedRow.dataset.rowIndex);
+        const isCorrect = selectedIndex === puzzleData.correctAnswerIndex;
+        
+        // Disable submit button
+        submitButton.disabled = true;
+        submitButton.textContent = "Processing...";
+        
+        // Show feedback
+        const feedbackMessages = isCorrect ? puzzleData.feedback.correct : puzzleData.feedback.incorrect;
+        
+        await typewriter.showSequence(feedbackMessages, {
+            onComplete: () => {
+                if (isCorrect) {
+                    // Mark puzzle as complete
+                    const userId = localStorage.getItem("connectedUserId");
+                    const roomId = localStorage.getItem("connectedRoomId");
+                    updatePlayer(userId, roomId, "enablerComplete", true);
+                    
+                    // Show success message
+                    typewriter.showSequence([
+                        "Puzzle completed successfully!",
+                        "You can now explore other rooms to help your team."
+                    ], {
+                        onComplete: () => {
+                            // Hide puzzle and return to room
+                            puzzleDiv.innerHTML = "";
+                            // You might want to regenerate actions here
+                        }
+                    });
+                } else {
+                    // Re-enable submit button for retry
+                    submitButton.disabled = false;
+                    submitButton.textContent = "Submit Answer";
+                }
+            }
+        });
+    });
+    
+    buttonContainer.appendChild(submitButton);
+    puzzleContainer.appendChild(buttonContainer);
+    puzzleDiv.appendChild(puzzleContainer);
 }
 
 

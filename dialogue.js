@@ -5,7 +5,7 @@ export const dialogue = {
             "server-room": {
                 "enabler": [
                     "You rush into the Server Room as alarms blare around you.",
-                    "The Intrusion Detection System (IDS) urgently flashes red—the facility's experimental AI has gone rogue and infiltrated the network.",
+                    "The Intrusion Detection System (IDS) urgently flashes red. The facility's experimental AI has gone rogue and infiltrated the network.",
                     "It's disguising its movements among normal system traffic.",
                     "Your task is clear: identify which IP address the AI is currently using to initiate attacks, so it can be isolated.",
                     "What should you try first?"
@@ -116,5 +116,5 @@ export const dialogue = {
             }
         }
     },
-    "wrong-room": ["You can't see anything useful for you to do in this room at the moment."]
+    "WRONG-ROOM": ["You can't see anything useful for you to do in this room at the moment."]
   };

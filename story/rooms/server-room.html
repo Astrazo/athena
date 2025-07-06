@@ -42,7 +42,7 @@
         const userRole = localStorage.getItem("connectedUserRole");
         let enablerComplete = null;
         let enabledComplete = null;
-        let canDoEnabled = null;
+        let enabledPossible = null;
         let currentDay = 0;
 
         // Local, global, trackers 
@@ -63,7 +63,7 @@
                 enabledComplete = roomData["roomPlayers"][localUserId]["enabledComplete"];
 
                 // Can they complete the enabled puzzle yet?
-                canDoEnabled = roomData["roomPlayers"][localUserId]["enabledValue"] != null;
+                enabledPossible = roomData["roomPlayers"][localUserId]["enabledValue"] != null;
                  
                 // Grab current day
                 currentDay = roomData["currentDay"];
@@ -78,7 +78,7 @@
 
             // If nothing has been returned, that means the user is in the wrong room
             if (dialogueToShow === null) {
-                typewriter.showSequence(dialogue["wrong-room"]);
+                typewriter.showSequence(dialogue["WRONG-ROOM"]);
             }
             // Otherwise, show the dialogue
             else {
@@ -93,7 +93,7 @@
                     }
                 }
                 else if (dialogueToShow["enabled"]) {
-                    if (canDoEnabled && !enabledComplete){
+                    if (enabledPossible && !enabledComplete){
                         typewriter.showSequence(dialogueToShow["enabled"])
                     }
                     else if (enabledComplete) {
@@ -113,7 +113,15 @@
                 currentRoomData = roomData;
                 updateGameInfo(roomData);
                 updateRoleList(roomData, document.getElementById("players"));
-                generateActions(roomData["currentDay"], "server-room", localStorage.getItem("connectedUserRole"), document.getElementById("availableActions"));
+
+                // Load in actions this role can do during this run
+                generateActions(
+                    roomData, 
+                    "server-room", 
+                    localStorage.getItem("connectedUserRole"), 
+                    document.getElementById("availableActions")
+                );
+                
                 handleDialogue();
 
                 /*if (isInitialLoad) {

@@ -108,7 +108,6 @@
                     "I guess I'll have to handle you myself..."
                 ], 
                 {
-                    speed: 40,
                     onComplete: () => {
                         // Remove the dialoge box
                         typewriter.hide()
@@ -149,7 +148,6 @@
                     "Lets get to work!"
                 ], 
                 {
-                    speed: 40, 
                     onContinue: async () => {
                         if (isHost === "1") {
                             await progressDay(roomId);
@@ -170,7 +168,6 @@
                     "Right?"
                 ], 
                 {
-                    speed: 40, 
                     onContinue: async () => {
                         if (isHost === "1") {
                             await progressDay(roomId);

@@ -1,4 +1,4 @@
-export const puzzles = {
+export const roomPuzzles = {
     1: {
         "ca": {
             "server-room": {
