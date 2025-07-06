@@ -276,13 +276,17 @@ h1 {
     min-height: 60px; /* Reserve space for text */
 }
 
-.dialogue-cursor {
-    display: inline-block;
+.dialogue-text::after {
+    content: '';  /* No character */
+    display: var(--cursor-visible, none);
     width: 2px;
-    height: 20px;
-    background-color: #4CAF50;
-    animation: blink 1s infinite;
-    margin-left: 2px;
+    height: 1em;
+    background-color: #4CAF50;  /* Green bar */
+    animation: blink 0.5s infinite;
+    margin-left: 5px;
+    vertical-align: baseline;
+    position: relative;
+    top: 0.15em;
 }
 
 @keyframes blink {

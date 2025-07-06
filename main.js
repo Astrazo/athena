@@ -5,6 +5,7 @@ import {
     increment
 } from "firebase/firestore";
 import { roomActions } from "/room-actions.js"
+import TypewriterDialogue from "./typewriter.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDzgDI28nu9RGm32mJH-1tvkZCQOdEjdrk",
@@ -141,25 +142,44 @@ export function listenToAllRooms(callback) {
     });
 }
 
-export function generateActions(currentDay, roomName, actionsContainer) {
+export function generateActions(currentDay, roomName, currentRole, actionsContainer) {
     // Get the available actions
-    const availableActions = roomActions[currentDay][localStorage.getItem("connectedUserRole")][roomName];
+    const availableActions = roomActions[currentDay][currentRole][roomName];
     
     // Clear existing buttons
     actionsContainer.innerHTML = "";
 
     // Loop through each key in the action dictionary
     for (const [actionKey, actionText] of Object.entries(availableActions)) {
-        const button = document.createElement("button");
-        button.id = actionKey.replace(/\s+/g, "").toLowerCase() + "Btn";
-        button.className = "std-button role-button";
-        button.style.width = "250px";
-        button.textContent = actionKey;
-        button.onclick = () => {
+
+        // Generate all by CORRECT_ACTION
+        if (actionKey != "CORRECT_ACTION") {
+            const button = document.createElement("button");
+            button.id = actionKey.replace(/\s+/g, "").toLowerCase() + "Btn";
+            button.className = "std-button role-button";
+            button.style.width = "250px";
+            button.textContent = actionKey;
+    
             // Handle action click
-            console.log(`Action clicked: ${actionKey} – ${actionText}`);
-        };
-        actionsContainer.appendChild(button);
+            button.onclick = () => {
+                // Show room-action dialogue for this button
+                typewriter.showSequence(
+                    availableActions[actionKey]
+                );
+
+                // If this button is the correct action to take, show the puzzle
+                if (actionKey === availableActions["CORRECT_ACTION"]) {
+                    console.log("Correct action clicked");
+                    // Hide actions
+                    // Show puzzle
+                }
+                else {
+                    // Show dialogue
+                    console.log("Incorrect action clicked");
+                }
+            };
+            actionsContainer.appendChild(button);
+        }
     }
 }
 

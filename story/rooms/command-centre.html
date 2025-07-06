@@ -115,7 +115,7 @@
                 currentRoomData = roomData;
                 updateGameInfo(roomData);
                 updateRoleList(roomData, document.getElementById("players"));
-                generateActions("command-centre", document.getElementById("availableActions"));
+                generateActions(roomData["currentDay"], "command-centre", localStorage.getItem("connectedUserRole"), document.getElementById("availableActions"));
                 handleDialogue();
 
                 /*if (isInitialLoad) {

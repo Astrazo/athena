@@ -113,7 +113,7 @@
                 currentRoomData = roomData;
                 updateGameInfo(roomData);
                 updateRoleList(roomData, document.getElementById("players"));
-                generateActions("research-lab", document.getElementById("availableActions"));
+                generateActions(currentDay["currentDay"], "research-lab", localStorage.getItem("connectedUserRole"), document.getElementById("availableActions"));
                 handleDialogue();
 
                 /*if (isInitialLoad) {
