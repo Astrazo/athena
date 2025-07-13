@@ -10,7 +10,7 @@ class TypewriterDialogue {
         this.interval = null;
         this.onLineComplete = null;
         this.onLineSkip = null;
-        this.isLastInSequence = false; // Track if this is the last line
+        this.isLastLineInSequence = false; // Track if this is the last line
         this.delayResolve = null;
         
         this.createDialogueElements();
@@ -70,7 +70,7 @@ class TypewriterDialogue {
                 this.nextLine();
             } 
             else {
-                this.skip();
+                this.lineSkip();
             }
         });
         
@@ -80,7 +80,7 @@ class TypewriterDialogue {
                 this.nextLine();
             } 
             else {
-                this.skip();
+                this.lineSkip();
             }
         });
 
@@ -90,180 +90,12 @@ class TypewriterDialogue {
                 this.nextLine();
             } 
             else {
-                this.skip();
+                this.lineSkip();
             }
         });
     }
 
-    show(text, options = {}) {
-        if (this.isActive) {
-            this.hide(true);
-        }
-
-        this.isActive = true;
-        this.isLineComplete = false;
-        this.fullText = text;
-        this.currentText = '';
-        this.currentIndex = 0;
-        this.speed = options.speed || this.speed;
-        this.onLineComplete = options.onLineComplete || null;
-        this.onContinue = options.onContinue || null;
-        this.onLineSkip = options.onLineSkip || null;
-        this.isLastInSequence = options.isLastInSequence || false;
-
-        // Show elements
-        this.overlay.style.display = 'block';
-        this.container.style.display = 'block';
-        this.continueButton.style.display = 'none';
-
-        // Start typing
-        this.type();
-    }
-
-    /*type() {
-        this.interval = setInterval(() => {
-            if (this.currentIndex < this.fullText.length) {
-                this.currentText += this.fullText[this.currentIndex];
-                this.textElement.textContent = this.currentText;
-                this.currentIndex++;
-            } else {
-                this.complete();
-            }
-        }, this.speed);
-    }*/
-
-    type() {
-        const typeNextChar = () => {
-            // Check if we've been cancelled (skip was called)
-            if (!this.isActive) {
-                return;
-            }
-            
-            if (this.currentIndex < this.fullText.length) {
-                this.currentText += this.fullText[this.currentIndex];
-                this.textElement.textContent = this.currentText;
-                this.currentIndex++;
-                // Schedule the next character
-                this.typingTimeout = setTimeout(typeNextChar, this.speed);
-            } else {
-                this.complete();
-            }
-        };
-        
-        // Start the typing sequence
-        typeNextChar();
-    }
-
-    skip() {
-        // Stop the typing animation timer
-        // Stop the typing animation timer
-        if (this.typingTimeout) {
-            clearTimeout(this.typingTimeout);
-            this.typingTimeout = null;
-        }
-        
-        // Show the complete text immediately
-        this.currentText = this.fullText;
-        this.textElement.textContent = this.currentText;
-        // Mark as complete and show cursor
-        this.complete();
-        
-        // Call skip callback if provided
-        if (this.onLineSkip) {
-            this.onLineSkip();
-        }
-
-        console.log("Skip called.")
-    }
-
-    nextLine() {
-        // If it's the last line, and skip is called after line completion, either hide or run custom continue funtion
-        if (this.isLastInSequence) {
-            if (this.onContinue) {
-                this.onContinue();
-                this.hide();
-            }
-            else {
-                this.hide()
-            }
-        }
-        else {
-            // If we're currently waiting for the next line of code, end the wait so it moves on
-            if (this.delayResolve) {
-                this.delayResolve();
-                this.delayResolve = null;
-            }
-        }
-    }
-
-    skipAll() {
-        // Stop the typing animation timer
-        if (this.interval) {
-            clearInterval(this.interval);
-        }
-    
-        // Cancel any ongoing sequence
-        if (this.sequenceController) {
-            this.sequenceController.abort();
-        }
-    
-        // Call completion callbacks to properly finish the sequence
-        if (this.onLineComplete) {
-            this.onLineComplete();
-        }
-        
-        if (this.onLineSkip) {
-            this.onLineSkip();
-        }
-    
-        // Hide and reset everything
-        this.hide();
-
-        console.log("All dialogue skipped.")
-    }
-
-    complete() {
-        this.isLineComplete = true;
-        
-        // Add cursor as pseudo-element using CSS
-        this.textElement.style.setProperty('--cursor-visible', 'inline-block');
-        
-        // Only show continue button if this is the last line in sequence
-        if (this.isLastInSequence) {
-            console.log("Last dialogue line completed.")
-            this.continueButton.style.display = 'block';
-        }
-        
-        if (this.onLineComplete) {
-            console.log("Dialogue line completed.")
-            this.onLineComplete();
-        }
-    }
-
-    hide(clearTextOnly = false) {
-        // Clear the text content
-        this.textElement.textContent = '';
-        this.currentText = '';
-        this.fullText = '';
-
-        // Hide cursor
-        this.textElement.style.setProperty('--cursor-visible', 'none');
-
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
-
-        console.log("Dialogue cleared.")
-        
-        if (!clearTextOnly) {
-            this.isActive = false;
-            this.overlay.style.display = 'none';
-            this.container.style.display = 'none';
-            console.log("Dialogue box hidden.")
-        }   
-    }
-
+    // --- Public Interface ---
     // Show multiple dialogue lines in sequence
     async showSequence(dialogueLines, options = {}) {
         // Create an AbortController to cancel promises
@@ -274,7 +106,7 @@ class TypewriterDialogue {
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
-            const isLast = i === lines.length - 1;
+            const isLastLine = i === lines.length - 1;
             
             await new Promise((resolve, reject) => {
                 // Check if cancelled before starting
@@ -285,9 +117,9 @@ class TypewriterDialogue {
 
                 this.show(line, {
                     ...options,
-                    isLastInSequence: isLast, // Pass this flag to show()
-                    onLineComplete: isLast ? (options["onLineComplete"] || resolve) : resolve, // set what this.onComplete will do in complete function
-                    onLineSkip: isLast ? (options["onLineSkip"] || resolve) : resolve // set what this.onSkip will do in skip function
+                    isLastLineInSequence: isLastLine, // Pass this flag to show()
+                    onLineComplete: isLastLine ? (options["onLineComplete"] || resolve) : resolve, // set what this.onComplete will do in complete function
+                    onLineSkip: isLastLine ? (options["onLineSkip"] || resolve) : resolve // set what this.onSkip will do in skip function
                 });
             }).catch(() => {
                 return Promise.reject(new Error("Cancelled"))
@@ -298,7 +130,7 @@ class TypewriterDialogue {
             }
 
             // Add 2-second delay between lines (except after the last line)
-            if (!isLast) {
+            if (!isLastLine) {
                 try {
                     await new Promise((resolve, reject) => {
                         this.delayResolve = resolve;
@@ -317,6 +149,145 @@ class TypewriterDialogue {
                 }
             }
         }
+    }
+
+    // Function called for every line in show sequence
+    show(text, options = {}) {
+        if (this.isActive) {
+            this.hide(true);
+        }
+
+        this.isActive = true;
+        this.isLineComplete = false;
+        this.fullText = text;
+        this.currentText = '';
+        this.currentIndex = 0;
+        this.speed = options.speed || this.speed;
+        this.isLastLineInSequence = options.isLastLineInSequence || false;
+
+        this.onLineComplete = options.onLineComplete || null;
+        this.onContinue = options.onContinue || null;
+        this.onLineSkip = options.onLineSkip || null;
+
+        this.overlay.style.display = 'block';
+        this.container.style.display = 'block';
+        this.continueButton.style.display = 'none';
+
+        this.type();
+    }
+
+    // Function called to hide and reset the dialogue box
+    hide(clearTextOnly = false) {
+        this.textElement.textContent = '';
+        this.currentText = '';
+        this.fullText = '';
+        this.textElement.style.setProperty('--cursor-visible', 'none');
+
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
+
+        console.log("Dialogue cleared.");
+
+        if (!clearTextOnly) {
+            this.isActive = false;
+            this.overlay.style.display = 'none';
+            this.container.style.display = 'none';
+            console.log("Dialogue box hidden.");
+        }
+    }
+
+    // Function used to handle progressing to the next line
+    nextLine() {
+        if (this.isLastLineInSequence) {
+            if (this.onContinue) {
+                this.onContinue();
+                this.hide();
+            } else {
+                this.hide();
+            }
+        } else {
+            if (this.delayResolve) {
+                this.delayResolve();
+                this.delayResolve = null;
+            }
+        }
+    }
+
+    // Typing Mechanism
+    type() {
+        const typeNextChar = () => {
+            if (!this.isActive) return;
+
+            if (this.currentIndex < this.fullText.length) {
+                this.currentText += this.fullText[this.currentIndex];
+                this.textElement.textContent = this.currentText;
+                this.currentIndex++;
+                this.typingTimeout = setTimeout(typeNextChar, this.speed);
+            } else {
+                this.lineComplete();
+            }
+        };
+
+        typeNextChar();
+    }
+
+    // Function to handle what happens when a line is completed
+    lineComplete() {
+        this.isLineComplete = true;
+        this.textElement.style.setProperty('--cursor-visible', 'inline-block');
+
+        if (this.isLastLineInSequence) {
+            console.log("Last dialogue line completed.");
+            this.continueButton.style.display = 'block';
+        }
+
+        if (this.onLineComplete) {
+            console.log("Dialogue line completed.");
+            this.onLineComplete();
+        }
+    }
+
+    // Function used to skip one line
+    lineSkip() {
+        if (this.typingTimeout) {
+            clearTimeout(this.typingTimeout);
+            this.typingTimeout = null;
+        }
+
+        this.currentText = this.fullText;
+        this.textElement.textContent = this.currentText;
+
+        this.lineComplete();
+
+        if (this.onLineSkip) {
+            this.onLineSkip();
+        }
+
+        console.log("Skip called.");
+    }
+
+    // Function used to skip all dialogue
+    skipAll() {
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
+
+        if (this.sequenceController) {
+            this.sequenceController.abort();
+        }
+
+        if (this.onLineComplete) {
+            this.onLineComplete();
+        }
+
+        if (this.onLineSkip) {
+            this.onLineSkip();
+        }
+
+        this.hide();
+        console.log("All dialogue skipped.");
     }
 
     // Method to show dialogue with character name

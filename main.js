@@ -6,15 +6,17 @@ import {
 } from "firebase/firestore";
 import { roomActions } from "/room-actions.js";
 import { roomPuzzles } from "/room-puzzles.js";
+import { enablerMap } from "./enabler-map";
 import { dialogue } from "./dialogue";
 
+
 const firebaseConfig = {
-    apiKey: "AIzaSyDzgDI28nu9RGm32mJH-1tvkZCQOdEjdrk",
-    authDomain: "athena-astrazo.firebaseapp.com",
-    projectId: "athena-astrazo",
-    storageBucket: "athena-astrazo.firebasestorage.app",
-    messagingSenderId: "879430407218",
-    appId: "1:879430407218:web:6c514226b384a7857b182b"
+    apiKey: "AIzaSyAzlzCHei-FyaNyWRZ7Or-iLTdQRGjLWUY",
+    authDomain: "athena2-f5bdf.firebaseapp.com",
+    projectId: "athena2-f5bdf",
+    storageBucket: "athena2-f5bdf.firebasestorage.app",
+    messagingSenderId: "571762315023",
+    appId: "1:571762315023:web:09aea3b0fdf575ab79387a"
 };
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
@@ -74,7 +76,11 @@ export async function loadRooms(status = null, roomId = null) {
         const dSnap = await getDoc(doc(db, "rooms", roomId));
         if (!dSnap.exists()) return null;
         const data = dSnap.data();
-        return { roomName: data.name, roomPlayers: data.players };
+        return { 
+            "roomName": data.name, 
+            "roomPlayers": data.players, 
+            "currentDay": d.data().currentDay 
+        };
     }
 
     // For each document in the rooms collection, return it's ID, name, and players list
@@ -84,32 +90,78 @@ export async function loadRooms(status = null, roomId = null) {
                 where("status", "==", status),
                 orderBy("created", "desc"))
         );
-        return snap.docs.map(d => ({
-        roomId: d.id,
-        roomName: d.data().name,
-        roomPlayers: d.data().players
-    }));
+        return snap.docs. map(d => ({
+            "roomId": d.id,
+            "roomName": d.data().name,
+            "roomPlayers": d.data().players,
+        })
+    );
   }
   return [];
 }
 
 export async function updatePlayer(userId, roomId, key, value) {
-    const roomRef = doc(db, "rooms", roomId);
-    const roomSnap = await getDoc(roomRef);
+    const loadingContainer = document.getElementById("loadingContainer");
+    if (loadingContainer) loadingContainer.style.display = "flex";
 
-    if (roomSnap.exists()) {
-        await updateDoc(roomRef, {
-            [`players.${userId}.${key}`]: value
-        });
+    try {
+        if (!userId || !roomId || !key) {
+            throw new Error(`updatePlayer failed: userId (${userId}), roomId (${roomId}), or key (${key}) is null or undefined.`);
+        }
+
+        const roomRef = doc(db, "rooms", roomId);
+        const roomSnap = await getDoc(roomRef);
+
+        if (roomSnap.exists()) {
+            await updateDoc(roomRef, {
+                [`players.${userId}.${key}`]: value
+            });
+        } else {
+            console.warn(`updatePlayer warning: Room ${roomId} does not exist.`);
+        }
+    } catch (err) {
+        console.error("updatePlayer error:", err);
+    } finally {
+        if (loadingContainer) loadingContainer.style.display = "none";
     }
 }
 
 export async function progressDay(roomId) {
     const roomRef = doc(db, "rooms", roomId);
-    localStorage.setItem("introDialogueSeen", "0")
     await updateDoc(roomRef, {
         currentDay: increment(1)
     });
+}
+
+export async function incrementEnabledCompletions(roomId, reset=false) {
+    const roomRef = doc(db, "rooms", roomId);
+    if (!reset) {
+        await updateDoc(roomRef, {
+            "enabledCompletions": increment(1)
+        });
+    }
+    else {
+        await updateDoc(roomRef, {
+            "enabledCompletions": 0
+        });
+    }
+    
+}
+
+export async function appendDayScore(roomId, newDayScore) {
+    const roomRef = doc(db, "rooms", roomId);
+    const roomSnap = await getDoc(roomRef);
+
+    if (roomSnap.exists()) {
+        const currentScores = roomSnap.data()["dayScores"] || [];
+        const updatedScores = [...currentScores, newDayScore];
+
+        await updateDoc(roomRef, {
+            "dayScores": updatedScores
+        });
+    } else {
+        console.error("Room does not exist");
+    }
 }
 
 export async function deleteRoom(roomId) {
@@ -122,7 +174,7 @@ export function listenToRoom(roomId, callback) {
     return onSnapshot(roomRef, (doc) => {
         if (doc.exists()) {
             const data = doc.data();
-            callback({ roomId: roomId, roomName: data.name, roomPlayers: data.players, currentDay: data.currentDay });
+            callback({ "roomId": roomId, "roomName": data.name, "roomPlayers": data.players, "currentDay": data.currentDay, "enabledCompletions": data.enabledCompletions });
         } else {
             callback(null);
         }
@@ -196,6 +248,7 @@ export function generateActions(roomData, roomName, currentRole, actionsContaine
         enabledPossible
     );
     console.log(`Player has entered an actionable room: ${isRoomActionable}`)
+    console.log(`Puzzle to be generated: ${puzzleToGenerate}`)
 
     // Loop through each key in the action dictionary
     for (const [actionKey, actionText] of Object.entries(availableActions)) {
@@ -209,26 +262,30 @@ export function generateActions(roomData, roomName, currentRole, actionsContaine
             button.textContent = actionKey;
 
             // If they're not in the correct room at the moment, all actions should be dead, so show the dialogue for that
+            let finalActionText = actionText;
             if (!isRoomActionable) {
-                actionText = roomActions["NO-ACTION"]
+                finalActionText = roomActions["NO-ACTION"]
             }
 
             // Handle action click
             button.onclick = async () => {
                 // Show room-action dialogue for this button
                 await typewriter.showSequence(
-                    actionText
+                    finalActionText
                 );
                 console.log("Made past dialogue");
                 // If this button is the correct action to take, show the puzzle
                 if (actionKey === availableActions["CORRECT_ACTION"]) {
                     console.log("Correct action clicked");
-                    // Hide actions
-                    actionsContainer.innerHTML = "";
 
-                    // Show puzzle
-                    const puzzleDiv = document.getElementById("availableActions");
-                    generatePuzzle(puzzleDiv, currentDay, roomName, currentRole, puzzleToGenerate);
+                    if (puzzleToGenerate != null) {
+                         // Hide actions
+                        actionsContainer.innerHTML = "";
+
+                        // Show puzzle
+                        //const puzzleDiv = document.getElementById("availableActions");
+                        generatePuzzle(actionsContainer, currentDay, roomName, currentRole, puzzleToGenerate, roomData);
+                    }     
                 }
                 else {
                     // Show dialogue
@@ -266,17 +323,18 @@ export function updateRoleList(roomData, playersList) {
     }
 }
 
-export function generatePuzzle(puzzleDiv, currentDay, roomName, currentRole, puzzleType) {
+export async function generatePuzzle(actionsContainer, currentDay, roomName, currentRole, puzzleType, roomData) {
     // Get puzzle data
     const puzzleData = roomPuzzles[currentDay]?.[currentRole]?.[roomName]?.[puzzleType];
-    
+    console.log(`PuzzleData ${puzzleData}`);
+
     if (!puzzleData) {
         console.error("Puzzle data not found for:", { currentDay, roomName, currentRole, puzzleType });
         return;
     }
 
     // Clear the puzzle div
-    puzzleDiv.innerHTML = "";
+    actionsContainer.innerHTML = "";
 
     // Create puzzle container
     const puzzleContainer = document.createElement("div");
@@ -285,13 +343,13 @@ export function generatePuzzle(puzzleDiv, currentDay, roomName, currentRole, puz
     // Create puzzle title
     const puzzleTitle = document.createElement("h2");
     puzzleTitle.className = "puzzle-title";
-    puzzleTitle.textContent = "Security Analysis Task";
+    puzzleTitle.textContent = puzzleData["title"];
     puzzleContainer.appendChild(puzzleTitle);
 
     // Create puzzle description
     const puzzleDescription = document.createElement("p");
     puzzleDescription.className = "puzzle-description";
-    puzzleDescription.textContent = "Review the network activity log below and identify the suspicious entry that indicates automated reconnaissance activity.";
+    puzzleDescription.textContent =  puzzleData["prompt"]
     puzzleContainer.appendChild(puzzleDescription);
 
     // Create table container
@@ -306,7 +364,7 @@ export function generatePuzzle(puzzleDiv, currentDay, roomName, currentRole, puz
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
     
-    puzzleData.tableHeaders.forEach(header => {
+    puzzleData["tableHeaders"].forEach(header => {
         const th = document.createElement("th");
         th.textContent = header;
         headerRow.appendChild(th);
@@ -318,7 +376,7 @@ export function generatePuzzle(puzzleDiv, currentDay, roomName, currentRole, puz
     // Create table body
     const tbody = document.createElement("tbody");
     
-    puzzleData.tableRows.forEach((row, rowIndex) => {
+    puzzleData["tableRows"].forEach((row, rowIndex) => {
         const tr = document.createElement("tr");
         tr.className = "puzzle-row";
         tr.dataset.rowIndex = rowIndex;
@@ -347,20 +405,33 @@ export function generatePuzzle(puzzleDiv, currentDay, roomName, currentRole, puz
     tableContainer.appendChild(table);
     puzzleContainer.appendChild(tableContainer);
 
-    // Create instruction text
-    const instruction = document.createElement("p");
-    instruction.className = "puzzle-instruction";
-    instruction.textContent = "Click on the suspicious activity entry, then click Submit Answer.";
-    puzzleContainer.appendChild(instruction);
+    // Create hint text
+    const hints = document.createElement("p");
+    hints.className = "puzzle-instruction";
+    hints.textContent = "Possible hints here";
+    hints.style.display = "none";
+    puzzleContainer.appendChild(hints);
 
     // Create button container
     const buttonContainer = document.createElement("div");
     buttonContainer.className = "puzzle-button-container";
 
+    // Create hint button
+    const hintButton = document.createElement("button");
+    hintButton.className = "std-button puzzle-hint"; // Use the new class
+    hintButton.textContent = "Show Hint";
+    hintButton.style.marginRight = "10px";
+
     // Create submit button
     const submitButton = document.createElement("button");
     submitButton.className = "std-button puzzle-submit";
     submitButton.textContent = "Submit Answer";
+
+    // Hint button work
+    hintButton.addEventListener("click", () => {
+        hints.style.display = "block";
+        hintButton.style.display = "none";
+    })
     
     submitButton.addEventListener("click", async () => {
         const selectedRow = document.querySelector(".puzzle-row.selected");
@@ -382,46 +453,101 @@ export function generatePuzzle(puzzleDiv, currentDay, roomName, currentRole, puz
         }
         
         const selectedIndex = parseInt(selectedRow.dataset.rowIndex);
-        const isCorrect = selectedIndex === puzzleData.correctAnswerIndex;
+        const isCorrect = selectedIndex === puzzleData["correctAnswerIndex"];
         
         // Disable submit button
         submitButton.disabled = true;
         submitButton.textContent = "Processing...";
         
         // Show feedback
-        const feedbackMessages = isCorrect ? puzzleData.feedback.correct : puzzleData.feedback.incorrect;
+        const feedbackMessages = isCorrect ? puzzleData["feedback"]["correct"] : puzzleData["feedback"]["incorrect"];
+
+        // Determine which puzzle to set co complete
+        const puzzleCompletionType = puzzleType === "enabler" ? "enablerComplete" : "enabledComplete";
         
         await typewriter.showSequence(feedbackMessages, {
-            onComplete: () => {
-                if (isCorrect) {
-                    // Mark puzzle as complete
-                    const userId = localStorage.getItem("connectedUserId");
-                    const roomId = localStorage.getItem("connectedRoomId");
-                    updatePlayer(userId, roomId, "enablerComplete", true);
-                    
-                    // Show success message
-                    typewriter.showSequence([
-                        "Puzzle completed successfully!",
-                        "You can now explore other rooms to help your team."
-                    ], {
-                        onComplete: () => {
-                            // Hide puzzle and return to room
-                            puzzleDiv.innerHTML = "";
-                            // You might want to regenerate actions here
+            onContinue:  async () => {
+                // Mark puzzle as complete
+                const userId = localStorage.getItem("connectedUserId");
+                const roomId = localStorage.getItem("connectedRoomId");
+                updatePlayer(userId, roomId, puzzleCompletionType, true);
+                
+                // Replace the puzzleDiv with the action buttons
+                actionsContainer.innerHTML = "";
+                generateActions(roomData, roomName, currentRole, actionsContainer)
+
+                // Construct diciontary with results to append to puzzleAnswers
+                const results = {
+                    "day": currentDay,
+                    "type": puzzleType,
+                    "room": roomName,
+                    "role": currentRole,
+                    "correct": isCorrect,
+                    "selectedIndex": selectedIndex,
+                    "timestamp": new Date().toISOString()
+                };
+
+                // Write to the puzzle results list for this player
+                appendPuzzleAnswer(userId, roomId, results); 
+
+                if (puzzleType === "enabler") {
+                    console.log("In Enabler Puzzle");
+                    // Find ID that matches role we need to enable
+                    const roleToEnable = enablerMap[currentDay][currentRole]
+                    console.log(`Role to enable: ${roleToEnable}`);
+                
+                    // Get the players, and find the ID of the player to enable
+                    const players = roomData["roomPlayers"]
+                    console.log(`Room Players: ${players}`)
+                    for (const [userId, playerData] of Object.entries(players)) {
+                        console.log(`Role: ${playerData["role"]}`);
+                        if (playerData["role"] === roleToEnable) {
+                            console.log("Found player to update, updating");
+                            await updatePlayer(userId, roomId, "enabledValue", selectedIndex)
                         }
-                    });
-                } else {
-                    // Re-enable submit button for retry
-                    submitButton.disabled = false;
-                    submitButton.textContent = "Submit Answer";
+                    }
+                }   
+                else {
+                    incrementEnabledCompletions(roomId);
                 }
             }
         });
     });
     
+    buttonContainer.appendChild(hintButton);
     buttonContainer.appendChild(submitButton);
     puzzleContainer.appendChild(buttonContainer);
-    puzzleDiv.appendChild(puzzleContainer);
+    actionsContainer.appendChild(puzzleContainer);
+}
+
+export async function appendPuzzleAnswer(userId, roomId, newResult) {
+    const roomRef = doc(db, "rooms", roomId);
+    const roomSnap = await getDoc(roomRef);
+
+    if (roomSnap.exists()) {
+        const playerData = roomSnap.data()["players"]?.[userId] || {};
+        const existingAnswers = playerData["puzzleAnswers"] || [];
+
+        const updatedAnswers = [...existingAnswers, newResult];
+
+        await updateDoc(roomRef, {
+            [`players.${userId}.puzzleAnswers`]: updatedAnswers
+        });
+    }
+}
+
+export async function navigateToRoom(roomName) {
+    const playerId = localStorage.getItem("connectedUserId");
+    const roomId = localStorage.getItem("connectedRoomId");
+    
+    // Show loading 
+    document.getElementById("loadingContainer").style.display = "flex";
+
+    // Update current room in Firebase
+    await updatePlayer(playerId, roomId, "currentRoom", roomName);
+    
+    // Navigate to the room
+    window.location.href = `${roomName.toLowerCase().replace(' ', '-')}.html`;
 }
 
 

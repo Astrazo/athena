@@ -108,7 +108,7 @@
                     "I guess I'll have to handle you myself..."
                 ], 
                 {
-                    onComplete: () => {
+                    onLineComplete: () => {
                         // Remove the dialoge box
                         typewriter.hide()
 
@@ -151,10 +151,10 @@
                     onContinue: async () => {
                         if (isHost === "1") {
                             await progressDay(roomId);
-                            window.location.href = "situation-room.html"
+                            window.location.href = "rooms/situation-room.html"
                         }
                         else {
-                            window.location.href = "situation-room.html"
+                            window.location.href = "rooms/situation-room.html"
                         }
                     }
                 }); 
@@ -171,10 +171,10 @@
                     onContinue: async () => {
                         if (isHost === "1") {
                             await progressDay(roomId);
-                            window.location.href = "situation-room.html"
+                            window.location.href = "rooms/situation-room.html"
                         }
                         else {
-                            window.location.href = "situation-room.html"
+                            window.location.href = "rooms/situation-room.html"
                         }
                     }
                 });     

@@ -8,7 +8,7 @@
     <link rel="icon" href="data:,">
 </head>
 <body>
-    <button class="back-button" onclick="window.location.href='../situation-room'">← Back to Situation Room</button>
+    <button id="back" class="back-button">← Back to Situation Room</button>
     <!-- Game Info Display -->
     <div id="gameInfo" class="game-info">
         <div id="roomName">Room: Loading...</div>
@@ -27,9 +27,12 @@
            
         </div>
     </div>
+    <div id="loadingContainer" class="loading-container" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
 
     <script type="module">
-        import { updatePlayer, listenToRoom, generateActions, updateRoleList } from "/main.js";
+        import { updatePlayer, listenToRoom, generateActions, updateRoleList, navigateToRoom } from "/main.js";
         import TypewriterDialogue from "/typewriter.js";
         import { dialogue } from "/dialogue.js";
         import { roomActions } from "/room-actions.js"
@@ -48,7 +51,11 @@
         // Local, global, trackers 
         let isInitialLoad = true;
         let currentRoomData = null;
-
+        
+        // Setup back button
+        document.getElementById("back").addEventListener("click", () => {
+            navigateToRoom("Situation Room")
+        });
         // Function to update game info
         function updateGameInfo(roomData) {
             if (roomData) {
@@ -73,36 +80,40 @@
 
         // 
         function handleDialogue() {
-            // First, see if for this day, this role is supposed to be in this room
-            const dialogueToShow = dialogue?.[currentDay]?.[userRole]?.["server-room"] || null;
+            if (isInitialLoad) {
+                // First, see if for this day, this role is supposed to be in this room
+                const dialogueToShow = dialogue?.[currentDay]?.[userRole]?.["server-room"] || null;
 
-            // If nothing has been returned, that means the user is in the wrong room
-            if (dialogueToShow === null) {
-                typewriter.showSequence(dialogue["WRONG-ROOM"]);
-            }
-            // Otherwise, show the dialogue
-            else {
-                // If the user has an enabler task in here
-                if (dialogueToShow["enabler"]) {
-                    // Has it been completed already?
-                    if (!enablerComplete) {
-                        typewriter.showSequence(dialogueToShow["enabler"]);
+                // If nothing has been returned, that means the user is in the wrong room
+                if (dialogueToShow === null) {
+                    typewriter.showSequence(dialogue["WRONG-ROOM"]);
+                }
+                // Otherwise, show the dialogue
+                else {
+                    // If the user has an enabler task in here
+                    if (dialogueToShow["enabler"]) {
+                        // Has it been completed already?
+                        if (!enablerComplete) {
+                            typewriter.showSequence(dialogueToShow["enabler"]);
+                        }
+                        else {
+                            typewriter.showSequence(dialogueToShow["enabler-complete"]);
+                        }
                     }
-                    else {
-                        typewriter.showSequence(dialogueToShow["enabler-complete"]);
+                    else if (dialogueToShow["enabled"]) {
+                        if (enabledPossible && !enabledComplete){
+                            typewriter.showSequence(dialogueToShow["enabled"])
+                        }
+                        else if (enabledComplete) {
+                            typewriter.showSequence(dialogueToShow["enabled-complete"])
+                        }
+                        else {
+                            typewriter.showSequence(dialogueToShow["enabled-not-available"])
+                        }
                     }
                 }
-                else if (dialogueToShow["enabled"]) {
-                    if (enabledPossible && !enabledComplete){
-                        typewriter.showSequence(dialogueToShow["enabled"])
-                    }
-                    else if (enabledComplete) {
-                        typewriter.showSequence(dialogueToShow["enabled-complete"])
-                    }
-                    else {
-                        typewriter.showSequence(dialogueToShow["enabled-not-available"])
-                    }
-                }
+
+                isInitialLoad = false;
             }
         }
 

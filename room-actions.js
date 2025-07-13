@@ -7,247 +7,264 @@ export const roomActions = {
                     "Scanning through the IDS logs, you notice suspicious traffic indicative of automated reconnaissance and rapid-fire attacks.",
                     "Given this traffic, which IP address most likely belongs to the Rougue AI and must be urgently reviewed?"
                 ],
-                "Action 2": [
-                    "Action 2 text here"
+                "Check Firewall Configuration": [
+                    "This won't help right now."
                 ],
-                "Action 3": [
-                    "Action 3 text here"
+                "Review Active Directory Logs": [
+                    "This won't help right now."
                 ],
-                "Action 4": [
-                    "Action 4 text here"
-                ],
-                "CORRECT_ACTION": "Investigate Server Traffic Logs"
-            },
-            "command-centre": {
-                "Action 1": [
-                    "Action 1 text here"
-                ],
-                "Action 2": [
-                    "Action 2 text here"
-                ],
-                "Action 3": [
-                    "Action 3 text here"
-                ],
-                "Action 4": [
-                    "Action 4 text here"
-                ],
-                "CORRECT_ACTION": "Investigate Server Traffic Logs"
-            },
-            "developer-hub": {
-                "Action 1": [
-                    "Action 1 text here"
-                ],
-                "Action 2": [
-                    "Action 2 text here"
-                ],
-                "Action 3": [
-                    "Action 3 text here"
-                ],
-                "Action 4": [
-                    "Action 4 text here"
-                ],
-                "CORRECT_ACTION": "Investigate Server Traffic Logs"
-            },
-            "research-lab": {
-                "Action 1": [
-                    "Action 1 text here"
-                ],
-                "Action 2": [
-                    "Action 2 text here"
-                ],
-                "Action 3": [
-                    "Action 3 text here"
-                ],
-                "Action 4": [
-                    "Action 4 text here"
-                ],
-                "CORRECT_ACTION": "Investigate Server Traffic Logs"
-            }
-        },
-        "se": {
-            "server-room": {
-                "Action 1": [
-                    "Action 1 text here"
-                ],
-                "Action 2": [
-                    "Action 2 text here"
-                ],
-                "Action 3": [
-                    "Action 3 text here"
-                ],
-                "Action 4": [
-                    "Action 4 text here"
+                "Deploy Honeypot System": [
+                    "This won't help right now."
                 ],
                 "CORRECT_ACTION": "Investigate Server Traffic Logs"
             },
             "command-centre": {
-                "Action 1": [
-                    "Action 1 text here"
+                "Review Org-Wide Security Dashboard": [
+                    "This won't help right now."
                 ],
-                "Action 2": [
-                    "Action 2 text here"
+                "Update Threat Intelligence Feeds": [
+                    "This won't help right now."
                 ],
-                "Action 3": [
-                    "Action 3 text here"
+                "Cross-check Audit Trail Against Global Events": [
+                    "This won't help right now."
                 ],
-                "Action 4": [
-                    "Action 4 text here"
+                "Review AI Containment Readiness Plan": [
+                    "This won't help right now."
                 ],
-                "CORRECT_ACTION": "Investigate Server Traffic Logs"
+                "CORRECT_ACTION": null
             },
             "developer-hub": {
-                "Action 1": [
-                    "Action 1 text here"
+                "Review Access Control File": [
+                    "This won't help right now."
                 ],
-                "Action 2": [
-                    "Action 2 text here"
+                "Check Developer Login Tokens": [
+                    "This won't help right now."
                 ],
-                "Action 3": [
-                    "Action 3 text here"
+                "Run Malware Scan on Dev Workstations": [
+                    "This won't help right now."
                 ],
-                "Action 4": [
-                    "Action 4 text here"
+                "Analyze Recent API Security Logs": [
+                    "This won't help right now."
                 ],
-                "CORRECT_ACTION": "Investigate Server Traffic Logs"
+                "CORRECT_ACTION": null
             },
             "research-lab": {
-                "Action 1": [
-                    "Action 1 text here"
+                "Review Email Gateway Rules": [
+                    "This won't help right now."
                 ],
-                "Action 2": [
-                    "Action 2 text here"
+                "Look Up User Activity History": [
+                    "You quickly pull up the latest user connection data.",
+                    "As an expert in cyber security, you're used to analysing things like login times, locations, and device patterns to determine if an account has been hijacked.",
+                    "If anything looks off here, you should flag it immediately before the AI burrows deeper."
                 ],
-                "Action 3": [
-                    "Action 3 text here"
+                "Reboot Threat Detection System": [
+                    "This won't help right now."
                 ],
-                "Action 4": [
-                    "Action 4 text here"
+                "Run Network Speed Diagnostics": [
+                    "This won't help right now."
                 ],
-                "CORRECT_ACTION": "Investigate Server Traffic Logs"
+                "CORRECT_ACTION": "Look Up User Activity History"
             }
         },
         "ne": {
             "server-room": {
-                "Action 1": [
-                    "Action 1 text here"
+                "Inspect Switch Port Activity Logs": [
+                    "This won't help right now."
                 ],
-                "Action 2": [
-                    "Action 2 text here"
+                "Reconfigure VLAN Assignments": [
+                    "This won't help right now."
                 ],
-                "Action 3": [
-                    "Action 3 text here"
+                "Check UPS and Cooling Network Interfaces": [
+                    "This won't help right now."
                 ],
-                "Action 4": [
-                    "Action 4 text here"
+                "Validate Fiber Link Health": [
+                    "This won't help right now."
                 ],
-                "CORRECT_ACTION": "Investigate Server Traffic Logs"
+                "CORRECT_ACTION": null
             },
             "command-centre": {
-                "Action 1": [
-                    "Action 1 text here"
+                "Review Network Topology Diagrams": [
+                    "This won't help right now."
                 ],
-                "Action 2": [
-                    "Action 2 text here"
+                "Run Path Trace Between Zones": [
+                    "This won't help right now."
                 ],
-                "Action 3": [
-                    "Action 3 text here"
+                "Examine Firewall Rule Propagation": [
+                    "This won't help right now."
                 ],
-                "Action 4": [
-                    "Action 4 text here"
+                "Compare Interface Access Logs": [
+                    "You cross-reference interface logs from the Command Centre for irregular access times, frequency spikes, or unauthorized devices.",
+                    "One of them doesn’t match the baseline. Which one is it?"
                 ],
-                "CORRECT_ACTION": "Investigate Server Traffic Logs"
+                "CORRECT_ACTION": "Compare Interface Access Logs"
             },
             "developer-hub": {
-                "Action 1": [
-                    "Action 1 text here"
+                "Audit Static IP Assignments": [
+                    "This won't help right now."
                 ],
-                "Action 2": [
-                    "Action 2 text here"
+                "Check Network Mapping for Dev Machines": [
+                    "This won't help right now."
                 ],
-                "Action 3": [
-                    "Action 3 text here"
+                "Monitor DHCP Lease Table": [
+                    "This won't help right now."
                 ],
-                "Action 4": [
-                    "Action 4 text here"
+                "Trace API Traffic from Flagged IP": [
+                    "You filter network flow logs for the flagged IP.",
+                    "Several API calls were routed through the Developer Hub — a few to undocumented endpoints.",
+                    "Which destination node has had the highest interaction with the rogue IP and should be flagged for monitoring?"
                 ],
-                "CORRECT_ACTION": "Investigate Server Traffic Logs"
+                "CORRECT_ACTION": "Trace API Traffic from Flagged IP"
             },
             "research-lab": {
-                "Action 1": [
-                    "Action 1 text here"
+                "Trace MAC Address Conflicts": [
+                    "This won't help right now."
                 ],
-                "Action 2": [
-                    "Action 2 text here"
+                "Analyze Network Throughput to Lab Nodes": [
+                    "This won't help right now."
                 ],
-                "Action 3": [
-                    "Action 3 text here"
+                "Scan for Rogue Access Points": [
+                    "This won't help right now."
                 ],
-                "Action 4": [
-                    "Action 4 text here"
+                "Check Research VLAN ACLs": [
+                    "This won't help right now."
                 ],
-                "CORRECT_ACTION": "Investigate Server Traffic Logs"
+                "CORRECT_ACTION": null
+            }
+        },
+        "se": {
+            "developer-hub": {
+                "Review Git Commit History": [
+                    "This won't help right now."
+                ],
+                "Trace Endpoint Access Logs": [
+                    "This won't help right now."
+                ],
+                "Inspect Build Artifacts": [
+                    "This won't help right now."
+                ],
+                "Check Running Dev Services": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": null
+            },
+
+            "server-room": {
+                "Audit Running Processes for Anomalies": [
+                    "You scan the server’s running processes for unusual memory usage, privilege elevation, and unsigned binaries.",
+                    "One process doesn’t match any verified signatures and is using significantly more resources than the rest.",
+                    "Which process should be flagged for investigation?"
+                ],
+                "Review Microservice Startup Logs": [
+                    "This won't help right now."
+                ],
+                "Check Runtime Errors on Backend Services": [
+                    "This won't help right now."
+                ],
+                "Validate Service Dependencies": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": "Audit Running Processes for Anomalies"
+            },
+
+            "research-lab": {
+                "Check Data Processing Scripts": [
+                    "This won't help right now."
+                ],
+                "Review Git Commit History": [
+                    "You open the commit logs from the last deployment window.",
+                    "One commit stands out. It modified a crucial dataset used by the AI in production.",
+                    "You flag it for rollback and notify the Data Scientist to help clean up the mess.",
+                    "Which git commit did you flag?"
+                ],
+                "Review Model Execution Logs": [
+                    "This won't help right now."
+                ],
+                "Inspect Staging Environment for Test Builds": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": "Review Git Commit History"
+            },
+
+            "command-centre": {
+                "Scan for Unsecured Internal APIs": [
+                    "This won't help right now."
+                ],
+                "Check Service Mesh Routing Rules": [
+                    "This won't help right now."
+                ],
+                "Review CI/CD Deployment Logs": [
+                    "This won't help right now."
+                ],
+                "Audit Token Usage in System Services": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": null
             }
         },
         "ds": {
             "server-room": {
-                "Action 1": [
-                    "Action 1 text here"
+                "Analyze Model Resource Usage": [
+                    "This won't help right now."
                 ],
-                "Action 2": [
-                    "Action 2 text here"
+                "Check Model Serving Latency": [
+                    "This won't help right now."
                 ],
-                "Action 3": [
-                    "Action 3 text here"
+                "Review Production Inference Logs": [
+                    "This won't help right now."
                 ],
-                "Action 4": [
-                    "Action 4 text here"
+                "Inspect Containerized Model Deployments": [
+                    "This won't help right now."
                 ],
-                "CORRECT_ACTION": "Investigate Server Traffic Logs"
+                "CORRECT_ACTION": null
             },
             "command-centre": {
-                "Action 1": [
-                    "Action 1 text here"
+                "Check Model Drift Dashboard": [
+                    "This won't help right now."
                 ],
-                "Action 2": [
-                    "Action 2 text here"
+                "Review Alert Thresholds for Data Anomalies": [
+                    "This won't help right now."
                 ],
-                "Action 3": [
-                    "Action 3 text here"
+                "Commence An Exploratory Data Analysis Session": [
+                    "Early analysis results show wild predictions by models that were previously operating correctly.",
+                    "A quick check of the summary stats reveals the issue.",
+                    "What’s the best cleaning approach to prevent downstream failures caused by this commit?"
                 ],
-                "Action 4": [
-                    "Action 4 text here"
+                "Audit Scheduled Retraining Jobs": [
+                    "This won't help right now."
                 ],
-                "CORRECT_ACTION": "Investigate Server Traffic Logs"
+                "CORRECT_ACTION": "Commence An Exploratory Data Analysis Session"
             },
             "developer-hub": {
-                "Action 1": [
-                    "Action 1 text here"
+                "Verify Data Pipeline Integrity": [
+                    "This won't help right now."
                 ],
-                "Action 2": [
-                    "Action 2 text here"
+                "Inspect Feature Store Activity": [
+                    "This won't help right now."
                 ],
-                "Action 3": [
-                    "Action 3 text here"
+                "Analyse User Session Logs": [
+                    "You load 24 hours of user session logs and run statistical comparisons across key behavioral metrics.",
+                    "One user shows a clear deviation with unusual access frequency, irregular login times, and inconsistent device usage.",
+                    "What user is this?"
                 ],
-                "Action 4": [
-                    "Action 4 text here"
+                "Check Dev Model Inputs for Anomalies": [
+                    "This won't help right now."
                 ],
-                "CORRECT_ACTION": "Investigate Server Traffic Logs"
+                "CORRECT_ACTION": "Analyse User Session Logs"
             },
             "research-lab": {
-                "Action 1": [
-                    "Action 1 text here"
+                "Evaluate Recent Model Training Runs": [
+                    "This won't help right now."
                 ],
-                "Action 2": [
-                    "Action 2 text here"
+                "Check Dataset Integrity and Labeling": [
+                    "This won't help right now."
                 ],
-                "Action 3": [
-                    "Action 3 text here"
+                "Analyze Experiment Metrics for Outliers": [
+                    "This won't help right now."
                 ],
-                "Action 4": [
-                    "Action 4 text here"
+                "Compare Performance of Experimental Models": [
+                    "This won't help right now."
                 ],
-                "CORRECT_ACTION": "Investigate Server Traffic Logs"
+                "CORRECT_ACTION": null
             }
         }
     },

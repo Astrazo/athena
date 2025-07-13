@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athena</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="icon" href="data:,">
+</head>
+<body>
+    <!-- Game Info Display -->
+    <div id="gameInfo" class="game-info">
+        <div id="roomName">Room: Loading...</div>
+        <div id="playerCount">Players: Loading...</div>
+        <div id="yourName">You: Loading...</div>
+        <div id="playerList" class="player-list">
+            <h3>Team Composition</h3>
+            <ul id="players"></ul>
+        </div>
+    </div>
+
+    <div class="menu-container">
+        <h1 id="lobbyHeader">Situation Room</h1>
+        <h2 id="lobbySubheader">Pick a room to explore</h2>
+        <div class="button-container">
+            <button id="serverBtn" class="std-button role-button" style="width: 250px;">Server Room</button>
+            <button id="researchBtn" class="std-button role-button" style="width: 250px;">Research Lab</button>
+            <button id="commandBtn" class="std-button role-button" style="width: 250px;">Command Centre</button>
+            <button id="developerBtn" class="std-button role-button" style="width: 250px;">Developer Hub</button>
+        </div>
+    </div>
+    <div id="loadingContainer" class="loading-container" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script type="module">
+        import { updatePlayer, listenToRoom, updateRoleList, navigateToRoom, 
+            appendDayScore, incrementEnabledCompletions, progressDay, loadRooms } from "/main.js";
+        import TypewriterDialogue from "/typewriter.js";
+        import { enablerMap } from "/enabler-map.js"
+
+        // Get room data from localStorage
+        const roomId = localStorage.getItem("connectedRoomId");
+        const localUserId = localStorage.getItem("connectedUserId");
+        const roomName = localStorage.getItem("connectedRoomName");
+        const username = localStorage.getItem("connectedUsername");
+        const userRole = localStorage.getItem("connectedUserRole");
+        const isHost = localStorage.getItem("isHost");
+        
+        // Local, global, trackers 
+        let currentRoomData = null;
+        let isDayEndInProgress = false;
+     
+
+        // Setup entering room buttons
+        document.getElementById("serverBtn").addEventListener("click", () => navigateToRoom("Server Room"));
+        document.getElementById("researchBtn").addEventListener("click", () => navigateToRoom("Research Lab"));
+        document.getElementById("commandBtn").addEventListener("click", () => navigateToRoom("Command Centre"));
+        document.getElementById("developerBtn").addEventListener("click", () => navigateToRoom("Developer Hub"));
+
+        // Function to update general game info in the top right
+        function updateGameInfo(roomData) {
+            if (roomData) {
+                // Update general room info
+                document.getElementById("roomName").textContent = `Room: ${roomData["roomName"]}`;
+                const playersArray = roomData["roomPlayers"] ? Object.values(roomData["roomPlayers"]) : [];
+                document.getElementById("playerCount").textContent = `Players: ${playersArray.length}/4`;
+                document.getElementById("yourName").textContent = `You: ${username}`;
+            }
+        }
+
+        function handleDialogue(roomData) {
+            const currentDay = roomData["currentDay"]
+            // Show initial dialogue for each day
+            if (localStorage.getItem("introDialogueSeen") !== "1") {
+                switch (currentDay) {
+                case 1:
+                    typewriter.showSequence([
+                        "Welcome, team, to the situation room.",
+                        "From here, you can access these four rooms which may contain what you need to fix this.",
+                        "Good luck, and don't be afraid to ask for help if you need it."
+                    ]);
+                    break;
+                case 2:
+                    typewriter.showSequence([
+                        "Day 2 welcome dialogue."
+                    ]); 
+                    break;
+                case 3:
+                    typewriter.showSequence([
+                        "Day 3 welcome dialogue."
+                    ]);
+                    break;
+                case 4:
+                    typewriter.showSequence([
+                        "Day 4 welcome dialogue."
+                    ]); 
+                    break;
+                default:
+                    typewriter.showSequence([
+                        "You're not supposed to see this.",
+                        "I guess you guys really are the best..."
+                    ])
+                }
+            }
+            // Ensure the intro dialogue is not replayed
+            localStorage.setItem("introDialogueSeen", "1")                      
+        }
+
+        async function handleDayEndDialogue(answers) {
+            // Based on answers, determine day end dialogue, and save a day 1 score 
+            const roleNames = {
+                "ds": "Data Scientist",
+                "se": "Software Engineer", 
+                "ne": "Network Engineer",
+                "ca": "Cybersecurity Analyst"
+            };
+            
+            let dialogue = [];
+            let perfectRoles = [];
+            let mixedRoles = [];
+            let failedRoles = [];
+            let enablerFailures = [];
+            let dayScore = 0;
+            
+            // Get current day for enabler mapping
+            const currentDay = currentRoomData["currentDay"];
+            
+            // Calculate base score from individual performance
+            for (const [role, results] of Object.entries(answers)) {
+                const correctAnswers = results.filter(result => result === true).length;
+                dayScore += correctAnswers;
+            } 
+            console.log(`Day ${currentDay} Score: ${dayScore}`);
+            
+            // Analyze performance for each role
+            for (const [role, results] of Object.entries(answers)) {
+                const correctAnswers = results.filter(result => result === true).length;
+                const totalQuestions = results.length;
+                
+                // Check if they failed their enabler task (first result is false)
+                if (results[0] === false) {
+                    const enabledRole = roleNames[enablerMap[currentDay][role]];
+                    enablerFailures.push({ 
+                        enabler: roleNames[role], 
+                        enabled: enabledRole 
+                    });
+                }
+                
+                if (correctAnswers === totalQuestions) {
+                    perfectRoles.push(roleNames[role]);
+                } else if (correctAnswers > 0) {
+                    mixedRoles.push({ role: roleNames[role], correct: correctAnswers, total: totalQuestions });
+                } else {
+                    failedRoles.push(roleNames[role]);
+                }
+            }
+            
+            // Generate dynamic dialogue based on performance
+            if (perfectRoles.length === 4) {
+                // Perfect performance - everyone got everything right
+                dialogue = [
+                    "Outstanding work, team! Every single one of you nailed your assessments.",
+                    "This is exactly the kind of precision we need to take back control.",
+                    "Keep this momentum going, we're going to need this level of excellence."
+                ];
+            } else if (perfectRoles.length >= 2 && failedRoles.length === 0) {
+                // Good performance - most did well, no complete failures
+                dialogue = [
+                    "Solid work overall, team. Most of you handled your tasks admirably.",
+                    ...perfectRoles.map(role => `${role}, excellent job on your assessments.`),
+                    "Let's build on this foundation and push forward."
+                ];
+            } else if (failedRoles.length > 0) {
+                // Some roles completely failed
+                dialogue = [
+                    "Well... we have some mixed results here.",
+                    ...perfectRoles.map(role => `${role}, you did your job properly.`),
+                    ...mixedRoles.map(({ role, correct, total }) => 
+                        `${role}, you got ${correct} out of ${total} right. Not terrible, but room for improvement.`
+                    ),
+                    ...failedRoles.map(role => 
+                        `${role}... I'm not even sure what to say. You had one job. ONE JOB.`
+                    ),
+                    "We need to do better if we're going to survive what's coming next."
+                ];
+            } else {
+                // Mixed performance but no complete failures
+                dialogue = [
+                    "Alright, let's review what happened here.",
+                    ...mixedRoles.map(({ role, correct, total }) => 
+                        `${role}, ${correct}/${total} correct. ${correct === 1 ? 'At least you got one right.' : 'Could be worse, I suppose.'}`
+                    ),
+                    "We need to tighten up our game. The stakes are only getting higher."
+                ];
+            }
+            
+            // Add enabler failure commentary if any exist
+            if (enablerFailures.length > 0) {
+                dialogue.push(""); // Add spacing
+                dialogue.push("And let's talk about teamwork for a moment...");
+                dialogue.push(...enablerFailures.map(({ enabler, enabled }) => 
+                    `${enabler}, you were supposed to help the ${enabled} do their job. You failed them. Which means they were working on bad information!`
+                ));
+                dialogue.push("In this facility, we succeed together or we fail together. Remember that.");
+            }
+            
+            // Add a final motivational/transitional line
+            dialogue.push("Tomorrow brings new challenges. Let's hope we're ready for them.");
+
+            // Show final dialogue
+            await typewriter.showSequence(dialogue);
+
+            // Save score and reset day (this will trigger a db reset 3 times)
+            localStorage.setItem("introDialogueSeen", "0") // set for all players
+            document.getElementById("loadingContainer").style.display = "flex";
+
+            if (isHost === "1") {
+                await appendDayScore(roomId, dayScore);
+                await progressDay(roomId);
+            } else {    
+                // Non-hosts: wait for the day to actually progress
+                // Keep checking until the currentDay changes
+                const originalDay = currentRoomData["currentDay"];
+                while (true) {
+                    await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
+                    const updatedRoomData = await loadRooms(roomId);
+                    console.log(originalDay);
+                    console.log(updatedRoomData["currentDay"]);
+                    if (updatedRoomData["currentDay"] > originalDay) {
+                        break; // Day has progressed, we can continue
+                    }
+                }
+            }
+
+            document.getElementById("loadingContainer").style.display = "none";
+        }
+
+        // Set up real-time listener for game info updates
+        const unsubscribe = listenToRoom(roomId, async (roomData) => {
+            if (!isDayEndInProgress) {
+                if (roomData) {
+                    console.log("Room updated.");
+                    currentRoomData = roomData;
+                    updateGameInfo(roomData);
+                    updateRoleList(roomData, document.getElementById("players"));
+                    handleDialogue(roomData);
+
+                    // If there are 4 people that have completed their roles, check to see if they're all in the Situation Room
+                    if (roomData["enabledCompletions"] >= 4 && !isDayEndInProgress) {
+                        const answers = {};
+
+                        // Get the values of the players results based on the current day
+                        const resultsPositions = {
+                            "1": [0, 1],
+                            "2": [1, 2],
+                            "3": [3, 4],
+                            "4": [5, 6]
+                        };
+                        const todaysReultsPositions = resultsPositions[roomData["currentDay"].toString()];
+
+                        for (const [userId, playerData] of Object.entries(roomData["roomPlayers"])) {
+                            if (playerData["currentRoom"] !== "Situation Room") {
+                                console.log(`All players have completed enabled tasks, but ${userId} is not in the Situation Room`);
+                                return;
+                            }
+
+                            const [indexA, indexB] = todaysReultsPositions;
+                            const resultA = playerData["puzzleAnswers"][indexA];
+                            const resultB = playerData["puzzleAnswers"][indexB];
+
+                            if (!resultA || !resultB) {
+                                console.warn(`Missing puzzle answers for ${playerData["role"]}`);
+                                return;
+                            }
+
+                            const isAEnabler = resultA["type"] === "enabler";
+                            const enablerResult = isAEnabler ? resultA["correct"] : resultB["correct"];
+                            const enabledResult = isAEnabler ? resultB["correct"] : resultA["correct"];
+
+                            answers[playerData["role"]] = [enablerResult, enabledResult];
+                        }
+
+                        isDayEndInProgress = true;
+
+                        // handle day end (this updates the DB)
+                        await handleDayEndDialogue(answers);
+
+                        // Reset flag
+                        isDayEndInProgress = false;
+                        
+                        // Reset the enabled completions on all clients to force refresh to start new day
+                        await incrementEnabledCompletions(roomId, true);
+                    }
+                } 
+                else {
+                    console.error("Room not found");
+                    window.location.href = "/index.html";
+                }
+            }
+        }); 
+
+    
+        // Clean up listener when leaving the page
+        window.addEventListener("beforeunload", () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        });
+    </script>
+</body>
+</html>
+

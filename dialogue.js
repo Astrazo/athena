@@ -11,7 +11,9 @@ export const dialogue = {
                     "What should you try first?"
                 ],
                 "enabler-complete": [
-                    "Enabler complete dialogue."
+                    "You’ve already identified the rogue IP and sent it to the Network Engineer for urgent review.",
+                    "The IDS has quieted — no further intrusions have been detected from that address.",
+                    "You should investigate some other rooms in case you can assist further."
                 ]
             },
             "research-lab": {
@@ -22,10 +24,14 @@ export const dialogue = {
                     "If not — you need to flag it for immediate lockdown before the AI spreads deeper."
                 ],
                 "enabled-complete": [
-                    "Enabled complete dialogue."
+                    "You’ve already reviewed the login logs and flagged the suspicious user account.",
+                    "The abnormal access pattern matched a classic account compromise — it’s now under lockdown.",
+                    "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
                 ],
                 "enabled-not-available": [
-                    "Enabled not avaiable dialogue."
+                    "You access the login logs and begin scanning recent entries for anomalies.",
+                    "But without a flagged user ID, the logs feel like white noise, there's nothing that clearly stands out.",
+                    "You realise the investigation can't proceed until the Data Scientist finishes their analysis and identifies a target."
                 ]
             }
         },
@@ -38,8 +44,9 @@ export const dialogue = {
                 ],
                 "enabler-complete": [
                     "You double-check the logs, but your work here is done.",
-                    "You already traced the AI’s point of entry through the network — the interface has been flagged.",
-                    "That intel’s now with the Software Engineer. Hopefully they can figure out what the AI's doing with it."
+                    "You already traced the AI’s point of entry through the network, the interface has been flagged.",
+                    "That intel’s now with the Software Engineer. Hopefully they can figure out what the AI's doing with it.",
+                    "You should investigate some other rooms in case you can assist further."
                 ]
             },
             "developer-hub": {
@@ -53,14 +60,13 @@ export const dialogue = {
                     "You've already traced the suspicious IP across the internal network.",
                     "Every system it touched has been flagged and logged.",
                     "There’s nothing more to pull from this trace—your part in the assessment is done.",
-                    "Hopefully that map gives the others a fighting chance."
+                    "Hopefully that map gives the others a fighting chance.",
+                    "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
                 ],
                 "enabled-not-available": [
-                    "You begin parsing the traffic logs in the Server Room, hunting for signs of the AI’s movement.",
-                    "Several connection attempts stand out—but without knowing the exact source IP, it’s all just noise.",
-                    "You scroll through a dozen candidates, none definitive.",
-                    "You need a confirmed indicator—something to anchor the trace.",
-                    "Hopefully someone upstream can pinpoint the breach origin... then you’ll be ready to map the damage."
+                    "You start parsing the traffic logs, looking for suspicious cross-network activity.",
+                    "A few odd patterns emerge, but none have a confirmed source — it's all guesswork without a flagged IP.",
+                    "You'll need to wait for the Cybersecurity Analyst to confirm the threat origin before you can act."
                 ]
             }
         },
@@ -72,46 +78,58 @@ export const dialogue = {
                     "Your task is to review the commit logs and identify which change may have enabled the breach."
                 ],
                 "enabler-complete": [
-                    "Enabler complete dialogue."
+                    "You already traced the malicious commit and flagged it for the Data Scientist to investigate further.",
+                    "Any additional changes here would risk contaminating the forensic trail.",
+                    "You should investigate some other rooms in case you can assist further."
                 ]
             },
             "server-room": {
                 "enabled": [
-                    "The Network Engineer has traced unusual activity to {{network engineer enabler answer}}.",
+                    "The Network Engineer has traced unusual activity to a specific node they have flagged for you.",
                     "You’ve got access to the runtime diagnostic tools in the Server Room, where the AI seems to be probing from.",
-                    "Several active windows services are bound to this interface, you need to identify which process on {{network engineer enabler answer}} is likely compromised."
+                    "Several active windows services are bound to this interface, you need to identify which process on this interface is likely compromised."
                 ],
                 "enabled-complete": [
-                    "Enabled complete dialogue."
+                    "You’ve already reviewed the running processes and flagged the one likely compromised by the AI.",
+                    "Security has been notified and the process is under containment review.",
+                    "You’ve done all you can here, check in with the rest of your team.",
+                    "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
                 ],
                 "enabled-not-available": [
-                    "Enabled not avaiable dialogue."
+                    "You bring up the diagnostic console and begin reviewing active processes.",
+                    "But there’s no signal yet, the suspicious interface hasn’t been confirmed.",
+                    "You back out for now, waiting on the Network Engineer to complete their trace."
                 ]
             }
         },
         "ds": {
-            "development-hub": {
+            "developer-hub": {
                 "enabler": [
                     "System logs show every user session across the last 24 hours.",
                     "Your task: analyse user activity patterns and identify which user deviates significantly from the norm.",
                     "This could be a potential sign of account takeover or injection by the AI."
                 ],
                 "enabler-complete": [
-                    "Enabler complete dialogue."
-                ]
+                    "You’ve already identified the user account that has been compromised.",
+                    "Hopefully that brings the team one step closer to catching up to the AI.",
+                    "You should investigate some other rooms in case you can assist further."
+                ],
             },
             "command-centre": {
                 "enabled": [
-                    "You've been hnded a dataset tied to a recent commit.",
-                    "The Software Engineer believes it might be compromised.",
+                    "You've been handed a dataset tied to a recent commit. The Software Engineer believes it might be compromised.",
                     "Before it can be used in any analysis, it needs to be cleaned and validated.",
                     "Your job: apply basic cleaning checks to ensure the data is safe inside the system."
                 ],
                 "enabled-complete": [
-                    "Enabled complete dialogue."
+                    "You’ve already cleaned and validated the dataset tied to the commit.",
+                    "It’s now safe to enter the pipeline without risking further model corruption now.",
+                    "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
                 ],
                 "enabled-not-available": [
-                    "Enabled not avaiable dialogue."
+                    "You prepare your validation tools and load up the staging area.",
+                    "But the dataset in question hasn’t arrived yet, there's nothing to analyse or clean.",
+                    "You’ll need to wait until the Software Engineer flags the suspicious commit."
                 ]
             }
         }
