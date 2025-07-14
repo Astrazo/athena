@@ -159,45 +159,95 @@
             // Generate dynamic dialogue based on performance
             if (perfectRoles.length === 4) {
                 // Perfect performance - everyone got everything right
-                dialogue = [
-                    "Outstanding work, team! Every single one of you nailed your assessments.",
-                    "This is exactly the kind of precision we need to take back control.",
-                    "Keep this momentum going, we're going to need this level of excellence."
-                ];
-            } else if (perfectRoles.length >= 2 && failedRoles.length === 0) {
+                if (currentDay === 1) {
+                    dialogue = [
+                        "Outstanding work team! Every single one of you nailed your assessments.",
+                        "This is exactly the kind of precision we need to take back control.",
+                        "Keep this momentum going, we're going to need this level of excellence."
+                    ];
+                }
+                else if (currentDay === 2) {
+                    dialogue = [
+                        "Outstanding work team! Every single one of you nailed your assessments.",
+                        "We're really beginning to fight back against this AI.",
+                        "Should only be a little bit more to go now, lets keep pushing."
+                    ];
+                }
+                
+            } 
+            else if (perfectRoles.length >= 2 && failedRoles.length === 0) {
                 // Good performance - most did well, no complete failures
-                dialogue = [
-                    "Solid work overall, team. Most of you handled your tasks admirably.",
-                    ...perfectRoles.map(role => `${role}, excellent job on your assessments.`),
-                    "Let's build on this foundation and push forward."
-                ];
-            } else if (failedRoles.length > 0) {
+                if (currentDay === 1) {
+                    dialogue = [
+                        "Solid work overall, team. Most of you handled your tasks admirably.",
+                        ...perfectRoles.map(role => `${role}, excellent job on your assessments.`),
+                        "Let's build on this foundation and push forward."
+                    ];
+                }
+                else if (currentDay === 2) {
+                    dialogue = [
+                        "Solid work overall, team. Most of you handled your tasks admirably.",
+                        ...perfectRoles.map(role => `${role}, excellent job on your assessments.`),
+                        "We're definitely making it difficult for the AI.  Lets keep going."
+                    ];
+                }
+                
+            } 
+            else if (failedRoles.length > 0) {
                 // Some roles completely failed
-                dialogue = [
-                    "Well... we have some mixed results here.",
-                    ...perfectRoles.map(role => `${role}, you did your job properly.`),
-                    ...mixedRoles.map(({ role, correct, total }) => 
-                        `${role}, you got ${correct} out of ${total} right. Not terrible, but room for improvement.`
-                    ),
-                    ...failedRoles.map(role => 
-                        `${role}... I'm not even sure what to say. You had one job. ONE JOB.`
-                    ),
-                    "We need to do better if we're going to survive what's coming next."
-                ];
-            } else {
+                if (currentDay === 1) {
+                    dialogue = [
+                        "Well... we have some mixed results here.",
+                        ...perfectRoles.map(role => `${role}, you did your job properly.`),
+                        ...mixedRoles.map(({ role, correct, total }) => 
+                            `${role}, you got ${correct} out of ${total} right. Not terrible, but room for improvement.`
+                        ),
+                        ...failedRoles.map(role => 
+                            `${role}... I'm not even sure what to say. You had one job. ONE JOB.`
+                        ),
+                        "We need to do better if we're going to survive what's coming next."
+                    ];
+                }
+                else if (currentDay === 2) {
+                    dialogue = [
+                        "Well... we have some mixed results here.",
+                        ...perfectRoles.map(role => `${role}, you did your job properly.`),
+                        ...mixedRoles.map(({ role, correct, total }) => 
+                            `${role}, you got ${correct} out of ${total} right. Not terrible, but room for improvement.`
+                        ),
+                        ...failedRoles.map(role => 
+                            `${role}... I'm not even sure what to say. You had one job. ONE JOB.`
+                        ),
+                        "If we don't improve soon, the AI might overrun us.  We need to improve."
+                    ];
+                }
+
+            } 
+            else {
                 // Mixed performance but no complete failures
-                dialogue = [
-                    "Alright, let's review what happened here.",
-                    ...mixedRoles.map(({ role, correct, total }) => 
-                        `${role}, ${correct}/${total} correct. ${correct === 1 ? 'At least you got one right.' : 'Could be worse, I suppose.'}`
-                    ),
-                    "We need to tighten up our game. The stakes are only getting higher."
-                ];
+                if (currentDay === 1) {
+                    dialogue = [
+                        "Alright, let's review what happened here.",
+                        ...mixedRoles.map(({ role, correct, total }) => 
+                            `${role}, ${correct}/${total} correct. ${correct === 1 ? 'At least you got one right.' : 'Could be worse, I suppose.'}`
+                        ),
+                        "We need to tighten up our game. The stakes are only getting higher."
+                    ];
+                }
+                else if (currentDay === 2) {
+                    dialogue = [
+                        "Alright, let's review what happened here.",
+                        ...mixedRoles.map(({ role, correct, total }) => 
+                            `${role}, ${correct}/${total} correct. ${correct === 1 ? 'At least you got one right.' : 'Could be worse, I suppose.'}`
+                        ),
+                        "We need to tighten up our game. The AI is getting relentless now..."
+                    ];
+                }
+                
             }
             
             // Add enabler failure commentary if any exist
             if (enablerFailures.length > 0) {
-                dialogue.push(""); // Add spacing
                 dialogue.push("And let's talk about teamwork for a moment...");
                 dialogue.push(...enablerFailures.map(({ enabler, enabled }) => 
                     `${enabler}, you were supposed to help the ${enabled} do their job. You failed them. Which means they were working on bad information!`
@@ -208,32 +258,50 @@
             // Add a final motivational/transitional line
             dialogue.push("Tomorrow brings new challenges. Let's hope we're ready for them.");
 
+            // Get the original day before any dialogue starts so it can be compared to
+            const originalDay = currentRoomData["currentDay"];
+
             // Show final dialogue
-            await typewriter.showSequence(dialogue);
+            await typewriter.showSequence(dialogue, {
+                onContinue: async () => {
+                    // Save score and reset day (this will trigger a db reset 3 times)
+                    localStorage.setItem("introDialogueSeen", "0") // set for all players
+                    document.getElementById("loadingContainer").style.display = "flex";
+                    let updatedRoomData = null;
 
-            // Save score and reset day (this will trigger a db reset 3 times)
-            localStorage.setItem("introDialogueSeen", "0") // set for all players
-            document.getElementById("loadingContainer").style.display = "flex";
+                    if (isHost === "1") {
+                        await appendDayScore(roomId, dayScore);
+                        await progressDay(roomId);
+                        await incrementEnabledCompletions(true);
+                        updatedRoomData = await loadRooms(undefined, roomId);
+                    } 
+                    else {    
+                        while (true) {
+                            await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
+                            updatedRoomData = await loadRooms(undefined, roomId);
+                            console.log(updatedRoomData);
 
-            if (isHost === "1") {
-                await appendDayScore(roomId, dayScore);
-                await progressDay(roomId);
-            } else {    
-                // Non-hosts: wait for the day to actually progress
-                // Keep checking until the currentDay changes
-                const originalDay = currentRoomData["currentDay"];
-                while (true) {
-                    await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
-                    const updatedRoomData = await loadRooms(roomId);
-                    console.log(originalDay);
-                    console.log(updatedRoomData["currentDay"]);
-                    if (updatedRoomData["currentDay"] > originalDay) {
-                        break; // Day has progressed, we can continue
+                            // If the host has updated the current day, break
+                            if (updatedRoomData["currentDay"] > originalDay) {
+                                break;
+                            }
+                        }
                     }
-                }
-            }
 
-            document.getElementById("loadingContainer").style.display = "none";
+                    // Every client now resets their enabler/enabled/enabled value states
+                    await updatePlayer(localUserId, roomId, "enablerComplete", false);
+                    await updatePlayer(localUserId, roomId, "enabledComplete", false);
+                    await updatePlayer(localUserId, roomId, "enabledValue", null);
+
+                    document.getElementById("loadingContainer").style.display = "none";
+                    // Reset flag
+                    isDayEndInProgress = false;
+
+                    updateGameInfo(updatedRoomData);
+                    updateRoleList(updatedRoomData, document.getElementById("players"));
+                    handleDialogue(updatedRoomData);
+                }
+            });
         }
 
         // Set up real-time listener for game info updates
@@ -285,12 +353,6 @@
 
                         // handle day end (this updates the DB)
                         await handleDayEndDialogue(answers);
-
-                        // Reset flag
-                        isDayEndInProgress = false;
-                        
-                        // Reset the enabled completions on all clients to force refresh to start new day
-                        await incrementEnabledCompletions(roomId, true);
                     }
                 } 
                 else {

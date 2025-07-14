@@ -40,7 +40,7 @@ export const roomActions = {
                 "Check Developer Login Tokens": [
                     "This won't help right now."
                 ],
-                "Run Malware Scan on Dev Workstations": [
+                "Trigger Endpoint Containment Protocol": [
                     "This won't help right now."
                 ],
                 "Analyze Recent API Security Logs": [
@@ -68,7 +68,7 @@ export const roomActions = {
         },
         "ne": {
             "server-room": {
-                "Inspect Switch Port Activity Logs": [
+                "Review Recent Script Executions": [
                     "This won't help right now."
                 ],
                 "Reconfigure VLAN Assignments": [
@@ -125,7 +125,7 @@ export const roomActions = {
                 "Scan for Rogue Access Points": [
                     "This won't help right now."
                 ],
-                "Check Research VLAN ACLs": [
+                "Trigger Batch Job Trace": [
                     "This won't help right now."
                 ],
                 "CORRECT_ACTION": null
@@ -179,7 +179,7 @@ export const roomActions = {
                 "Review Model Execution Logs": [
                     "This won't help right now."
                 ],
-                "Inspect Staging Environment for Test Builds": [
+                "Review Active Class Overrides": [
                     "This won't help right now."
                 ],
                 "CORRECT_ACTION": "Review Git Commit History"
@@ -189,7 +189,7 @@ export const roomActions = {
                 "Scan for Unsecured Internal APIs": [
                     "This won't help right now."
                 ],
-                "Check Service Mesh Routing Rules": [
+                "Trigger Class Hierarchy Scan": [
                     "This won't help right now."
                 ],
                 "Review CI/CD Deployment Logs": [
@@ -203,13 +203,13 @@ export const roomActions = {
         },
         "ds": {
             "server-room": {
-                "Analyze Model Resource Usage": [
+                "Analyse Model Resource Usage": [
                     "This won't help right now."
                 ],
                 "Check Model Serving Latency": [
                     "This won't help right now."
                 ],
-                "Review Production Inference Logs": [
+                "Run Feature Engineering Audit": [
                     "This won't help right now."
                 ],
                 "Inspect Containerized Model Deployments": [
@@ -218,7 +218,7 @@ export const roomActions = {
                 "CORRECT_ACTION": null
             },
             "command-centre": {
-                "Check Model Drift Dashboard": [
+                "Adjust Intrusion Detection Signals": [
                     "This won't help right now."
                 ],
                 "Review Alert Thresholds for Data Anomalies": [
@@ -250,6 +250,274 @@ export const roomActions = {
                     "This won't help right now."
                 ],
                 "CORRECT_ACTION": "Analyse User Session Logs"
+            },
+            "research-lab": {
+                "Evaluate Recent Model Training Runs": [
+                    "This won't help right now."
+                ],
+                "Check Dataset Integrity and Labeling": [
+                    "This won't help right now."
+                ],
+                "Analyze Experiment Metrics for Outliers": [
+                    "This won't help right now."
+                ],
+                "Compare Performance of Experimental Models": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": null
+            }
+        }
+    },
+    2: {
+        "ca": {
+            "server-room": {
+                "Investigate Server Traffic Logs": [
+                    "This won't help right now."
+                ],
+                "Check Firewall Configuration": [
+                    "This won't help right now."
+                ],
+                "Review Active Directory Logs": [
+                    "This won't help right now."
+                ],
+                "Deploy Honeypot System": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": null
+            },
+            "command-centre": {
+                "Adjust Intrusion Detection Signals": [
+                    "You bring up the current detection rules. Most are weighted around the signal that was flagged.",
+                    "It's invalid due to data leakage.",
+                    "Which signal should be used to replace the flawed feature in your detection rules?"
+                ],
+                "Update Threat Intelligence Feeds": [
+                    "This won't help right now."
+                ],
+                "Cross-check Audit Trail Against Global Events": [
+                    "This won't help right now."
+                ],
+                "Review AI Containment Readiness Plan": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": "Adjust Intrusion Detection Signals"
+            },
+            "developer-hub": {
+                "Review Access Control File": [
+                    "This won't help right now."
+                ],
+                "Check Developer Login Tokens": [
+                    "This won't help right now."
+                ],
+                "Trigger Endpoint Containment Protocol": [
+                    "You launch the containment protocol, scanning logs for suspicious internal activity.",
+                    "Several machines are acting strangely — service accounts behaving outside normal baselines.",
+                    "Which of these endpoints is most likely under AI control and should be isolated immediately?"
+                ],
+                "Analyze Recent API Security Logs": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": "Trigger Endpoint Containment Protocol"
+            },
+            "research-lab": {
+                "Review Email Gateway Rules": [
+                    "This won't help right now."
+                ],
+                "Look Up User Activity History": [
+                    "This won't help right now."
+                ],
+                "Reboot Threat Detection System": [
+                    "This won't help right now."
+                ],
+                "Run Network Speed Diagnostics": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": null
+            }
+        },
+        "ne": {
+            "server-room": {
+                "Review Recent Script Executions": [
+                    "You sort through recent batch script deployments across internal systems.",
+                    "One of them was created by the subclass flagged earlier by the Software Engineer.",
+                    "Which batch script was most likely generated by the AI-controlled subclass and should be flagged?"
+                ],
+                "Reconfigure VLAN Assignments": [
+                    "This won't help right now."
+                ],
+                "Check UPS and Cooling Network Interfaces": [
+                    "This won't help right now."
+                ],
+                "Validate Fiber Link Health": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": "Review Recent Script Executions"
+            },
+            "command-centre": {
+                "Review Network Topology Diagrams": [
+                    "This won't help right now."
+                ],
+                "Run Path Trace Between Zones": [
+                    "This won't help right now."
+                ],
+                "Review Recent Script Executions": [
+                    "This won't help right now."
+                ],
+                "Compare Interface Access Logs": [
+                    "You cross-reference interface logs from the Command Centre for irregular access times, frequency spikes, or unauthorized devices.",
+                    "One of them doesn’t match the baseline. Which one is it?"
+                ],
+                "CORRECT_ACTION": "Compare Interface Access Logs"
+            },
+            "developer-hub": {
+                "Audit Static IP Assignments": [
+                    "This won't help right now."
+                ],
+                "Check Network Mapping for Dev Machines": [
+                    "This won't help right now."
+                ],
+                "Monitor DHCP Lease Table": [
+                    "This won't help right now."
+                ],
+                "Trace API Traffic from Flagged IP": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": null
+            },
+            "research-lab": {
+                "Trace MAC Address Conflicts": [
+                    "This won't help right now."
+                ],
+                "Analyze Network Throughput to Lab Nodes": [
+                    "This won't help right now."
+                ],
+                "Scan for Rogue Access Points": [
+                    "This won't help right now."
+                ],
+                "Trigger Batch Job Trace": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": null
+            }
+        },
+        "se": {
+            "developer-hub": {
+                "Review Git Commit History": [
+                    "This won't help right now."
+                ],
+                "Trace Endpoint Access Logs": [
+                    "This won't help right now."
+                ],
+                "Inspect Build Artifacts": [
+                    "This won't help right now."
+                ],
+                "Check Running Dev Services": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": null
+            },
+
+            "server-room": {
+                "Audit Running Processes for Anomalies": [
+                    "This won't help right now."
+                ],
+                "Review Microservice Startup Logs": [
+                    "This won't help right now."
+                ],
+                "Check Runtime Errors on Backend Services": [
+                    "This won't help right now."
+                ],
+                "Validate Service Dependencies": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": null
+            },
+
+            "research-lab": {
+                "Check Data Processing Scripts": [
+                    "This won't help right now."
+                ],
+                "Review Git Commit History": [
+                    "This won't help right now."
+                ],
+                "Review Model Execution Logs": [
+                    "This won't help right now."
+                ],
+                "Review Active Class Overrides": [
+                    "You scan recently modified classes in the build pipeline.",
+                    "One of them originates from the compromised developer machine flagged earlier.",
+                    "Which class has most likely been modified by the AI and should be deprecated immediately?"
+                ],
+                "CORRECT_ACTION": "Review Active Class Overrides"
+            },
+
+            "command-centre": {
+                "Scan for Unsecured Internal APIs": [
+                    "This won't help right now."
+                ],
+                "Trigger Class Hierarchy Scan": [
+                    "You launch a scan of active subclasses extending from core system services.",
+                    "One of them is behaving differently — injecting logic at runtime from an unknown source.",
+                    "Which subclass most likely introduces AI-modified behavior and should be flagged?"
+                ],
+                "Review CI/CD Deployment Logs": [
+                    "This won't help right now."
+                ],
+                "Audit Token Usage in System Services": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": "Trigger Class Hierarchy Scan"
+            }
+        },
+        "ds": {
+            "server-room": {
+                "Analyze Model Resource Usage": [
+                    "This won't help right now."
+                ],
+                "Check Model Serving Latency": [
+                    "This won't help right now."
+                ],
+                "Run Feature Engineering Audit": [
+                    "You audit the engineered features feeding into the real-time detection model.",
+                    "One of them has an unusually high correlation with intrusion events. Suspiciously high...",
+                    "Which engineered feature is likely causing data leakage in the intrusion detection model?"
+                ],
+                "Inspect Containerized Model Deployments": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": "Run Feature Engineering Audit"
+            },
+            "command-centre": {
+                "Analyse Feature Stability Report": [
+                    "You compare the variance and update timings of key engineered features.",
+                    "One of them lines up exactly with the suspicious script injected earlier.",
+                    "Which feature is most likely impacted by the corrupted automation script and should be excluded from modeling?"
+                ],
+                "Review Alert Thresholds for Data Anomalies": [
+                    "This won't help right now."
+                ],
+                "Commence An Exploratory Data Analysis Session": [
+                    "This won't help right now."
+                ],
+                "Audit Scheduled Retraining Jobs": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": "Analyse Feature Stability Report"
+            },
+            "developer-hub": {
+                "Verify Data Pipeline Integrity": [
+                    "This won't help right now."
+                ],
+                "Inspect Feature Store Activity": [
+                    "This won't help right now."
+                ],
+                "Analyse User Session Logs": [
+                    "This won't help right now."
+                ],
+                "Check Dev Model Inputs for Anomalies": [
+                    "This won't help right now."
+                ],
+                "CORRECT_ACTION": null
             },
             "research-lab": {
                 "Evaluate Recent Model Training Runs": [

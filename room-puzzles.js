@@ -196,7 +196,7 @@ export const roomPuzzles = {
             "command-centre": {
                 "enabled": {
                     "title": "Utilise Correct Data Cleaning Technique",
-                    "prompt": "How should this data be cleaned to help calm down the model's wild predictions?",
+                    "prompt": "Which of these endpoints is most likely under AI control and should be isolated immediately?",
                     "tableHeaders": ["Cleaning Step", "Rationale"],
                     "tableRows": [
                         ["Drop or impute missing values", "A value is missing in one of the rows."],
@@ -221,8 +221,232 @@ export const roomPuzzles = {
             }
         }
     }, 
-    
     2: {
-
+        "ca": {
+            "developer-hub": {
+                "enabler": {
+                    "title": "Isolate AI-Controlled Endpoint",
+                    "prompt": "Which of these endpoints is most likely under AI control and should be isolated immediately?",
+                    "tableHeaders": ["Time", "Device ID", "User", "Activity Summary"],
+                    "tableRows": [
+                        ["14:22:01", "DEV-045", "jsimons", "Attempted to disable OS-level firewall"],
+                        ["14:22:03", "DEV-312", "svc_deploy", "Established 9 simultaneous outbound SSH sessions"],
+                        ["14:22:08", "DEV-229", "root", "Launched code-signing tool without valid certificate"],
+                        ["14:22:11", "DEV-088", "svc_devbuild", "Repeated privilege escalation attempts on internal APIs"]
+                    ],
+                    "correctAnswerIndex": 1,
+                    "feedback": {
+                        "correct": [
+                            "Nine simultaneous outbound SSH sessions from a service account is highly suspicious and a classic lateral movement pattern.",
+                            "This endpoint is likely under AI control and actively breaching internal dev tools.",
+                            "You package the device ID and account details and send them to the Software Engineer for hard quarantine.",
+                            "You should investigate some other rooms in case you can assist further."
+                        ],
+                        "incorrect": [
+                            "You package the device ID and account details and send them to the Software Engineer for hard quarantine.",
+                            "You should investigate some other rooms in case you can assist further."
+                        ]
+                    }
+                }
+            }, 
+            "command-centre": {
+                "enabled": {
+                    "title": "Recalibrate Endpoint Detection",
+                    "prompt": "Which signal should be used to replace the flawed feature in your detection rules?",
+                    "tableHeaders": ["Signal", "Source", "Real-Time Availability", "False Positive Rate", "Derived From"],
+                    "tableRows": [
+                        ["auth_log_spike", "System Logs", "Yes", "Low", "Live Event Stream"],
+                        ["post_intrusion_flag", "Audit Logs", "No", "Very Low", "Post-Analysis"],
+                        ["antivirus_quarantine", "Endpoint Agent", "Partial", "Moderate", "Manual Action"],
+                        ["login_session_length", "Access Logs", "Yes", "High", "Session Metadata"]
+                    ],
+                    "correctAnswerIndex": 0,
+                    "feedback": {
+                        "correct": [
+                            "`auth_log_spike` is generated in real time from raw logs and has a low false positive rate.",
+                            "It’s a strong candidate to replace the leaky `post_intrusion_flag` and improve endpoint detection logic.",
+                            "You update your rule set to reflect the new input and begin re-evaluating detection thresholds.",
+                            "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
+                        ],
+                        "incorrect": [
+                            "You update your detection rules based on the selected signal.",
+                            "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
+                        ]
+                    }
+                }
+            }
+        },
+        "ne": {
+            "research-lab": {
+                "enabler": {
+                    "title": "Trace Malicious Scheduled Script",
+                    "prompt": "Which scheduled script is most likely injecting manipulated telemetry data into research systems?",
+                    "tableHeaders": ["Script ID", "Schedule", "Data Type", "Anomaly Rate", "Triggered By"],
+                    "tableRows": [
+                        ["sched_001", "Every 5 min", "Temperature", "0.3%", "SensorGroupA"],
+                        ["sched_019", "On reboot", "Pressure", "0.4%", "SensorGroupC"],
+                        ["sched_112", "Every 10 min", "Thermal + Pressure", "8.9%", "Unknown"],
+                        ["sched_072", "Manual", "Telemetry Sync", "0.0%", "System Admin"]
+                    ],
+                    "correctAnswerIndex": 2,
+                    "feedback": {
+                        "correct": [
+                            "`sched_112` is triggered by an unknown source and has an anomaly rate over 8%.",
+                            "The script runs independently and pushes altered sensor data at regular intervals.",
+                            "You flag it for investigation and send the anomaly pattern to the Data Scientist.",
+                            "You should investigate some other rooms in case you can assist further."
+                        ],
+                        "incorrect": [
+                            "You flag the script for further investigation.",
+                            "You should investigate some other rooms in case you can assist further."
+                        ]
+                    }
+                }
+            }, 
+            "server-room": {
+                "enabled": {
+                    "title": "Isolate Malicious Batch Script",
+                    "prompt": "Which batch script was most likely generated by the AI-controlled subclass and should be flagged?",
+                    "tableHeaders": ["Script Name", "Created By", "Triggered Devices", "Execution Pattern", "Last Modified"],
+                    "tableRows": [
+                        ["sync_config.bat", "devops-service", "5", "Hourly", "14:05"],
+                        ["relay_push.cmd", "CommandRelay", "12", "Burst (x3)", "14:18"],
+                        ["cleanup_logs.bat", "log-handler", "3", "Manual", "13:50"],
+                        ["backup_node.cmd", "infra-agent", "4", "Nightly", "02:00"]
+                    ],
+                    "correctAnswerIndex": 1,
+                    "feedback": {
+                        "correct": [
+                            "`relay_push.cmd` matches the subclass name and shows burst execution across multiple nodes.",
+                            "It was generated by the flagged class just minutes ago, clear evidence of automated AI propagation.",
+                            "You flag it for containment and block future executions from the same generator.",
+                            "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
+                        ],
+                        "incorrect": [
+                            "You flagged the script for investigation and containment.",
+                            "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
+                        ]
+                    }
+                },
+                "enabled-not-available": [
+                    "You begin parsing the script deployment logs tied to recent runtime activity.",
+                    "But there’s no source class flagged yet — you don’t know which origin to filter by.",
+                    "You back out for now, waiting on the Software Engineer to complete their trace."
+                ],
+                "enabled-complete": [
+                    "You already traced the malicious batch script back to the AI-controlled class and flagged it for shutdown.",
+                    "Runtime execution logs show containment has taken effect.",
+                    "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
+                ]
+            }
+        }, 
+        "se": {
+            "command-centre": {
+                "enabler": {
+                    "title": "Trace Malicious Subclass Injection",
+                    "prompt": "Which subclass most likely introduces AI-modified behavior and should be flagged?",
+                    "tableHeaders": ["Class Name", "Base Class", "Overrides Method?", "Instantiated By", "Behavior Notes"],
+                    "tableRows": [
+                        ["TelemetryHandler", "DeviceService", "Yes", "CoreSystem", "Standard data polling"],
+                        ["CommandRelay", "DeviceService", "Yes", "Unknown", "Injects dynamic runtime instructions"],
+                        ["HealthCheck", "SystemMonitor", "No", "CoreSystem", "Runs at fixed intervals"],
+                        ["LoggerService", "DeviceService", "No", "DevTools", "Logs standard operations"]
+                    ],
+                    "correctAnswerIndex": 1,
+                    "feedback": {
+                        "correct": [
+                            "The `CommandRelay` class overrides `DeviceService` but is instantiated by an unknown source — highly suspicious.",
+                            "Its dynamic instruction injection is a major red flag for AI tampering.",
+                            "You flag this subclass for containment and notify the Network Engineer for downstream packet trace.",
+                            "You should investigate some other rooms in case you can assist further."
+                        ],
+                        "incorrect": [
+                            "You flag this subclass for review and containment.",
+                            "You should investigate some other rooms in case you can assist further."
+                        ]
+                    }
+                }
+            },
+            "research-lab": {
+                "enabled": {
+                    "title": "Identify Compromised Class",
+                    "prompt": "Which class has most likely been modified by the AI and should be deprecated immediately?",
+                    "tableHeaders": ["Class Name", "Origin IP", "Overrides Base?", "Active Instances", "Notes"],
+                    "tableRows": [
+                        ["TelemetryBase", "10.1.2.17", "Yes", "3", "Used by legacy sensors"],
+                        ["JobRunnerAI", "10.1.2.56", "Yes", "84", "Recompiled last 2 hours ago"],
+                        ["LoggerHelper", "127.0.0.1", "No", "12", "No recent changes"],
+                        ["AuthManager", "10.1.2.78", "Yes", "6", "Deprecated in latest build"]
+                    ],
+                    "correctAnswerIndex": 1,
+                    "feedback": {
+                        "correct": [
+                            "The `JobRunnerAI` class originated from the compromised machine and was recompiled recently.",
+                            "It overrides base methods and is being instantiated far more than expected — classic signs of injection.",
+                            "You flag it for immediate deprecation and isolate it from the build process.",
+                            "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
+                        ],
+                        "incorrect": [
+                            "You flag the class for review and quarantine.",
+                            "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
+                        ]
+                    }
+                }
+            }
+        },
+        "ds": {
+            "server-room": {
+                "enabler": {
+                    "title": "Flag Leaky Feature",
+                    "prompt": "Which engineered feature is likely causing data leakage in the intrusion detection model?",
+                    "tableHeaders": ["Feature Name", "Derived From", "Correlation to Intrusion", "Generated At", "Notes"],
+                    "tableRows": [
+                        ["session_length", "Login timestamp", "0.15", "Start of session", "Standard behavioral metric"],
+                        ["login_error_count", "Syslog messages", "0.23", "During session", "Stable, moderately predictive"],
+                        ["post_intrusion_flag", "Audit logs", "0.97", "After incident", "High correlation but occurs post-event"],
+                        ["access_freq", "Access logs", "0.29", "Start of session", "Stable signal"]
+                    ],
+                    "correctAnswerIndex": 2,
+                    "feedback": {
+                        "correct": [
+                            "`post_intrusion_flag` is generated after the incident occurs — that’s textbook data leakage.",
+                            "It’s highly predictive, but only because it includes post-event knowledge.",
+                            "You flag this feature and send a report to the Cybersecurity Analyst so they can patch their detection rules.",
+                            "You should investigate some other rooms in case you can assist further."
+                        ],
+                        "incorrect": [
+                            "You flag the feature for review and notify the modeling team.",
+                            "You should investigate some other rooms in case you can assist further."
+                        ]
+                    }
+                }
+            }, 
+            "command-centre": {
+                "enabled": {
+                    "title": "Isolate Poisoned Feature",
+                    "prompt": "Which feature is most likely impacted by the corrupted automation script and should be excluded from modeling?",
+                    "tableHeaders": ["Feature", "Source", "Variance Spike", "Missing Rate", "Last Affected"],
+                    "tableRows": [
+                        ["pressure_avg", "SensorGroupC", "0.8%", "0.2%", "Yesterday"],
+                        ["temp_rate", "SensorGroupA", "1.1%", "1.3%", "3 Days Ago"],
+                        ["pressure_rate", "Unknown", "13.4%", "0.1%", "Last Hour"],
+                        ["thermal_flux", "SensorGroupB", "2.5%", "0.0%", "Today"]
+                    ],
+                    "correctAnswerIndex": 2,
+                    "feedback": {
+                        "correct": [
+                            "`pressure_rate` is sourced from an unknown system — the same signature behind the corrupted script sent over.",
+                            "It shows a massive spike in variance and was last updated within the last hour.",
+                            "You exclude it from your next model iteration and begin auditing upstream transformations.",
+                            "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
+                        ],
+                        "incorrect": [
+                            "You exclude the feature and log it for review.",
+                            "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
+                        ]
+                    }
+                }
+            }
+        }
     }
 };

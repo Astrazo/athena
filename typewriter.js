@@ -286,6 +286,10 @@ class TypewriterDialogue {
             this.onLineSkip();
         }
 
+        if (this.onContinue) {
+            this.onContinue();
+        }
+
         this.hide();
         console.log("All dialogue skipped.");
     }

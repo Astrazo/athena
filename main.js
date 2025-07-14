@@ -79,7 +79,7 @@ export async function loadRooms(status = null, roomId = null) {
         return { 
             "roomName": data.name, 
             "roomPlayers": data.players, 
-            "currentDay": d.data().currentDay 
+            "currentDay": data.currentDay 
         };
     }
 
@@ -197,9 +197,17 @@ export function listenToAllRooms(callback) {
 
 // Function used show correct action dialogue and puzzles if they're in a room where the actions can do something
 function isRoomActionableRightNow(currentDay, currentRole, roomName, enablerComplete, enabledComplete, enabledPossible) {
+
     // First, see if for this day, this role is ever in this room
     const dialogueToShow = dialogue?.[currentDay]?.[currentRole]?.[roomName] || null;
     // If nothing has been returned, that means the user is in the wrong room entirely
+    console.log("Debug Info:");
+    console.log("currentDay:", currentDay);
+    console.log("currentRole:", currentRole);
+    console.log("roomName:", roomName);
+    console.log("enablerComplete:", enablerComplete);
+    console.log("enabledComplete:", enabledComplete);
+    console.log("enabledPossible:", enabledPossible);
     if (dialogueToShow === null) {
         return [false, null];
     }
@@ -221,7 +229,7 @@ function isRoomActionableRightNow(currentDay, currentRole, roomName, enablerComp
 
 export function generateActions(roomData, roomName, currentRole, actionsContainer) {
     // Get current day
-    const currentDay = roomData["currentDay"]
+    const currentDay = roomData["currentDay"];
 
     // Get localUserId
     const localUserId = localStorage.getItem("connectedUserId");
@@ -273,7 +281,6 @@ export function generateActions(roomData, roomName, currentRole, actionsContaine
                 await typewriter.showSequence(
                     finalActionText
                 );
-                console.log("Made past dialogue");
                 // If this button is the correct action to take, show the puzzle
                 if (actionKey === availableActions["CORRECT_ACTION"]) {
                     console.log("Correct action clicked");

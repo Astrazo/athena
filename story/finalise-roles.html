@@ -22,6 +22,9 @@
             <ul id="players"></ul>
         </div>
     </div>
+    <div id="loadingContainer" class="loading-container" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
 
     <script type="module">
         import { updatePlayer, listenToRoom, progressDay } from "../main.js";
@@ -149,11 +152,20 @@
                 ], 
                 {
                     onContinue: async () => {
+                        document.getElementById("loadingContainer").style.display = "flex";
+                        localStorage.setItem("introDialogueSeen", "0");
                         if (isHost === "1") {
                             await progressDay(roomId);
                             window.location.href = "rooms/situation-room.html"
                         }
                         else {
+                            while (true) {
+                                // Only move forward when the current day is greater than 1
+                                if (currentRoomData["currentDay"] > 0) {
+                                    break; // Day has progressed, we can continue
+                                }
+                                await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
+                            }
                             window.location.href = "rooms/situation-room.html"
                         }
                     }
@@ -169,11 +181,20 @@
                 ], 
                 {
                     onContinue: async () => {
+                        document.getElementById("loadingContainer").style.display = "flex";
+                        localStorage.setItem("introDialogueSeen", "0");
                         if (isHost === "1") {
                             await progressDay(roomId);
                             window.location.href = "rooms/situation-room.html"
                         }
                         else {
+                            while (true) {
+                                // Only move forward when the current day is greater than 1
+                                if (currentRoomData["currentDay"] > 0) {
+                                    break; // Day has progressed, we can continue
+                                }
+                                await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
+                            }
                             window.location.href = "rooms/situation-room.html"
                         }
                     }
