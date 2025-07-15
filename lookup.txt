@@ -1,0 +1,50 @@
+$connectedUsername
+$connectedRoomName
+$connectedRoomId
+$connectedUserId
+$connectedRoomPlayerNames
+$connectedRoomPlayers
+
+sessionStorage.setItem('connectedRoomId', roomId);
+sessionStorage.setItem('connectedUserId', userId);
+sessionStorage.setItem('connectedRoomName', roomName);
+sessionStorage.setItem('connectedUsername', username);
+
+
+FORMAT A ROOM IS RETURNED IN
+roomId: d.id,
+roomName: d.data().name,
+roomPlayers: d.data().players
+
+
+// rooms/{roomId}
+{
+  "name":   "Room 42",
+
+  "players": {
+    "uidA": { "name": "Alice",   "role": "DS"   },
+    "uidB": { "name": "Bob",     "role": "SE"   },
+    "uidC": { "name": "Charlie", "role": "None" },
+    "uidD": { "name": "Dana",    "role": "None" }
+  }
+}
+
+roomData {
+    roomId: "id",
+    roomName: "name",
+    roomPlayers: {
+        playerId1: {
+            role: "role",
+            name: "name",
+            readyStatus: "status"
+        },
+        playerId2: {
+            role: "role",
+            name: "name",
+            readyStatus: "status"
+        },
+        etc.
+    }
+}
+
+callback({ roomId: roomId, roomName: data.name, roomPlayers: data.players }); Roomdata is returned like this onSnapshot change.  Data is a dictionary
