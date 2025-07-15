@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Room Lobby - Athena</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="src/styles/styles.css">
     <link rel="icon" href="data:,">
 </head>
 <body>
@@ -33,7 +33,7 @@
     </div>
 
     <script type="module">
-        import { loadRooms, removeUserFromRoom, updatePlayer, listenToRoom, deleteRoom } from "./main.js";
+        import { loadRooms, removeUserFromRoom, updatePlayer, listenToRoom, deleteRoom } from "./src/js/main.js";
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
@@ -89,7 +89,7 @@
                     });
 
                     // Check if there's 4 players, and they're all ready
-                    const allReady = playersArray.length >= 2 && 
+                    const allReady = playersArray.length >= 1 && 
                                    playersArray.some(player => player["readyStatus"] === 1);
                     
                     // If all ready, start the countdown
@@ -116,7 +116,6 @@
                         // Start countdown
                         const countdownInterval = setInterval(() => {
                             countdownElement.textContent = `Game starting in ${countdownValue}`;
-                            countdownValue--;
                             
                             // Load title page
                             if (countdownValue <= 0) {
@@ -126,6 +125,9 @@
                                 }
                                 console.log("Game has commenced.")
                                 window.location.href = "story/role-select.html";
+                            }
+                            else {
+                                countdownValue--;
                             }
                         }, 1000);
                         

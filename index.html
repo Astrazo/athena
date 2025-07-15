@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Athena</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="src/styles/styles.css">
     <link rel="icon" href="data:,">
 </head>
 <body>
@@ -17,7 +17,7 @@
         <div class="loading-spinner"></div>
     </div>
     <script type="module">
-        import { loadRooms } from "./main.js";
+        import { loadRooms } from "./src/js/main.js";
         document.getElementById("joinRoomBtn").addEventListener("click", async () => {
             // Show spinner
             document.getElementById("loadingContainer").style.display = "flex";
@@ -30,6 +30,6 @@
                 localStorage.removeItem("availableRooms");
             }
         });
-        </script>
+    </script>
 </body>
 </html> 

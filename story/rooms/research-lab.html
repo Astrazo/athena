@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Athena</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="../../src/styles/styles.css">
     <link rel="icon" href="data:,">
 </head>
 <body>
@@ -32,10 +32,10 @@
     </div>
 
     <script type="module">
-        import { updatePlayer, listenToRoom, updateRoleList, generateActions, navigateToRoom } from "/main.js";
-        import TypewriterDialogue from "/typewriter.js";
-        import { dialogue } from "/dialogue.js";
-        import { roomActions } from "/room-actions.js"
+        import { updatePlayer, listenToRoom, updateRoleList, generateActions, navigateToRoom } from "../../src/js/main.js";
+        import TypewriterDialogue from "../../src/js/typewriter.js";
+        import { dialogue } from "../../src/js/dialogue.js";
+        import { roomActions } from "../../src/js/room-actions.js";
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");

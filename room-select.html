@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Join Room - Athena</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="src/styles/styles.css">
     <link rel="icon" href="data:,">
 </head>
 <body>
@@ -30,7 +30,7 @@
     </div>
 
     <script type="module">
-        import { createUser, addUserToRoom, listenToAllRooms, loadRooms } from "./main.js";
+        import { createUser, addUserToRoom, listenToAllRooms, loadRooms } from "./src/js/main.js";
     
         const noRoomsDiv = document.getElementById("noRooms");
         const roomContentDiv = document.getElementById("roomContent");
@@ -66,7 +66,7 @@
                         </div>
                         ${canJoin ? 
                             `<button class="std-button join-button" data-room-id="${room["roomId"]}" data-room-name="${room["roomName"]}">Join Room</button>` :
-                            `<button class="std-button" disabled>Can't Join</button>`
+                            `<button class="std-button" disabled>Room Full</button>`
                         }
                     `;
                     roomsGrid.appendChild(roomCard);

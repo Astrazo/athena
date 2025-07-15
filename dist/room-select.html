@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Room - Athena</title>
+    <link rel="icon" href="data:,">
+  <script type="module" crossorigin src="/athena/assets/roomSelect-B54E6Unm.js"></script>
+  <link rel="modulepreload" crossorigin href="/athena/assets/main-3GqDBcTq.js">
+  <link rel="stylesheet" crossorigin href="/athena/assets/main-D0TiZtJm.css">
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='index.html'">← Back</button>
+
+    <div class="menu-container">
+        <h1>Join Room</h1>
+    </div>
+
+    <div id="noRooms" class="no-rooms" style="display: none;">
+        No rooms available. Create a new room to start playing!
+    </div>
+
+    <div id="roomContent" style="display: none;">
+        <div class="nickname-section">
+            <h2>Enter Your Nickname</h2>
+            <input type="text" id="username" class="std-input" placeholder="Enter your nickname" autofocus>
+        </div>
+        <div id="roomsGrid" class="rooms-grid"></div>
+    </div>
+    <div id="loadingContainer" class="loading-container" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+
+</body>
+</html> 

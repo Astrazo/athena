@@ -4,10 +4,10 @@ import {
     query, where, orderBy, getDocs, arrayUnion, arrayRemove, getDoc, onSnapshot, deleteDoc, deleteField,
     increment
 } from "firebase/firestore";
-import { roomActions } from "/room-actions.js";
-import { roomPuzzles } from "/room-puzzles.js";
-import { enablerMap } from "./enabler-map";
-import { dialogue } from "./dialogue";
+import { roomActions } from "./room-actions.js";
+import { roomPuzzles } from "./room-puzzles.js";
+import { enablerMap } from "./enabler-map.js";
+import { dialogue } from "./dialogue.js";
 
 
 const firebaseConfig = {

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athena</title>
+    <link rel="icon" href="data:,">
+  <script type="module" crossorigin src="/athena/assets/roleSelect-BwmhP_0c.js"></script>
+  <link rel="modulepreload" crossorigin href="/athena/assets/main-3GqDBcTq.js">
+  <link rel="modulepreload" crossorigin href="/athena/assets/typewriter-CCdU_-e1.js">
+  <link rel="stylesheet" crossorigin href="/athena/assets/main-D0TiZtJm.css">
+</head>
+
+<body>
+    <!-- Game Info Display -->
+    <div id="gameInfo" class="game-info">
+        <div id="roomName">Room: Loading...</div>
+        <div id="playerCount">Players: Loading...</div>
+        <div id="yourName">You: Loading...</div>
+    </div>
+
+    <div class="menu-container">
+        <h1>Welcome to the Digital Escape Room</h1>
+        <div class="button-container">
+            <button id="dsBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Data Scientist</button>
+            <button id="seBtn" class="std-button role-button" style="width: 250px;">Software Engineer</button>
+            <button id="neBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Network Engineer</button>
+            <button id="caBtn" class="std-button role-button" style="width: 250px;">Cybersecurity Analyst</button>
+        </div>
+    </div>
+    
+    <div class="menu-container">
+        <div id="waitingSection" style="display: none;">
+            <div id="spinner" class="loading-spinner"></div>
+            <p id="waitingText">Waiting for others to choose their role...</p>
+            <button id="changeMindBtn" class="std-button" style="margin-top: 20px;">Change Your Mind</button>
+        </div>
+    </div>
+
+</body>
+</html>
+
