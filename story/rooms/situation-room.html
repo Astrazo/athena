@@ -156,6 +156,7 @@
                 }
             }
             
+            const finalDay = 3;
             // Generate dynamic dialogue based on performance
             if (perfectRoles.length === 4) {
                 // Perfect performance - everyone got everything right
@@ -171,6 +172,12 @@
                         "Outstanding work team! Every single one of you nailed your assessments.",
                         "We're really beginning to fight back against this AI.",
                         "Should only be a little bit more to go now, lets keep pushing."
+                    ];
+                }
+                else if (currentDay === finalDay) {
+                    dialogue = [
+                        "Outstanding work team! Every single one of you nailed your assessments.",
+                        "That's just what we needed to avoid disaster, and I think we've done it."
                     ];
                 }
                 
@@ -189,6 +196,13 @@
                         "Solid work overall, team. Most of you handled your tasks admirably.",
                         ...perfectRoles.map(role => `${role}, excellent job on your assessments.`),
                         "We're definitely making it difficult for the AI.  Lets keep going."
+                    ];
+                }
+                else if (currentDay === finalDay) {
+                    dialogue = [
+                        "Solid work overall, team. Most of you handled your tasks admirably.",
+                        ...perfectRoles.map(role => `${role}, excellent job on your assessments.`),
+                        "It's tough, but I think we've just about avoided disaster."
                     ];
                 }
                 
@@ -221,6 +235,19 @@
                         "If we don't improve soon, the AI might overrun us.  We need to improve."
                     ];
                 }
+                else if (currentDay === finalDay) {
+                    dialogue = [
+                        "Well... we have some mixed results here.",
+                        ...perfectRoles.map(role => `${role}, you did your job properly.`),
+                        ...mixedRoles.map(({ role, correct, total }) => 
+                            `${role}, you got ${correct} out of ${total} right. Not terrible, but room for improvement.`
+                        ),
+                        ...failedRoles.map(role => 
+                            `${role}... I'm not even sure what to say. You had one job. ONE JOB.`
+                        ),
+                        "I don't think this will be enough to fight back against the AI..."
+                    ];
+                }
 
             } 
             else {
@@ -243,6 +270,15 @@
                         "We need to tighten up our game. The AI is getting relentless now..."
                     ];
                 }
+                else if (currentDay === 3) {
+                    dialogue = [
+                        "Alright, let's review what happened here.",
+                        ...mixedRoles.map(({ role, correct, total }) => 
+                            `${role}, ${correct}/${total} correct. ${correct === 1 ? 'At least you got one right.' : 'Could be worse, I suppose.'}`
+                        ),
+                        "I think we're going to just scrape by.  Just..."
+                    ];
+                }
                 
             }
             
@@ -256,7 +292,10 @@
             }
             
             // Add a final motivational/transitional line
-            dialogue.push("Tomorrow brings new challenges. Let's hope we're ready for them.");
+            if (currentDay !== finalDay) {
+                dialogue.push("Tomorrow brings new challenges. Let's hope we're ready for them.");
+            }
+            
 
             // Get the original day before any dialogue starts so it can be compared to
             const originalDay = currentRoomData["currentDay"];
@@ -264,43 +303,105 @@
             // Show final dialogue
             await typewriter.showSequence(dialogue, {
                 onContinue: async () => {
-                    // Save score and reset day (this will trigger a db reset 3 times)
-                    localStorage.setItem("introDialogueSeen", "0") // set for all players
-                    document.getElementById("loadingContainer").style.display = "flex";
-                    let updatedRoomData = null;
+                    if (currentDay !== finalDay) {
+                        let updatedRoomData = null;
+                        if (isHost === "1") {
+                            await appendDayScore(roomId, dayScore);
+                            await progressDay(roomId);
+                            await incrementEnabledCompletions(true);
+                            updatedRoomData = await loadRooms(undefined, roomId, undefined);
+                        } 
+                        else {    
+                            while (true) {
+                                await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
+                                updatedRoomData = await loadRooms(undefined, roomId, undefined);
+                                console.log(updatedRoomData);
 
-                    if (isHost === "1") {
-                        await appendDayScore(roomId, dayScore);
-                        await progressDay(roomId);
-                        await incrementEnabledCompletions(true);
-                        updatedRoomData = await loadRooms(undefined, roomId);
-                    } 
-                    else {    
-                        while (true) {
-                            await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
-                            updatedRoomData = await loadRooms(undefined, roomId);
-                            console.log(updatedRoomData);
-
-                            // If the host has updated the current day, break
-                            if (updatedRoomData["currentDay"] > originalDay) {
-                                break;
+                                // If the host has updated the current day, break
+                                if (updatedRoomData["currentDay"] > originalDay) {
+                                    break;
+                                }
                             }
                         }
+
+
+
+                        // Save score and reset day (this will trigger a db reset 3 times)
+                        localStorage.setItem("introDialogueSeen", "0") // set for all players
+                        document.getElementById("loadingContainer").style.display = "flex";
+                        
+
+                        // Every client now resets their enabler/enabled/enabled value states
+                        await updatePlayer(localUserId, roomId, "enablerComplete", false);
+                        await updatePlayer(localUserId, roomId, "enabledComplete", false);
+                        await updatePlayer(localUserId, roomId, "enabledValue", null);
+
+                        document.getElementById("loadingContainer").style.display = "none";
+                        // Reset flag
+                        isDayEndInProgress = false;
+
+                        updateGameInfo(updatedRoomData);
+                        updateRoleList(updatedRoomData, document.getElementById("players"));
+                        handleDialogue(updatedRoomData);
                     }
+                    else {
+                        // Need host to update the scores
+                        let updatedRoomData = null;
+                        document.getElementById("loadingContainer").style.display = "flex";
+                        if (isHost === "1") {
+                            await appendDayScore(roomId, dayScore);
+                            await progressDay(roomId, true);
+                            updatedRoomData = await loadRooms(undefined, roomId, undefined);
+                        } 
+                        else {    
+                            while (true) {
+                                await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
+                                updatedRoomData = await loadRooms(undefined, roomId, undefined);
+                                console.log(updatedRoomData);
 
-                    // Every client now resets their enabler/enabled/enabled value states
-                    await updatePlayer(localUserId, roomId, "enablerComplete", false);
-                    await updatePlayer(localUserId, roomId, "enabledComplete", false);
-                    await updatePlayer(localUserId, roomId, "enabledValue", null);
+                                // If the host has updated the current day, break
+                                if (updatedRoomData["currentDay"] != originalDay) {
+                                    break;
+                                }
+                            }
+                        }
+                        document.getElementById("loadingContainer").style.display = "none";
 
-                    document.getElementById("loadingContainer").style.display = "none";
-                    // Reset flag
-                    isDayEndInProgress = false;
-
-                    updateGameInfo(updatedRoomData);
-                    updateRoleList(updatedRoomData, document.getElementById("players"));
-                    handleDialogue(updatedRoomData);
-                }
+                        // Get the player's scores
+                        const dayScores = updatedRoomData["dayScores"];
+                        const totalPointsPossible = dayScores.length;
+                        let pointsScored = 0;
+                        for (const score of dayScores) {
+                            pointsScored += score;
+                        }
+                        const percent = (pointsScored / (totalPointsPossible * 4)) * 100; // 4 roles per day
+                        let finalDialogue = [];
+                        if (percent < 50) {
+                            finalDialogue = [
+                                "Unfortunately, your team was unable to stop the AI.",
+                                "With less than half the possible points, the facility is lost.",
+                                "Perhaps next time, you'll be able to work together more effectively."
+                            ];
+                        } else if (percent < 80) {
+                            finalDialogue = [
+                                "You just barely managed to hold things together.",
+                                "It wasn't a perfect run, but you did enough to scrape by.",
+                                "The AI is contained... for now. But there's plenty of room for improvement."
+                            ];
+                        } else {
+                            finalDialogue = [
+                                "Congratulations! Your team performed exceptionally well.",
+                                "With over 80% of the possible points, you've outsmarted the AI and saved the facility.",
+                                "Outstanding teamwork and skill!"
+                            ];
+                        }
+                        await typewriter.showSequence(finalDialogue, {
+                            onContinue: () => {
+                                window.location.href = "/index.html"
+                            }
+                        });
+                    }
+                }   
             });
         }
 

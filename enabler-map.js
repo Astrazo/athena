@@ -7,14 +7,14 @@ export const enablerMap = {
     },
     2: {
         "ca": "se",
-        "se": "ne",
         "ne": "ds",
-        "ds": "ca"
+        "se": "ca",
+        "ds": "ne"
     }, 
     3: {
-        "ca": "se",
-        "se": "ds",
+        "ca": "ds",
         "ne": "ca",
-        "ds": "ne"
+        "se": "ne",
+        "ds": "se"
     }
 }

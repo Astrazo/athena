@@ -134,7 +134,7 @@ export const dialogue = {
             }
         }
     },
-    2: { // Day 1
+    2: { // Day 2
         "ca": {
             "developer-hub": {
                 "enabler": [
@@ -151,20 +151,19 @@ export const dialogue = {
             },
             "command-centre": {
                 "enabled": [
-                    "You return to the Command Centre to review detection failures from earlier today.",
-                    "The Data Scientist just flagged a feature as unreliable. It only seems to activates after an incident.",
-                    "Your detection model is compromised. You need to reconfigure it using trustworthy, real-time signals.",
-                    "Time to patch your logic before the AI slips through again."
+                    "You return to the Command Centre with alerts stacking up for rogue endpoint behavior.",
+                    "The Software Engineer just flagged a malicious subclass that you should investigate.",
+                    "Your job is to trace which endpoint it’s controlling and shut it down before it spreads further."
                 ],
                 "enabled-complete": [
-                    "You already replaced the flawed feature feature with a valid real-time signal.",
-                    "Updated detection rules are in place and monitoring is live.",
+                    "You already isolated the endpoint tied to the AI-injected subclass.",
+                    "Outbound traffic from the compromised node has been cut off.",
                     "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
                 ],
                 "enabled-not-available": [
-                    "You access the rule engine for endpoint detection.",
-                    "But without a confirmed invalid feature, you can’t adjust the signal thresholds.",
-                    "You back out for now, waiting on the Data Scientist to finish their audit."
+                    "You open the endpoint diagnostics dashboard.",
+                    "But there’s no known injected class yet, so you don’t know what to filter for.",
+                    "You back out for now, waiting on the Software Engineer to complete their class trace."
                 ]
             }
         },
@@ -183,20 +182,19 @@ export const dialogue = {
             },
             "server-room": {
                 "enabled": [
-                    "You enter the Server Room — network automation is running hot. Too hot.",
-                    "Multiple scripts have executed across devices in rapid succession, and one stands out for its reach and frequency.",
-                    "The Software Engineer just flagged a suspicious subclass.",
-                    "You need to determine which script it’s pushing into your environment."
+                    "You enter the Server Room — several monitoring scripts are still firing false positives or delayed alerts.",
+                    "The Data Scientist just flagged an engineered feature as invalid — it’s leaking post-event data into real-time systems.",
+                    "You need to patch the script that’s using this feature before it spreads faulty alerts across the network."
                 ],
                 "enabled-complete": [
-                    "You already traced the batch script back to the AI-controlled subclass and flagged it.",
-                    "Containment rules are in place, and execution has been halted across affected devices.",
+                    "You already patched the script that relied on the invalid feature.",
+                    "Real-time endpoint monitoring has been restored to safe conditions.",
                     "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
                 ],
                 "enabled-not-available": [
-                    "You access the deployment logs for batch automation scripts triggered in the last hour.",
-                    "But you don’t know which class was compromised — there’s no source to trace back yet.",
-                    "You back out for now, waiting on the Software Engineer to complete their trace."
+                    "You review the list of active batch monitoring scripts.",
+                    "But without knowing which feature is compromised, there’s no way to prioritise the fix.",
+                    "You back out for now, waiting on the Data Scientist to complete their feature audit."
                 ]
             }
         },
@@ -261,6 +259,139 @@ export const dialogue = {
                     "You load the latest feature set into your modeling pipeline.",
                     "But without a confirmed automation source, you can’t isolate the anomaly.",
                     "You back out for now, waiting on the Network Engineer to complete their trace."
+                ]
+            }
+        }
+    },
+    3: { // Day 3
+        "ca": {
+            "server-room": {
+                "enabler": [
+                    "You enter the Server Room — security dashboards are reporting anomalies in access logs.",
+                    "A service account appears to be under AI control, bypassing traditional detection with near-perfect logins.",
+                    "It’s compromising endpoint integrity and likely exfiltrating sensitive logs or credentials.",
+                    "Time to identify the account before the Data Scientist gets fed garbage telemetry."
+                ],
+                "enabler-complete": [
+                    "You already flagged the AI-controlled service account and revoked its credentials.",
+                    "The Data Scientist is using the behavior pattern to refine real-time monitoring.",
+                    "You should investigate some other rooms in case you can assist further."
+                ]
+            },
+            "command-centre": {
+                "enabled": [
+                    "You step into the Command Centre and pull the active config for `log_api` which is the service running on port 8080.",
+                    "The AI used this exact vector to pull sensitive logs without triggering a firewall block.",
+                    "There are multiple ways to patch this — but only one prevents this specific data exposure path."
+                ],
+                "enabled-complete": [
+                    "You already patched the exposed `log_api` service and restricted its network access.",
+                    "No further breach attempts have occurred on that vector.",
+                    "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
+                ],
+                "enabled-not-available": [
+                    "You begin auditing exposed services for suspicious behavior.",
+                    "But without a confirmed breach vector, you can't determine which config to patch.",
+                    "You back out for now, waiting on the Network Engineer to complete their analysis."
+                ]
+            }
+        },
+        "ne": {
+            "command-centre": {
+                "enabler": [
+                    "You return to the Command Centre and access firewall logs tied to a suspicious early-morning alert.",
+                    "One of the open ports shows a large outbound data transfer — far outside protocol norms.",
+                    "The AI likely used this path to bypass containment layers.",
+                    "You need to identify the breach vector and notify the Cybersecurity Analyst to perform mitigation."
+                ],
+                "enabler-complete": [
+                    "You’ve already flagged the App Layer (port 8080) as the AI’s exfiltration route.",
+                    "The Cybersecurity Analyst has begun patching and containment protocols for the service.",
+                    "You should investigate some other rooms in case you can assist further."
+                ]
+            },
+            "server-room": {
+                "enabled": [
+                    "You enter the Command Centre and begin reviewing the firewall’s outbound rule set.",
+                    "Alerts suggest malformed user records are triggering unexpected reports in the analytics server.",
+                    "The Software Engineer has identified that the AI is injecting invalid `user_id`s into `security_flags`.",
+                    "Your goal is to block any resulting transmissions from making it past the firewall."
+                ],
+                "enabled-complete": [
+                    "You’ve already deployed the firewall rule blocking outbound traffic containing invalid user IDs.",
+                    "Data exfiltration attempts through this exploit vector have dropped to zero.",
+                    "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
+                ],
+                "enabled-not-available": [
+                    "You access the command terminal for managing firewall rules.",
+                    "But there’s no specific exploit signature provided yet — you don’t know what pattern to filter.",
+                    "You back out for now, waiting on the Software Engineer to complete their schema trace."
+                ]
+            }
+        },
+        "se": {
+            "research-lab": {
+                "enabler": [
+                    "You arrive in the Research Lab and access the classification module’s database logs.",
+                    "A warning catches your eye — invalid `user_id`s are being inserted but aren’t triggering schema rejections.",
+                    "The AI may be exploiting weak foreign key constraints to poison downstream systems.",
+                    "You’ll need to trace the exploit and forward a correction to the Network Engineer."
+                ],
+                "enabler-complete": [
+                    "You already identified the AI’s misuse of the foreign key constraint and forwarded the vulnerability.",
+                    "The Network Engineer has begun locking down schema validation rules.",
+                    "You should investigate some other rooms in case you can assist further."
+                ]
+            },
+            "developer-hub": {
+                "enabled": [
+                    "You enter the Developer Hub, where AI-modified logic is interfering with database-based access filters.",
+                    "The Data Scientist sent over the faulty decision logic — it’s bypassing malicious inputs.",
+                    "You suspect the flaw lies in a misconfigured table schema that’s letting the AI exploit weak relationships.",
+                    "It’s your job to isolate and patch the structural issue before more bad data leaks through."
+                ],
+                "enabled-complete": [
+                    "You already traced the schema flaw that was enabling AI-bypassed users to slip through.",
+                    "The foreign key has been fixed and downstream queries are now filtered properly.",
+                    "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
+                ],
+               "enabled-not-available": [
+                    "You log into the internal schema management dashboard.",
+                    "But the corrupted model logic hasn’t yet been isolated — you don’t know what to patch.",
+                    "You back out for now, waiting on the Data Scientist to complete their trace."
+                ]
+            }
+        },
+        "ds": {
+            "developer-hub": {
+                "enabler": [
+                    "You enter the Developer Hub and pull the AI’s decision tree from the most recent build.",
+                    "Your anomaly detection models are now misfiring — triggering no alerts on compromised data.",
+                    "One of the AI's logic conditions has likely been inverted or tampered with.",
+                    "Your job is to find the faulty rule and forward it to the Software Engineer for code correction."
+                ],
+                "enabler-complete": [
+                    "You already identified the faulty model logic and passed it to the Software Engineer.",
+                    "The rule was patched, and false positives have been reduced significantly.",
+                    "You should investigate some other rooms in case you can assist further."
+                ]
+            },
+            "research-lab": {
+                "enabled": [
+                    "You return to the Research Lab — the real-time training stream is acting strangely.",
+                    "Your pipeline is picking up contradictions: inputs flagged as 'malicious' show no actual signs of threat.",
+                    "The Cybersecurity Analyst just flagged the an account as the likely AI access vector.",
+                    "You suspect one of your recent training samples has been poisoned — and it’s biasing your entire model."
+                ],
+                "enabled-complete": [
+                    "You already removed the poisoned sample tied to the compromised account.",
+                    "Training set variance has dropped and retraining has resumed.",
+                    "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
+                ],
+                "enabled-not-available": [
+                    "You load the training logs from the real-time stream.",
+                    "But there’s no confirmed compromised account yet so you can’t filter effectively.",
+                    "You back out for now, waiting on the Cybersecurity Analyst to complete their trace."
                 ]
             }
         }

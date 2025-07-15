@@ -241,7 +241,7 @@
                 // Show spinner
                 document.getElementById("loadingContainer").style.display = "flex";
                 try {
-                    const rooms = await loadRooms("waiting", undefined);
+                    const rooms = await loadRooms(undefined, undefined, 0);
                     localStorage.setItem("availableRooms", JSON.stringify(rooms));
                     window.location.href = "room-select.html";
                 } catch (err) {

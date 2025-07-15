@@ -65,7 +65,7 @@
 
                 // Load latest room data and redirect to room lobby
                 try {
-                    const roomData = await loadRooms(undefined, roomId);
+                    const roomData = await loadRooms(undefined, roomId, undefined);
                     localStorage.setItem("localRoomData", JSON.stringify(roomData));
                     window.location.href = "room-lobby.html";
                 } catch (err) {

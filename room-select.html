@@ -103,7 +103,7 @@
     
                             // Get updated room data data
                             try {
-                                const roomData = await loadRooms(undefined, roomId);
+                                const roomData = await loadRooms(undefined, roomId, undefined);
                                 localStorage.setItem("localRoomData", JSON.stringify(roomData));
                                 // Redirect to room lobby
                                 window.location.href = "room-lobby.html";

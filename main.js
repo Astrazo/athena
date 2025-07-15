@@ -71,7 +71,7 @@ export async function removeUserFromRoom(userId, userName, userRole, roomId) {
     //await deleteDoc(userRef);
 }
 
-export async function loadRooms(status = null, roomId = null) {
+export async function loadRooms(status = null, roomId = null, dayValue = null) {
     if (roomId) {
         const dSnap = await getDoc(doc(db, "rooms", roomId));
         if (!dSnap.exists()) return null;
@@ -79,7 +79,8 @@ export async function loadRooms(status = null, roomId = null) {
         return { 
             "roomName": data.name, 
             "roomPlayers": data.players, 
-            "currentDay": data.currentDay 
+            "currentDay": data.currentDay,
+            "dayScores": data.dayScores
         };
     }
 
@@ -94,9 +95,22 @@ export async function loadRooms(status = null, roomId = null) {
             "roomId": d.id,
             "roomName": d.data().name,
             "roomPlayers": d.data().players,
-        })
-    );
-  }
+        }))
+    }; 
+
+    // For each document in the rooms collection, return it's ID, name, and players list
+    if (dayValue) {
+        const snap = await getDocs(
+        query(collection(db, "rooms"),
+                where("day", "==", dayValue),
+                orderBy("created", "desc"))
+        );
+        return snap.docs. map(d => ({
+            "roomId": d.id,
+            "roomName": d.data().name,
+            "roomPlayers": d.data().players,
+        }))
+    }; 
   return [];
 }
 
@@ -126,11 +140,19 @@ export async function updatePlayer(userId, roomId, key, value) {
     }
 }
 
-export async function progressDay(roomId) {
+export async function progressDay(roomId, completeDay = false) {
     const roomRef = doc(db, "rooms", roomId);
-    await updateDoc(roomRef, {
-        currentDay: increment(1)
-    });
+    if (!completeDay) {
+        await updateDoc(roomRef, {
+            currentDay: increment(1)
+        });
+    }
+    else {
+        await updateDoc(roomRef, {
+            currentDay: -1
+        });
+    }
+    
 }
 
 export async function incrementEnabledCompletions(roomId, reset=false) {
@@ -201,13 +223,6 @@ function isRoomActionableRightNow(currentDay, currentRole, roomName, enablerComp
     // First, see if for this day, this role is ever in this room
     const dialogueToShow = dialogue?.[currentDay]?.[currentRole]?.[roomName] || null;
     // If nothing has been returned, that means the user is in the wrong room entirely
-    console.log("Debug Info:");
-    console.log("currentDay:", currentDay);
-    console.log("currentRole:", currentRole);
-    console.log("roomName:", roomName);
-    console.log("enablerComplete:", enablerComplete);
-    console.log("enabledComplete:", enabledComplete);
-    console.log("enabledPossible:", enabledPossible);
     if (dialogueToShow === null) {
         return [false, null];
     }
@@ -356,7 +371,7 @@ export async function generatePuzzle(actionsContainer, currentDay, roomName, cur
     // Create puzzle description
     const puzzleDescription = document.createElement("p");
     puzzleDescription.className = "puzzle-description";
-    puzzleDescription.textContent =  puzzleData["prompt"]
+    puzzleDescription.innerHTML = puzzleData["prompt"];
     puzzleContainer.appendChild(puzzleDescription);
 
     // Create table container
