@@ -151,8 +151,14 @@ export async function progressDay(roomId, completeDay = false) {
         await updateDoc(roomRef, {
             currentDay: -1
         });
-    }
-    
+    }   
+}
+
+export async function ackReshuffle(roomId) {
+    const roomRef = doc(db, "rooms", roomId);
+    await updateDoc(roomRef, {
+        "ackReshuffle": increment(1)
+    });
 }
 
 export async function incrementEnabledCompletions(roomId, reset=false) {
@@ -196,7 +202,13 @@ export function listenToRoom(roomId, callback) {
     return onSnapshot(roomRef, (doc) => {
         if (doc.exists()) {
             const data = doc.data();
-            callback({ "roomId": roomId, "roomName": data.name, "roomPlayers": data.players, "currentDay": data.currentDay, "enabledCompletions": data.enabledCompletions });
+            callback({ 
+                "roomId": roomId, 
+                "roomName": data.name, 
+                "roomPlayers": data.players, 
+                "currentDay": data.currentDay, 
+                "enabledCompletions": data.enabledCompletions,
+                "ackReshuffle": data.ackReshuffle });
         } else {
             callback(null);
         }

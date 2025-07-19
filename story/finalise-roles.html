@@ -9,7 +9,7 @@
 </head>
 <body>
     <!-- Game Info Display -->
-    <div id="gameInfo" class="game-info">
+    <div id="gameInfo" class="game-info game-panel">
         <div id="roomName">Room: Loading...</div>
         <div id="playerCount">Players: Loading...</div>
         <div id="yourName">You: Loading...</div>
@@ -17,7 +17,7 @@
 
     <div class="menu-container">
         <h1 id="lobbyHeader">Briefing Room</h1>
-        <div id="playerList" class="player-list">
+        <div id="playerList" class="player-list game-style" style="margin-bottom: 24px;">
             <h3>Team Composition</h3>
             <ul id="players"></ul>
         </div>
@@ -27,7 +27,7 @@
     </div>
 
     <script type="module">
-        import { updatePlayer, listenToRoom, progressDay } from "../src/js/main.js";
+        import { updatePlayer, listenToRoom, progressDay, ackReshuffle } from "../src/js/main.js";
         import TypewriterDialogue from "../src/js/typewriter.js";
         import { setCurrentObjective } from "../src/js/objectives.js";
 
@@ -38,14 +38,14 @@
         const username = localStorage.getItem("connectedUsername");
         const isHost = localStorage.getItem("isHost");
 
-        // Check for duplicate roles
+        // Global duplicate role tracking
         let hasDuplicateRoles = false;
         const rolesPicked = {
             "ds": {"count": 0, "users": []},
             "se": {"count": 0, "users": []},
             "ne": {"count": 0, "users": []},
             "ca": {"count": 0, "users": []}
-        }
+        };
         
         // Local, global, trackers 
         let isInitialLoad = true;
@@ -64,13 +64,25 @@
         }
 
         function updateRoleList(roomData) {
+            // Reset for each call
+            hasDuplicateRoles = false;
+            Object.keys(rolesPicked).forEach(role => {
+                rolesPicked[role].count = 0;
+                rolesPicked[role].users = [];
+            });
             // Update role list
             const playersList = document.getElementById("players");
             playersList.innerHTML = "";
             
             if (roomData && roomData["roomPlayers"]) {
+                // Sort players alphabetically by name
+                const sortedPlayers = Object.entries(roomData["roomPlayers"]).sort((a, b) => {
+                    const nameA = a[1].name.toLowerCase();
+                    const nameB = b[1].name.toLowerCase();
+                    return nameA.localeCompare(nameB);
+                });
                 // Display player list
-                Object.entries(roomData["roomPlayers"]).forEach(([playerId, player]) => {
+                sortedPlayers.forEach(([playerId, player]) => {
                     const li = document.createElement("li");
                     const roleNames = {
                         'ds': 'Data Scientist',
@@ -104,52 +116,71 @@
             }
         }
 
+        function reshuffleRoles(roomData) {
+            // Set to true for all clients so the correct dialogue will play for all on reload
+            isRoleReassignmentLoad = true;
+            // Host client will now randomise the roles to players who duplicate their selection
+            if (roomData["roomPlayers"][localUserId]["isHost"] === 1) {
+                Object.entries(rolesPicked).forEach(([roleId, data]) => {
+                    console.log(rolesPicked)
+                    if (data["count"] > 1) {
+                        // Get available roles (roles that haven't been selected)
+                        const availableRoles = Object.keys(rolesPicked).filter(role => rolesPicked[role]["count"] === 0);
+                        
+                        // Grab the users who picked this role
+                        const duplicateUsers = data.users.slice(1); // Skip first user who keeps their choice
+                        
+                        // Distribute available roles to the duplicate users
+                        duplicateUsers.forEach((userId, index) => {
+                            if (availableRoles.length > 0) {
+                                // Randomly select an available role
+                                const randomIndex = Math.floor(Math.random() * availableRoles.length);
+                                const newRole = availableRoles.splice(randomIndex, 1)[0];
+                                // Update the player's role in the database
+                                updatePlayer(userId, roomId, "role", newRole);
+                            }
+                        });
+                    }
+                })
+            }
+
+            // Can we pause for 1 second here?
+            setTimeout(() => {
+                document.getElementById("loadingContainer").style.display = "none";
+                handleRoleReasignmentDialogue(roomData);
+            }, 1000);
+        }
+
         function handleDialogue(roomData) {
             if (hasDuplicateRoles) {
                 typewriter.showSequence([
-                    "You picked the same roles?!?!",
-                    "I thought you were the best?",
-                    "I guess I'll have to handle you myself..."
+                    ">> ROLE CONFLICT DETECTED",
+                    "Commander Reyes’s voice interrupts, firm but reassuring.",
+                    "\"Hold on, team—we have duplicated specializations.\"",
+                    "\"Athena adapts quickly. We can't afford redundancy.\"",
+                    "\"I'm reassigning roles to optimize your strengths.\"",
                 ], 
                 {
-                    onLineComplete: () => {
+                    onContinue: () => {
                         // Remove the dialoge box
                         typewriter.hide()
 
-                        // Set to true for all clients so the correct dialogue will play for all on reload
-                        isRoleReassignmentLoad = true;
+                        // Show loading
+                        document.getElementById("loadingContainer").style.display = "flex";
 
-                        // Host client will now randomise the roles to players who duplicate their selection
-                        if (roomData["roomPlayers"][localUserId]["isHost"] === 1) {
-                            Object.entries(rolesPicked).forEach(([roleId, data]) => {
-                                console.log(rolesPicked)
-                                if (data["count"] > 1) {
-                                    // Get available roles (roles that haven't been selected)
-                                    const availableRoles = Object.keys(rolesPicked).filter(role => rolesPicked[role]["count"] === 0);
-                                    
-                                    // Grab the users who picked this role
-                                    const duplicateUsers = data.users.slice(1); // Skip first user who keeps their choice
-                                    
-                                    // Distribute available roles to the duplicate users
-                                    duplicateUsers.forEach((userId, index) => {
-                                        if (availableRoles.length > 0) {
-                                            // Randomly select an available role
-                                            const randomIndex = Math.floor(Math.random() * availableRoles.length);
-                                            const newRole = availableRoles.splice(randomIndex, 1)[0];
-                                            // Update the player's role in the database
-                                            updatePlayer(userId, roomId, "role", newRole);
-                                        }
-                                    });
-                                }
-                            })
-                        }
+                        // Update acks
+                        ackReshuffle(roomId);
                     }
                 }); 
             }
             else {
                 typewriter.showSequence([
-                    "Good work team",
-                    "Lets get to work!"
+                    ">> ROLE ASSIGNMENTS CONFIRMED",
+                    "Commander Reyes’s voice comes through clearly, approval evident.",
+                    "\"Good choices, team. You're each exactly where we need you.\"",
+                    "\"Stay sharp, move quickly, and keep communication open.\"",
+                    "\"Let's regain control of Helios.\"",
+                    "The Situation Room doors unlock, pathways awaiting your next move."
                 ], 
                 {
                     onContinue: async () => {
@@ -175,10 +206,17 @@
         }
 
         function handleRoleReasignmentDialogue(roomData) {
+            const roleNames = {
+                'ds': 'Data Scientist',
+                'se': 'Software Engineer',
+                'ne': 'Network Engineer',
+                'ca': 'Cybersecurity Analyst'
+            };
+            const userRoleKey = localStorage.getItem("connectedUserRole");
+            const userRoleName = roleNames[userRoleKey] || 'Specialist';
             typewriter.showSequence([
-                    "Now that that's sorted, lets get to work.",
-                    "Your communication skills can surely only get better from here.",
-                    "Right?"
+                    "You glance at the terminal as the system recalibrates your assignment.",
+                    `"New specializations set. You will be working as the ${userRoleName}. Confirm your tasks and move swiftly to the situation room."`
                 ], 
                 {
                     onContinue: async () => {
@@ -216,9 +254,8 @@
                     handleDialogue(roomData)
                     isInitialLoad = false
                 }
-                else if (isRoleReassignmentLoad) {
-                    handleRoleReasignmentDialogue(roomData)
-                    isRoleReassignmentLoad = false;
+                else if (roomData["ackReshuffle"] >= Object.keys(roomData["roomPlayers"]).length && !isRoleReassignmentLoad) {
+                    reshuffleRoles(roomData);
                 }
             } else {
                 console.error("Room not found");

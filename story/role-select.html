@@ -10,7 +10,7 @@
 
 <body>
     <!-- Game Info Display -->
-    <div id="gameInfo" class="game-info">
+    <div id="gameInfo" class="game-info game-panel">
         <div id="roomName">Room: Loading...</div>
         <div id="playerCount">Players: Loading...</div>
         <div id="yourName">You: Loading...</div>
@@ -25,7 +25,6 @@
             <button id="caBtn" class="std-button role-button" style="width: 250px;">Cybersecurity Analyst</button>
         </div>
     </div>
-    
     <div class="menu-container">
         <div id="waitingSection" style="display: none;">
             <div id="rolePlayerList" class="player-list game-style" style="margin-bottom: 24px;">
@@ -206,19 +205,13 @@
                     'neBtn': 'Network Engineer',
                     'caBtn': 'Cybersecurity Analyst'
                 };
-                
                 const roleName = roleNames[button.id];
-                
                 try {
                     // Update player role after dialogue
                     updatePlayer(userId, roomId, "role", button.id.slice(0, 2));
-                    // Show role selection dialogue
-                    /*typewriter.showWithCharacter("System", `Role selected: ${roleName}. Your expertise will be crucial for this mission.`, {
-                        onComplete: () => {
-                            // Update player role after dialogue
-                            //updatePlayer(userId, roomId, "role", button.id.slice(0, 2));
-                        }
-                    });*/
+                    // Hide role buttons, show team selection
+                    document.querySelector(".button-container").style.display = 'none';
+                    document.getElementById('waitingSection').style.display = 'flex';
                 } catch (error) {
                     console.error("Error in updatePlayer:", error);
                 }
@@ -229,13 +222,9 @@
         document.getElementById("changeMindBtn").addEventListener("click", async () => {
             // Reset role to None after dialogue
             updatePlayer(userId, roomId, "role", null);
-            // Show dialogue about changing mind
-            /*typewriter.show("Role reset. Please select a new role.", {
-                onComplete: () => {
-                    // Reset role to None after dialogue
-                    updatePlayer(userId, roomId, "role", "None");
-                }
-            });*/
+            // Show role buttons, hide team selection
+            document.querySelector(".button-container").style.display = 'block';
+            document.getElementById('waitingSection').style.display = 'none';
         });
 
         // Clean up listener when leaving the page

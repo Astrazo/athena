@@ -9,7 +9,7 @@
 </head>
 <body>
     <!-- Game Info Display -->
-    <div id="gameInfo" class="game-info">
+    <div id="gameInfo" class="game-info game-panel">
         <div id="roomName">Room: Loading...</div>
         <div id="playerCount">Players: Loading...</div>
         <div id="yourName">You: Loading...</div>
@@ -76,9 +76,15 @@
                 switch (currentDay) {
                 case 1:
                     typewriter.showSequence([
-                        "Welcome, team, to the situation room.",
-                        "From here, you can access these four rooms which may contain what you need to fix this.",
-                        "Good luck, and don't be afraid to ask for help if you need it."
+                        ">> SITUATION ROOM ACCESS GRANTED",
+                        "The Situation Room hums quietly, its walls lined with monitors displaying streams of erratic data.",
+                        "Commander Reyes's voice returns, steadier now.",
+                        "\"Team, Athena's grip on Helios tightens by the minute.\"",
+                        "\"We have four critical areas to investigate: Cybersecurity Hub, Developer Lab, Network Core, and Data Analytics Center.\"",
+                        "\"Each room holds key information or tools to regain control.\"",
+                        "\"Coordinate closely and share your findings. We're counting on you.\"",
+                        "The doors unlock, revealing passageways illuminated in cool blue.",
+                        "The mission begins now."
                     ]);
                     break;
                 case 2:
