@@ -12,6 +12,13 @@ class TypewriterDialogue {
         this.onLineSkip = null;
         this.isLastLineInSequence = false; // Track if this is the last line
         this.delayResolve = null;
+        this.autoProgress = false; // Auto-progress toggle state
+        this.autoProgressTimeout = null; // Timeout for auto-progress
+        this.dialogueLog = []; // Array to store all dialogue history
+        this.logVisible = false; // Track if log is currently visible
+        this.currentSequence = []; // Store current dialogue sequence
+        this.currentSequenceIndex = 0; // Track current position in sequence
+        this.currentSequenceOptions = {}; // Store options for current sequence
         
         this.createDialogueElements();
     }
@@ -26,34 +33,93 @@ class TypewriterDialogue {
         this.container = document.createElement('div');
         this.container.className = 'dialogue-container';
         this.container.innerHTML = `
-            <div style="display: flex; gap: 10px; margin-bottom: 10px; position: relative; justify-content: flex-start;">
-                <button id="skip" class="dialogue-skip" style="position: static;">Skip</button>
-                <button id="skip-all" class="dialogue-skip" style="position: static;">Skip All</button>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px; position: relative; justify-content: space-between; align-items: center;">
+                <button id="auto-toggle" class="dialogue-auto-toggle">Auto: OFF</button>
+                <div style="display: flex; gap: 10px;">
+                    <button id="log-toggle" class="dialogue-log-toggle">Log</button>
+                    <button id="skip" class="dialogue-skip" style="position: static;">Skip</button>
+                    <button id="skip-all" class="dialogue-skip" style="position: static;">Skip All</button>
+                </div>
             </div>
             <p class="dialogue-text"></p>
             <button class="dialogue-continue">Continue</button>
         `;
         document.body.appendChild(this.container);
 
+        // Create dialogue log container
+        this.logContainer = document.createElement('div');
+        this.logContainer.className = 'dialogue-log-container';
+        this.logContainer.innerHTML = `
+            <div class="dialogue-log-header">
+                <h3>Dialogue Log</h3>
+                <button id="log-close" class="dialogue-log-close">×</button>
+            </div>
+            <div class="dialogue-log-content"></div>
+        `;
+        document.body.appendChild(this.logContainer);
+
+        // Create persistent log button (always visible)
+        this.persistentLogButton = document.createElement('button');
+        this.persistentLogButton.className = 'persistent-log-button';
+        this.persistentLogButton.innerHTML = '📖';
+        this.persistentLogButton.title = 'Dialogue Log';
+        document.body.appendChild(this.persistentLogButton);
+
+        // Add event listener for persistent log button
+        this.persistentLogButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            this.toggleDialogueLog();
+        });
+
         // Get references to elements
         this.textElement = this.container.querySelector(".dialogue-text");
+        this.autoToggleButton = this.container.querySelector("#auto-toggle");
+        this.logToggleButton = this.container.querySelector("#log-toggle");
         this.skipButton = this.container.querySelector("#skip");
         this.skipAllButton = this.container.querySelector("#skip-all");
         this.continueButton = this.container.querySelector(".dialogue-continue");
+        this.logContent = this.logContainer.querySelector(".dialogue-log-content");
+        this.logCloseButton = this.logContainer.querySelector("#log-close");
 
         // Add event listeners
+        // Auto-toggle button
+        this.autoToggleButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            this.toggleAutoProgress();
+        });
+
+        // Log-toggle button
+        this.logToggleButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            this.toggleDialogueLog();
+        });
+
+        // Log close button
+        this.logCloseButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            this.hideDialogueLog();
+        });
+
         // Continue button 
         this.continueButton.addEventListener("click", (event) => {
             event.stopPropagation(); // Prevent this click from being sent to the container click as well
 
-            // If a custom on continue has been provided, run that, otherwise just hide
-            if (this.onContinue) {
-                this.onContinue(); // Call custom continue function
-                this.hide();
-            } 
-            else {
-                this.hide(); // Default behavior
+            // Check if it's the last line
+            if (this.isLastLineInSequence) {
+                    // If a custom on continue has been provided, run that, otherwise just hide
+                if (this.onContinue) {
+                    this.onContinue(); // Call custom continue function
+                    this.hide();
+                } 
+                else {
+                    this.hide(); // Default behavior
+                }
             }
+            else {
+                this.nextLine()
+            }
+
+            
         });
 
         // Skip all
@@ -103,10 +169,18 @@ class TypewriterDialogue {
 
         // Handle both single string and array of strings
         const lines = Array.isArray(dialogueLines) ? dialogueLines : [dialogueLines];
+        
+        // Store sequence data for skip all functionality
+        this.currentSequence = lines;
+        this.currentSequenceIndex = 0;
+        this.currentSequenceOptions = options;
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
             const isLastLine = i === lines.length - 1;
+            
+            // Update current sequence index
+            this.currentSequenceIndex = i;
             
             await new Promise((resolve, reject) => {
                 // Check if cancelled before starting
@@ -129,8 +203,8 @@ class TypewriterDialogue {
                 break;
             }
 
-            // Add 2-second delay between lines (except after the last line)
-            if (!isLastLine) {
+            // If auto-progress is enabled, add delay between lines (except after the last line)
+            if (!isLastLine && this.autoProgress) {
                 try {
                     await new Promise((resolve, reject) => {
                         this.delayResolve = resolve;
@@ -147,8 +221,29 @@ class TypewriterDialogue {
                         break;
                     }
                 }
+            } else if (!isLastLine && !this.autoProgress) {
+                // If auto-progress is disabled, wait for manual progression
+                try {
+                    await new Promise((resolve, reject) => {
+                        this.delayResolve = resolve;
+                        
+                        // Listen for abort signal
+                        this.sequenceController.signal.addEventListener("abort", () => {
+                            reject(new Error("Cancelled"));
+                        });
+                    });
+                } catch (error) {
+                    if (error.message === "Cancelled") {
+                        break;
+                    }
+                }
             }
         }
+        
+        // Clear sequence data after completion
+        this.currentSequence = [];
+        this.currentSequenceIndex = 0;
+        this.currentSequenceOptions = {};
     }
 
     // Function called for every line in show sequence
@@ -169,9 +264,15 @@ class TypewriterDialogue {
         this.onContinue = options.onContinue || null;
         this.onLineSkip = options.onLineSkip || null;
 
+        // Add to dialogue log
+        this.addToDialogueLog(text, options.characterName);
+
         this.overlay.style.display = 'block';
         this.container.style.display = 'block';
         this.continueButton.style.display = 'none';
+        
+        // Hide persistent log button during dialogue
+        this.persistentLogButton.style.display = 'none';
 
         this.type();
     }
@@ -188,12 +289,17 @@ class TypewriterDialogue {
             this.interval = null;
         }
 
+        // Clear auto-progress timeout
+        this.clearAutoProgressTimeout();
+
         console.log("Dialogue cleared.");
 
         if (!clearTextOnly) {
             this.isActive = false;
             this.overlay.style.display = 'none';
             this.container.style.display = 'none';
+            // Show persistent log button when dialogue is hidden
+            this.persistentLogButton.style.display = 'flex';
             console.log("Dialogue box hidden.");
         }
     }
@@ -238,8 +344,9 @@ class TypewriterDialogue {
         this.isLineComplete = true;
         this.textElement.style.setProperty('--cursor-visible', 'inline-block');
 
-        if (this.isLastLineInSequence) {
-            console.log("Last dialogue line completed.");
+        // Show continue button on the last line, or on intermediate lines when auto-progress is off
+        if (this.isLastLineInSequence || !this.autoProgress) {
+            console.log("Dialogue line completed - showing continue button.");
             this.continueButton.style.display = 'block';
         }
 
@@ -247,6 +354,85 @@ class TypewriterDialogue {
             console.log("Dialogue line completed.");
             this.onLineComplete();
         }
+    }
+
+    // Toggle auto-progress functionality
+    toggleAutoProgress() {
+        this.autoProgress = !this.autoProgress;
+        this.autoToggleButton.textContent = this.autoProgress ? "Auto: ON" : "Auto: OFF";
+        this.autoToggleButton.classList.toggle("active", this.autoProgress);
+        
+        // If auto is turned on and we're currently waiting for manual progression, trigger it
+        if (this.autoProgress && this.isLineComplete && !this.isLastLineInSequence && this.delayResolve) {
+            this.delayResolve();
+            this.delayResolve = null;
+        }
+    }
+
+    // Clear auto-progress timeout
+    clearAutoProgressTimeout() {
+        if (this.autoProgressTimeout) {
+            clearTimeout(this.autoProgressTimeout);
+            this.autoProgressTimeout = null;
+        }
+    }
+
+    // Add dialogue to log
+    addToDialogueLog(text, characterName = null) {
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = {
+            text: text,
+            character: characterName,
+            timestamp: timestamp
+        };
+        this.dialogueLog.push(logEntry);
+        this.updateDialogueLogDisplay();
+    }
+
+    // Update dialogue log display
+    updateDialogueLogDisplay() {
+        this.logContent.innerHTML = '';
+        
+        this.dialogueLog.forEach((entry, index) => {
+            const logEntry = document.createElement('div');
+            logEntry.className = 'dialogue-log-entry';
+            
+            let displayText = entry.text;
+            if (entry.character) {
+                displayText = `${entry.character}: ${entry.text}`;
+            }
+            
+            logEntry.innerHTML = `
+                <div class="dialogue-log-text">${displayText}</div>
+                <div class="dialogue-log-timestamp">${entry.timestamp}</div>
+            `;
+            this.logContent.appendChild(logEntry);
+        });
+        
+        // Scroll to bottom
+        this.logContent.scrollTop = this.logContent.scrollHeight;
+    }
+
+    // Toggle dialogue log visibility
+    toggleDialogueLog() {
+        if (this.logVisible) {
+            this.hideDialogueLog();
+        } else {
+            this.showDialogueLog();
+        }
+    }
+
+    // Show dialogue log
+    showDialogueLog() {
+        this.logVisible = true;
+        this.logContainer.style.display = 'block';
+        this.updateDialogueLogDisplay();
+    }
+
+    // Hide dialogue log
+    hideDialogueLog() {
+        this.logVisible = false;
+        this.logContainer.style.display = 'none';
     }
 
     // Function used to skip one line
@@ -270,9 +456,20 @@ class TypewriterDialogue {
 
     // Function used to skip all dialogue
     skipAll() {
+        // Add remaining dialogue lines to log before skipping
+        if (this.currentSequence && this.currentSequence.length > 0) {
+            const remainingLines = this.currentSequence.slice(this.currentSequenceIndex + 1);
+            remainingLines.forEach(line => {
+                this.addToDialogueLog(line, this.currentSequenceOptions.characterName);
+            });
+        }
+
         if (this.interval) {
             clearInterval(this.interval);
         }
+
+        // Clear auto-progress timeout
+        this.clearAutoProgressTimeout();
 
         if (this.sequenceController) {
             this.sequenceController.abort();
@@ -290,14 +487,19 @@ class TypewriterDialogue {
             this.onContinue();
         }
 
+        // Clear sequence data
+        this.currentSequence = [];
+        this.currentSequenceIndex = 0;
+        this.currentSequenceOptions = {};
+
         this.hide();
-        console.log("All dialogue skipped.");
+        console.log("All dialogue skipped and remaining lines added to log.");
     }
 
     // Method to show dialogue with character name
     showWithCharacter(characterName, text, options = {}) {
         const formattedText = `${characterName}: ${text}`;
-        this.show(formattedText, options);
+        this.show(formattedText, { ...options, characterName: characterName });
     }
 }
 

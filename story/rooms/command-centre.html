@@ -36,6 +36,7 @@
         import TypewriterDialogue from "../../src/js/typewriter.js";
         import { dialogue } from "../../src/js/dialogue.js";
         import { roomActions } from "../../src/js/room-actions.js";
+        import { setCurrentObjective } from "../../src/js/objectives.js";
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
@@ -130,6 +131,9 @@
                 currentRoomData = roomData;
                 updateGameInfo(roomData);
                 updateRoleList(roomData, document.getElementById("players"));
+
+                // Set the current objective for this room
+                setCurrentObjective("command-centre", roomData, localStorage.getItem("connectedUserRole"));
 
                 // Load in actions this role can do during this run
                 generateActions(

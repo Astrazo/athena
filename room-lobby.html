@@ -34,6 +34,7 @@
 
     <script type="module">
         import { loadRooms, removeUserFromRoom, updatePlayer, listenToRoom, deleteRoom } from "./src/js/main.js";
+        import { setCurrentObjective } from "./src/js/objectives.js";
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
@@ -70,6 +71,9 @@
                 // Update game info
                 updateGameInfo(updatedRoom);
                 
+                // Set the current objective for the lobby
+                setCurrentObjective("lobby");
+                
                 // Update player count
                 const playersArray = updatedRoom["roomPlayers"] ? Object.values(updatedRoom["roomPlayers"]) : [];
                 document.getElementById("playerCount").textContent = `Players: ${playersArray.length}/4`;
@@ -89,7 +93,7 @@
                     });
 
                     // Check if there's 4 players, and they're all ready
-                    const allReady = playersArray.length >= 4 && 
+                    const allReady = playersArray.length >= 1 && 
                                    playersArray.every(player => player["readyStatus"] === 1);
                     
                     // If all ready, start the countdown

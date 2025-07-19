@@ -249,6 +249,34 @@ h1 {
     margin-bottom: 0;
 }
 
+.objective-display {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 1000;
+    max-width: 300px;
+    min-width: 200px;
+}
+
+.objective-display h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    color: #4CAF50;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.objective-display p {
+    margin: 0;
+    line-height: 1.4;
+    color: #e0e0e0;
+}
+
 /* Typewriter Dialogue System */
 .dialogue-container {
     position: fixed;
@@ -311,6 +339,150 @@ h1 {
 .dialogue-skip:hover {
     background: #4CAF50;
     color: black;
+}
+
+.dialogue-auto-toggle {
+    background: none;
+    border: 1px solid #4CAF50;
+    color: #4CAF50;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.dialogue-auto-toggle:hover {
+    background: #4CAF50;
+    color: black;
+}
+
+.dialogue-auto-toggle.active {
+    background: #4CAF50;
+    color: black;
+}
+
+.dialogue-log-toggle {
+    background: none;
+    border: 1px solid #4CAF50;
+    color: #4CAF50;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.dialogue-log-toggle:hover {
+    background: #4CAF50;
+    color: black;
+}
+
+.dialogue-log-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 800px;
+    height: 70%;
+    background: rgba(0, 0, 0, 0.95);
+    border: 2px solid #4CAF50;
+    border-radius: 10px;
+    color: white;
+    font-family: 'Courier New', monospace;
+    z-index: 2000;
+    display: none;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+}
+
+.dialogue-log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #4CAF50;
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.dialogue-log-header h3 {
+    margin: 0;
+    color: #4CAF50;
+    font-size: 18px;
+}
+
+.dialogue-log-close {
+    background: none;
+    border: 1px solid #4CAF50;
+    color: #4CAF50;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.dialogue-log-close:hover {
+    background: #4CAF50;
+    color: black;
+}
+
+.dialogue-log-content {
+    padding: 20px;
+    height: calc(100% - 80px);
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.dialogue-log-entry {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-left: 3px solid #4CAF50;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 0 5px 5px 0;
+}
+
+.dialogue-log-text {
+    margin-bottom: 5px;
+    color: #e0e0e0;
+}
+
+.dialogue-log-timestamp {
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+}
+
+.persistent-log-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #4CAF50;
+    border-radius: 50%;
+    color: #4CAF50;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.persistent-log-button:hover {
+    background: #4CAF50;
+    color: black;
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.persistent-log-button:active {
+    transform: scale(0.95);
 }
 
 .dialogue-continue {

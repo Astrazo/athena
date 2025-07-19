@@ -37,6 +37,7 @@
     <script type="module">
         import { updatePlayer, listenToRoom } from "../src/js/main.js";
         import TypewriterDialogue from "../src/js/typewriter.js";
+        import { setCurrentObjective } from "../src/js/objectives.js";
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
@@ -117,6 +118,25 @@
                 //console.log(roomData);
                 //console.log(roomData["roomPlayers"]["NIRGBxG21vn5Q03cOCzz"]["name"])
                 updateGameInfo(roomData);
+                
+                // Set the current objective for this page
+                setCurrentObjective("role-select");
+
+                // Show dialogue if initial load
+                if (isInitialLoad) {
+                    typewriter.showSequence([
+                        ">> SYSTEM BOOT COMPLETE",
+                        ">> CONNECTION ESTABLISHED WITH HELIOS FACILITY BRIEFING TERMINAL",
+                        "The Briefing Room glows softly under the flickering light of the holographic table.",
+                        "Commander Reyes’s face appears, tense, urgent.",
+                        "\"Athena’s locked us out. She's taken control of Helios.\"",
+                        "\"We need specialists on-site immediately.\"",
+                        "Four specializations flash onto the display: Cybersecurity Analyst, Software Engineer, Network Engineer, Data Scientist.",
+                        "Your teammates glance at each other, then at you.",
+                        "\"Each path is critical. Choose yours carefully.\"",
+                        "Waiting for all operatives to select roles..."
+                    ]);
+                }
                 
                 // Show/hide waiting state based on current user's role selection
                 if (hasCurrentUserRole(roomData)) {

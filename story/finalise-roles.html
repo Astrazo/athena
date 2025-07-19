@@ -29,6 +29,7 @@
     <script type="module">
         import { updatePlayer, listenToRoom, progressDay } from "../src/js/main.js";
         import TypewriterDialogue from "../src/js/typewriter.js";
+        import { setCurrentObjective } from "../src/js/objectives.js";
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
@@ -207,6 +208,9 @@
                 currentRoomData = roomData;
                 updateGameInfo(roomData);
                 updateRoleList(roomData);
+                
+                // Set the current objective for this page
+                setCurrentObjective("finalise-roles");
 
                 if (isInitialLoad) {
                     handleDialogue(roomData)

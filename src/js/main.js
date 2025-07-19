@@ -218,7 +218,7 @@ export function listenToAllRooms(callback) {
 }
 
 // Function used show correct action dialogue and puzzles if they're in a room where the actions can do something
-function isRoomActionableRightNow(currentDay, currentRole, roomName, enablerComplete, enabledComplete, enabledPossible) {
+export function isRoomActionableRightNow(currentDay, currentRole, roomName, enablerComplete, enabledComplete, enabledPossible) {
 
     // First, see if for this day, this role is ever in this room
     const dialogueToShow = dialogue?.[currentDay]?.[currentRole]?.[roomName] || null;
@@ -567,6 +567,9 @@ export async function navigateToRoom(roomName) {
 
     // Update current room in Firebase
     await updatePlayer(playerId, roomId, "currentRoom", roomName);
+    
+    // Store the room name for objective setting
+    localStorage.setItem("currentRoomName", roomName);
     
     // Navigate to the room
     window.location.href = `${roomName.toLowerCase().replace(' ', '-')}.html`;

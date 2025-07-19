@@ -37,6 +37,7 @@
         import { updatePlayer, listenToRoom, updateRoleList, navigateToRoom, appendDayScore, incrementEnabledCompletions, progressDay, loadRooms } from "../../src/js/main.js";
         import TypewriterDialogue from "../../src/js/typewriter.js";
         import { enablerMap } from "../../src/js/enabler-map.js";
+        import { setCurrentObjective } from "../../src/js/objectives.js";
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
@@ -412,6 +413,10 @@
                     currentRoomData = roomData;
                     updateGameInfo(roomData);
                     updateRoleList(roomData, document.getElementById("players"));
+                    
+                    // Set the current objective for this room
+                    setCurrentObjective("situation-room", roomData, localStorage.getItem("connectedUserRole"));
+                    
                     handleDialogue(roomData);
 
                     // If there are 4 people that have completed their roles, check to see if they're all in the Situation Room
