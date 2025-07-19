@@ -9,7 +9,7 @@
 </head>
 <body>
     <!-- Game Info Display -->
-    <div id="gameInfo" class="game-info">
+    <div id="gameInfo" class="game-info game-panel">
         <div id="roomName">Room: Loading...</div>
         <div id="playerCount">Players: Loading...</div>
         <div id="yourName">You: Loading...</div>
@@ -17,14 +17,15 @@
 
     <div class="menu-container">
         <h1 id="lobbyHeader"></h1>
-        <div id="playerList" class="player-list">
-            <h3>Players</h3>
-            <ul id="players"></ul>
-        </div>
-
-        <div class="button-container">
-            <button id="readyUp" class="std-button" style="width: 200px; max-width: 100%;">Ready Up</button>
-            <button id="leaveRoom" class="std-button" style="width: 200px;">Leave Room</button>
+        <div style="height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div id="playerList" class="player-list game-style">
+                <h3>Players</h3>
+                <ul id="players"></ul>
+                <div class="button-container" style="margin-top: 24px; justify-content: center;">
+                    <button id="readyUp" class="std-button" style="width: 200px; max-width: 100%;">Ready Up</button>
+                    <button id="leaveRoom" class="std-button" style="width: 200px;">Leave Room</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -82,13 +83,27 @@
                 const playersList = document.getElementById("players");
                 playersList.innerHTML = ""; // Clear current list
                 if (updatedRoom["roomPlayers"]) {
-                    Object.entries(updatedRoom["roomPlayers"]).forEach(([playerId, player]) => {
+                    // Sort players alphabetically by name
+                    const sortedPlayers = Object.entries(updatedRoom["roomPlayers"]).sort((a, b) => {
+                        const nameA = a[1].name.toLowerCase();
+                        const nameB = b[1].name.toLowerCase();
+                        return nameA.localeCompare(nameB);
+                    });
+                    sortedPlayers.forEach(([playerId, player]) => {
                         const li = document.createElement("li");
-                        const readyStatus = player["readyStatus"] === 1 ? "(ready)" : "(not ready)";
-                        li.textContent = `${player["name"]} ${readyStatus}`;
                         if (playerId === userId) {
                             li.classList.add("current-player");
                         }
+                        li.textContent = player["name"];
+                        const badge = document.createElement("span");
+                        if (player["readyStatus"] === 1) {
+                            badge.className = "ready-badge";
+                            badge.textContent = "Ready";
+                        } else {
+                            badge.className = "not-ready-badge";
+                            badge.textContent = "Not Ready";
+                        }
+                        li.appendChild(badge);
                         playersList.appendChild(li);
                     });
 
@@ -104,34 +119,58 @@
                         
                         // Create countdown element if it doesn't exist
                         let countdownElement = document.getElementById("countdown");
-                        if (!countdownElement) {
-                            countdownElement = document.createElement("div");
-                            countdownElement.id = "countdown";
-                            countdownElement.style.position = "fixed";
-                            countdownElement.style.top = "50%";
-                            countdownElement.style.left = "50%";
-                            countdownElement.style.transform = "translate(-50%, -50%)";
-                            countdownElement.style.fontSize = "48px";
-                            countdownElement.style.fontWeight = "bold";
-                            countdownElement.style.color = "#4CAF50";
-                            document.body.appendChild(countdownElement);
+                        let overlay = document.getElementById("countdownOverlay");
+                        if (!overlay) {
+                            overlay = document.createElement("div");
+                            overlay.id = "countdownOverlay";
+                            overlay.className = "countdown-overlay";
+                            overlay.innerHTML = `
+                                <div class="countdown-box">
+                                    <div class="countdown-title">Mission Starting</div>
+                                    <div id="countdown" class="countdown-number" style="opacity:0;">0</div>
+                                    <button id="cancelLaunchBtn" class="std-button" style="margin-top:32px;min-width:180px;">Cancel Launch</button>
+                                </div>
+                            `;
+                            document.body.appendChild(overlay);
+                            countdownElement = document.getElementById("countdown");
                         }
-
+                        overlay.style.display = "flex";
+                        countdownElement.style.display = "block";
+                        countdownElement.textContent = `${countdownValue}`;
+                        countdownElement.style.opacity = "1";
+                        // Add cancel button handler
+                        const cancelBtn = document.getElementById("cancelLaunchBtn");
+                        if (cancelBtn) {
+                            cancelBtn.onclick = async () => {
+                                if (window.countdownIntervalId) {
+                                    clearInterval(window.countdownIntervalId);
+                                    window.countdownIntervalId = null;
+                                }
+                                overlay.remove();
+                                window.countdownStarted = false;
+                                // Set this user's ready status to not ready
+                                try {
+                                    await updatePlayer(userId, roomId, "readyStatus", 0);
+                                    readyButton.textContent = "Ready Up";
+                                    readyButton.classList.remove("ready");
+                                    localStorage.setItem("readyStatus", 0);
+                                } catch (err) {
+                                    console.error("Failed to update ready status after cancel:", err);
+                                }
+                            };
+                        }
                         // Start countdown
                         const countdownInterval = setInterval(() => {
-                            countdownElement.textContent = `Game starting in ${countdownValue}`;
-                            
-                            // Load title page
+                            countdownValue--;
                             if (countdownValue <= 0) {
                                 clearInterval(countdownInterval);
-                                if (countdownElement) {
-                                    countdownElement.remove();
+                                if (overlay) {
+                                    overlay.remove();
                                 }
                                 console.log("Game has commenced.")
                                 window.location.href = "story/role-select.html";
-                            }
-                            else {
-                                countdownValue--;
+                            } else {
+                                countdownElement.textContent = `${countdownValue}`;
                             }
                         }, 1000);
                         
@@ -149,9 +188,9 @@
                         }
                         
                         // Remove countdown element
-                        const countdownElement = document.getElementById("countdown");
-                        if (countdownElement) {
-                            countdownElement.remove();
+                        const overlay = document.getElementById("countdownOverlay");
+                        if (overlay) {
+                            overlay.remove();
                         }
                     }
                 }

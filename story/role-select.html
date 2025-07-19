@@ -17,7 +17,7 @@
     </div>
 
     <div class="menu-container">
-        <h1>Welcome to the Digital Escape Room</h1>
+        <h1>Briefing Room</h1>
         <div class="button-container">
             <button id="dsBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Data Scientist</button>
             <button id="seBtn" class="std-button role-button" style="width: 250px;">Software Engineer</button>
@@ -28,9 +28,11 @@
     
     <div class="menu-container">
         <div id="waitingSection" style="display: none;">
-            <div id="spinner" class="loading-spinner"></div>
-            <p id="waitingText">Waiting for others to choose their role...</p>
-            <button id="changeMindBtn" class="std-button" style="margin-top: 20px;">Change Your Mind</button>
+            <div id="rolePlayerList" class="player-list game-style" style="margin-bottom: 24px;">
+                <h3>Team Selection</h3>
+                <ul id="rolePlayers"></ul>
+                <button id="changeMindBtn" class="std-button" style="margin-top: 20px;">Change Your Mind</button>
+            </div>
         </div>
     </div>
 
@@ -111,6 +113,34 @@
             return false;
         }
 
+        // Function to render the polished player/role list
+        function renderRolePlayerList(roomData) {
+            const listContainer = document.getElementById('rolePlayers');
+            if (!listContainer || !roomData || !roomData.roomPlayers) return;
+            listContainer.innerHTML = '';
+            // Sort players alphabetically by name
+            const sortedPlayers = Object.entries(roomData.roomPlayers).sort((a, b) => {
+                const nameA = a[1].name.toLowerCase();
+                const nameB = b[1].name.toLowerCase();
+                return nameA.localeCompare(nameB);
+            });
+            const roleNames = {
+                'ds': 'Data Scientist',
+                'se': 'Software Engineer',
+                'ne': 'Network Engineer',
+                'ca': 'Cybersecurity Analyst'
+            };
+            sortedPlayers.forEach(([playerId, player]) => {
+                const li = document.createElement('li');
+                if (playerId === userId) {
+                    li.classList.add('current-player');
+                }
+                const role = player.role ? roleNames[player.role] || player.role : 'Choosing...';
+                li.textContent = `${player.name} - ${role}`;
+                listContainer.appendChild(li);
+            });
+        }
+
         // Set up real-time listener for game info updates
         const unsubscribe = listenToRoom(roomId, (roomData) => {
             if (roomData) {
@@ -118,6 +148,7 @@
                 //console.log(roomData);
                 //console.log(roomData["roomPlayers"]["NIRGBxG21vn5Q03cOCzz"]["name"])
                 updateGameInfo(roomData);
+                renderRolePlayerList(roomData);
                 
                 // Set the current objective for this page
                 setCurrentObjective("role-select");
@@ -136,6 +167,7 @@
                         "\"Each path is critical. Choose yours carefully.\"",
                         "Waiting for all operatives to select roles..."
                     ]);
+                    isInitialLoad = false;
                 }
                 
                 // Show/hide waiting state based on current user's role selection

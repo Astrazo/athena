@@ -19,7 +19,7 @@ export function setCurrentObjective(roomName, roomData = null, currentRole = nul
     // For non-game rooms, use predefined objectives
     if (roomObjectives[roomName]) {
         const objective = roomObjectives[roomName];
-        updateObjectiveDisplay(objective.title, objective.description);
+        updateObjectiveDisplay('Objective', objective.description);
         return;
     }
 
@@ -38,14 +38,14 @@ export function setCurrentObjective(roomName, roomData = null, currentRole = nul
             );
 
             if (isActionable) {
-                updateObjectiveDisplay("Current Task", "Choose an action to complete this task");
+                updateObjectiveDisplay('Objective', "Choose an action to complete this task");
             } else {
-                updateObjectiveDisplay("Current Task", "Explore other rooms");
+                updateObjectiveDisplay('Objective', "Explore other rooms");
             }
         });
     } else {
         // Fallback for when we don't have room data
-        updateObjectiveDisplay("Current Task", "Explore other rooms");
+        updateObjectiveDisplay('Objective', "Explore other rooms");
     }
 }
 
@@ -60,9 +60,11 @@ function updateObjectiveDisplay(title, description) {
     }
 
     objectiveDisplay.innerHTML = `
-        <h3>${title}</h3>
+        <h3>Objective</h3>
         <p>${description}</p>
     `;
+    const objDiv = document.getElementById('objectiveDisplay');
+    if (objDiv) objDiv.classList.add('game-panel');
 }
 
 // Function to clear the objective display
@@ -84,7 +86,9 @@ export function updateObjective(title, description) {
     }
 
     objectiveDisplay.innerHTML = `
-        <h3>${title}</h3>
+        <h3>Objective</h3>
         <p>${description}</p>
     `;
+    const objDiv = document.getElementById('objectiveDisplay');
+    if (objDiv) objDiv.classList.add('game-panel');
 } 
