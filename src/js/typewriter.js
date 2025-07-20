@@ -407,21 +407,31 @@ class TypewriterDialogue {
     updateDialogueLogDisplay() {
         this.logContent.innerHTML = '';
         
-        this.dialogueLog.forEach((entry, index) => {
-            const logEntry = document.createElement('div');
-            logEntry.className = 'dialogue-log-entry';
-            
-            let displayText = entry.text;
-            if (entry.character) {
-                displayText = `${entry.character}: ${entry.text}`;
-            }
-            
-            logEntry.innerHTML = `
-                <div class="dialogue-log-text">${displayText}</div>
-                <div class="dialogue-log-timestamp">${entry.timestamp}</div>
+        if (this.dialogueLog.length === 0) {
+            // Show "No Dialogue Shown" message when log is empty
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'dialogue-log-empty';
+            emptyMessage.innerHTML = `
+                <div class="dialogue-log-text">No dialogue.</div>
             `;
-            this.logContent.appendChild(logEntry);
-        });
+            this.logContent.appendChild(emptyMessage);
+        } else {
+            this.dialogueLog.forEach((entry, index) => {
+                const logEntry = document.createElement('div');
+                logEntry.className = 'dialogue-log-entry';
+                
+                let displayText = entry.text;
+                if (entry.character) {
+                    displayText = `${entry.character}: ${entry.text}`;
+                }
+                
+                logEntry.innerHTML = `
+                    <div class="dialogue-log-text">${displayText}</div>
+                    <div class="dialogue-log-timestamp">${entry.timestamp}</div>
+                `;
+                this.logContent.appendChild(logEntry);
+            });
+        }
         
         // Scroll to bottom
         this.logContent.scrollTop = this.logContent.scrollHeight;

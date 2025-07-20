@@ -499,6 +499,22 @@ h1 {
     font-style: italic;
 }
 
+.dialogue-log-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: #888;
+    font-style: italic;
+    text-align: center;
+}
+
+.dialogue-log-empty .dialogue-log-text {
+    color: #888;
+    font-size: 1.1rem;
+    margin-bottom: 0;
+}
+
 .persistent-log-button {
     position: fixed;
     bottom: 20px;

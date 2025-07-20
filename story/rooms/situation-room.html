@@ -364,7 +364,7 @@
                         if (isHost === "1") {
                             await appendDayScore(roomId, dayScore);
                             await progressDay(roomId);
-                            await incrementEnabledCompletions(true);
+                            await incrementEnabledCompletions(roomId, true);
                             updatedRoomData = await loadRooms(undefined, roomId, undefined);
                         } 
                         else {    
@@ -400,6 +400,8 @@
                         updateGameInfo(updatedRoomData);
                         updateRoleList(updatedRoomData, document.getElementById("players"));
                         handleDialogue(updatedRoomData);
+
+                        console.log("Day Reset")
                     }
                     else {
                         // Need host to update the scores
