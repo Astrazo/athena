@@ -82,7 +82,16 @@
 
                 // Check if enabledValue just changed from null to a value
                 if (currentEnabledValue !== null && currentEnabledValue != previousEnabledValue) {
-                    showEnabledValueToast();
+                    // Only show toast if we haven't shown it for this enabledValue
+                    if (!localStorage.getItem('enabledValueToastShown')) {
+                        showEnabledValueToast();
+                        localStorage.setItem('enabledValueToastShown', 'true');
+                    }
+                }
+
+                // Clear the flag when enabledValue goes back to null (new day)
+                if (currentEnabledValue === null && previousEnabledValue !== null) {
+                    localStorage.removeItem('enabledValueToastShown');
                 }
 
                 // Update previous value for next comparison
@@ -103,7 +112,54 @@
             const enablerRole = enablerMap[currentDay][userRole];
             const enablerName = roleNames[enablerRole];
 
-            toast.success(`${enablerName} has sent you some information to be used in another room.`);
+            toast.success(`The ${enablerName} has sent you some information to be used in another room.`);
+            
+            // Check if player is in the correct room for their enabled puzzle
+            if (isInEnabledPuzzleRoom()) {
+                // Trigger dialogue for enabled puzzle
+                triggerEnabledDialogue();
+            }
+        }
+
+        // Function to determine if player is in the room where their enabled puzzle is located
+        function isInEnabledPuzzleRoom() {
+            const enabledPuzzleRoom = getEnabledPuzzleRoom();
+            return enabledPuzzleRoom === "server-room";
+        }
+
+        // Function to get the room where the player's enabled puzzle is located
+        function getEnabledPuzzleRoom() {
+            const enabledPuzzleRooms = {
+                1: {
+                    "ca": "research-lab",
+                    "ne": "developer-hub", 
+                    "se": "server-room",
+                    "ds": "command-centre"
+                },
+                2: {
+                    "ca": "command-centre",
+                    "ne": "server-room",
+                    "se": "research-lab", 
+                    "ds": "command-centre"
+                },
+                3: {
+                    "ca": "command-centre",
+                    "ne": "server-room",
+                    "se": "developer-hub",
+                    "ds": "research-lab"
+                }
+            };
+            
+            return enabledPuzzleRooms[currentDay]?.[userRole] || null;
+        }
+
+        // Function to trigger dialogue for enabled puzzle
+        function triggerEnabledDialogue() {
+            const dialogueToShow = dialogue?.[currentDay]?.[userRole]?.["server-room"];
+            
+            if (dialogueToShow && dialogueToShow["enabled"]) {
+                typewriter.showSequence(dialogueToShow["enabled"]);
+            }
         }
 
         // 

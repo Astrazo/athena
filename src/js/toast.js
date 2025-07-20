@@ -21,18 +21,10 @@ class Toast {
         }
     }
 
-    /**
-     * Show a toast notification
-     * @param {string} message - The message to display
-     * @param {Object} options - Toast options
-     * @param {string} options.type - 'success', 'error', 'warning', 'info' (default: 'info')
-     * @param {number} options.duration - Duration in milliseconds (default: 4000)
-     * @param {boolean} options.dismissible - Whether the toast can be dismissed (default: true)
-     */
     show(message, options = {}) {
         const {
             type = 'info',
-            duration = 4000,
+            duration = 6000,
             dismissible = true
         } = options;
 
@@ -57,7 +49,7 @@ class Toast {
         if (dismissible) {
             const closeBtn = document.createElement('button');
             closeBtn.className = 'toast-close';
-            closeBtn.innerHTML = '×';
+            closeBtn.innerHTML = 'x';
             closeBtn.addEventListener('click', () => this.dismiss(toast));
             toastContent.appendChild(closeBtn);
         }
@@ -85,10 +77,6 @@ class Toast {
         return toast;
     }
 
-    /**
-     * Dismiss a specific toast
-     * @param {HTMLElement} toast - The toast element to dismiss
-     */
     dismiss(toast) {
         if (toast && toast.parentNode) {
             toast.classList.add('toast-hide');
@@ -100,17 +88,11 @@ class Toast {
         }
     }
 
-    /**
-     * Dismiss all toasts
-     */
     dismissAll() {
         const toasts = this.toastContainer.querySelectorAll('.toast');
         toasts.forEach(toast => this.dismiss(toast));
     }
 
-    /**
-     * Convenience methods for different toast types
-     */
     success(message, options = {}) {
         return this.show(message, { ...options, type: 'success' });
     }

@@ -37,6 +37,7 @@
         import TypewriterDialogue from "../../src/js/typewriter.js";
         import { enablerMap } from "../../src/js/enabler-map.js";
         import { setCurrentObjective } from "../../src/js/objectives.js";
+        import toast from "../../src/js/toast.js";
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
@@ -49,6 +50,8 @@
         // Local, global, trackers 
         let currentRoomData = null;
         let isDayEndInProgress = false;
+        let previousEnabledValue = null;
+        let currentDay = 0;
      
 
         // Setup entering room buttons
@@ -65,7 +68,55 @@
                 const playersArray = roomData["roomPlayers"] ? Object.values(roomData["roomPlayers"]) : [];
                 document.getElementById("playerCount").textContent = `Players: ${playersArray.length}/4`;
                 document.getElementById("yourName").textContent = `You: ${username}`;
+
+                // Track enabledValue changes for toast notifications
+                const currentEnabledValue = roomData["roomPlayers"][localUserId]["enabledValue"];
+                currentDay = roomData["currentDay"];
+
+                // Check if enabledValue just changed from null to a value
+                if (currentEnabledValue !== null && currentEnabledValue != previousEnabledValue) {
+                    // Only show toast if we haven't shown it for this enabledValue
+                    if (!localStorage.getItem('enabledValueToastShown')) {
+                        showEnabledValueToast();
+                        localStorage.setItem('enabledValueToastShown', 'true');
+                    }
+                }
+
+                // Clear the flag when enabledValue goes back to null (new day)
+                if (currentEnabledValue === null && previousEnabledValue !== null) {
+                    localStorage.removeItem('enabledValueToastShown');
+                }
+
+                // Update previous value for next comparison
+                previousEnabledValue = currentEnabledValue;
             }
+        }
+
+        // Function to show toast when enabledValue is received
+        function showEnabledValueToast() {
+            const roleNames = {
+                "ds": "Data Scientist",
+                "se": "Software Engineer", 
+                "ne": "Network Engineer",
+                "ca": "Cybersecurity Analyst"
+            };
+
+            // Find which role enabled this player by searching the enabler map
+            const enablerRole = findEnablerRole(userRole, currentDay);
+            const enablerName = roleNames[enablerRole];
+
+            toast.success(`The ${enablerName} has sent you some information to be used in another room.`);
+        }
+
+        // Function to find which role enabled the current player
+        function findEnablerRole(currentRole, day) {
+            const dayMap = enablerMap[day];
+            for (const [enabler, enabled] of Object.entries(dayMap)) {
+                if (enabled === currentRole) {
+                    return enabler;
+                }
+            }
+            return null;
         }
 
         function handleDialogue(roomData) {
@@ -333,6 +384,7 @@
 
                         // Save score and reset day (this will trigger a db reset 3 times)
                         localStorage.setItem("introDialogueSeen", "0") // set for all players
+                        localStorage.setItem("enabledValueToastShown", "false") // set for all players
                         document.getElementById("loadingContainer").style.display = "flex";
                         
 
