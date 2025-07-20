@@ -37,6 +37,8 @@
         import { dialogue } from "../../src/js/dialogue.js";
         import { roomActions } from "../../src/js/room-actions.js";
         import { setCurrentObjective } from "../../src/js/objectives.js";
+        import { enablerMap } from "../../src/js/enabler-map.js";
+        import toast from "../../src/js/toast.js";
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
@@ -48,6 +50,7 @@
         let enabledComplete = null;
         let enabledPossible = null;
         let currentDay = 0;
+        let previousEnabledValue = null;
 
         // Local, global, trackers 
         let isInitialLoad = true;
@@ -69,14 +72,38 @@
                 // Figure out what puzzle status the player has 
                 enablerComplete = roomData["roomPlayers"][localUserId]["enablerComplete"];
                 enabledComplete = roomData["roomPlayers"][localUserId]["enabledComplete"];
+                const currentEnabledValue = roomData["roomPlayers"][localUserId]["enabledValue"];
 
                 // Can they complete the enabled puzzle yet?
-                enabledPossible = roomData["roomPlayers"][localUserId]["enabledValue"] != null;
+                enabledPossible = currentEnabledValue != null;
                  
                 // Grab current day
                 currentDay = roomData["currentDay"];
 
+                // Check if enabledValue just changed from null to a value
+                if (currentEnabledValue !== null && currentEnabledValue != previousEnabledValue) {
+                    showEnabledValueToast();
+                }
+
+                // Update previous value for next comparison
+                previousEnabledValue = currentEnabledValue;
             }
+        }
+
+        // Function to show toast when enabledValue is received
+        function showEnabledValueToast() {
+            const roleNames = {
+                "ds": "Data Scientist",
+                "se": "Software Engineer", 
+                "ne": "Network Engineer",
+                "ca": "Cybersecurity Analyst"
+            };
+
+            // Get who enabled this player based on enabler map
+            const enablerRole = enablerMap[currentDay][userRole];
+            const enablerName = roleNames[enablerRole];
+
+            toast.success(`${enablerName} has sent you some information to be used in another room.`);
         }
 
         // 
@@ -98,7 +125,10 @@
                             typewriter.showSequence(dialogueToShow["enabler"]);
                         }
                         else {
-                            typewriter.showSequence(dialogueToShow["enabler-complete"]);
+                            // For enabler-complete, check if both tasks are done
+                            const baseDialogue = dialogueToShow["enabler-complete"].slice(0, -1); // Remove the last line
+                            const completionMessage = getCompletionMessage();
+                            typewriter.showSequence([...baseDialogue, completionMessage]);
                         }
                     }
                     else if (dialogueToShow["enabled"]) {
@@ -106,7 +136,10 @@
                             typewriter.showSequence(dialogueToShow["enabled"])
                         }
                         else if (enabledComplete) {
-                            typewriter.showSequence(dialogueToShow["enabled-complete"])
+                            // For enabled-complete, check if both tasks are done
+                            const baseDialogue = dialogueToShow["enabled-complete"].slice(0, -1); // Remove the last line
+                            const completionMessage = getCompletionMessage();
+                            typewriter.showSequence([...baseDialogue, completionMessage]);
                         }
                         else {
                             typewriter.showSequence(dialogueToShow["enabled-not-available"])
@@ -118,6 +151,15 @@
             }
         }
 
+        // Helper function to determine the correct completion message
+        function getCompletionMessage() {
+            if (enabledComplete && enablerComplete) {
+                return "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up.";
+            } else {
+                return "You should investigate some other rooms in case you can assist further.";
+            }
+        }
+
         // Set up real-time listener for game info updates
         const unsubscribe = listenToRoom(roomId, (roomData) => {
             if (roomData) {
@@ -125,28 +167,25 @@
                 currentRoomData = roomData;
                 updateGameInfo(roomData);
                 updateRoleList(roomData, document.getElementById("players"));
-
-                // Set the current objective for this room
+                
+                // Always update the objective when room data changes
                 setCurrentObjective("server-room", roomData, localStorage.getItem("connectedUserRole"));
 
-                // Load in actions this role can do during this run
-                generateActions(
-                    roomData, 
-                    "server-room", 
-                    localStorage.getItem("connectedUserRole"), 
-                    document.getElementById("availableActions")
-                );
-                
-                handleDialogue();
+                // Only run this stuff it it's in the initiload load
+                if (isInitialLoad) {
+                    // Load in actions this role can do during this run
+                    generateActions(
+                        roomData, 
+                        "server-room", 
+                        localStorage.getItem("connectedUserRole"), 
+                        document.getElementById("availableActions")
+                    );
 
-                /*if (isInitialLoad) {
-                    handleDialogue(roomData)
-                    isInitialLoad = false
+                    // Show dialogue
+                    handleDialogue();
+
+                    isInitialLoad = false;
                 }
-                else if (isRoleReassignmentLoad) {
-                    handleRoleReasignmentDialogue(roomData)
-                    isRoleReassignmentLoad = false;
-                }*/
             } else {
                 console.error("Room not found");
                 window.location.href = "../index.html";
