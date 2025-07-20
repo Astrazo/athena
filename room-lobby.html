@@ -36,6 +36,7 @@
     <script type="module">
         import { loadRooms, removeUserFromRoom, updatePlayer, listenToRoom, deleteRoom } from "./src/js/main.js";
         import { setCurrentObjective } from "./src/js/objectives.js";
+        import toast from "./src/js/toast.js";
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
@@ -95,15 +96,26 @@
                             li.classList.add("current-player");
                         }
                         li.textContent = player["name"];
-                        const badge = document.createElement("span");
-                        if (player["readyStatus"] === 1) {
-                            badge.className = "ready-badge";
-                            badge.textContent = "Ready";
-                        } else {
-                            badge.className = "not-ready-badge";
-                            badge.textContent = "Not Ready";
-                        }
-                        li.appendChild(badge);
+                        
+                        // Create status container
+                        const statusContainer = document.createElement("div");
+                        statusContainer.className = "status-container";
+                        
+                        // Create status text
+                        const statusText = document.createElement("span");
+                        statusText.className = "status-text";
+                        statusText.textContent = player["readyStatus"] === 1 ? "Ready" : "Not Ready";
+                        statusText.style.color = player["readyStatus"] === 1 ? "#4CAF50" : "#ff6b6b";
+                        
+                        // Create status light
+                        const statusLight = document.createElement("div");
+                        statusLight.className = "status-light";
+                        statusLight.style.backgroundColor = player["readyStatus"] === 1 ? "#4CAF50" : "#ff6b6b";
+                        statusLight.style.boxShadow = player["readyStatus"] === 1 ? "0 0 8px #4CAF50" : "0 0 8px #ff6b6b";
+                        
+                        statusContainer.appendChild(statusText);
+                        statusContainer.appendChild(statusLight);
+                        li.appendChild(statusContainer);
                         playersList.appendChild(li);
                     });
 
@@ -154,8 +166,14 @@
                                     readyButton.textContent = "Ready Up";
                                     readyButton.classList.remove("ready");
                                     localStorage.setItem("readyStatus", 0);
+                                    
+                                    // Show toast notification
+                                    toast.warning("Launch cancelled. Waiting for all players to be ready.", {
+                                        duration: 5000
+                                    });
                                 } catch (err) {
                                     console.error("Failed to update ready status after cancel:", err);
+                                    toast.error("Failed to cancel launch. Please try again.");
                                 }
                             };
                         }

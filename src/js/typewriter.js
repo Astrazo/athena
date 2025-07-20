@@ -12,10 +12,12 @@ class TypewriterDialogue {
         this.onLineSkip = null;
         this.isLastLineInSequence = false; // Track if this is the last line
         this.delayResolve = null;
-        this.autoProgress = false; // Auto-progress toggle state
+        // Load auto-progress state from localStorage, default to false
+        this.autoProgress = localStorage.getItem('dialogueAutoProgress') === 'true';
         this.autoProgressTimeout = null; // Timeout for auto-progress
         this.dialogueLog = []; // Array to store all dialogue history
-        this.logVisible = false; // Track if log is currently visible
+        // Load log visibility state from localStorage, default to false
+        this.logVisible = localStorage.getItem('dialogueLogVisible') === 'true';
         this.currentSequence = []; // Store current dialogue sequence
         this.currentSequenceIndex = 0; // Track current position in sequence
         this.currentSequenceOptions = {}; // Store options for current sequence
@@ -80,6 +82,15 @@ class TypewriterDialogue {
         this.continueButton = this.container.querySelector(".dialogue-continue");
         this.logContent = this.logContainer.querySelector(".dialogue-log-content");
         this.logCloseButton = this.logContainer.querySelector("#log-close");
+
+        // Set initial auto-toggle button state based on saved preference
+        this.autoToggleButton.textContent = this.autoProgress ? "Auto: ON" : "Auto: OFF";
+        this.autoToggleButton.classList.toggle("active", this.autoProgress);
+
+        // Set initial log container visibility based on saved preference
+        if (this.logVisible) {
+            this.logContainer.style.display = 'block';
+        }
 
         // Add event listeners
         // Auto-toggle button
@@ -362,6 +373,9 @@ class TypewriterDialogue {
         this.autoToggleButton.textContent = this.autoProgress ? "Auto: ON" : "Auto: OFF";
         this.autoToggleButton.classList.toggle("active", this.autoProgress);
         
+        // Save auto-progress state to localStorage
+        localStorage.setItem('dialogueAutoProgress', this.autoProgress.toString());
+        
         // If auto is turned on and we're currently waiting for manual progression, trigger it
         if (this.autoProgress && this.isLineComplete && !this.isLastLineInSequence && this.delayResolve) {
             this.delayResolve();
@@ -427,12 +441,16 @@ class TypewriterDialogue {
         this.logVisible = true;
         this.logContainer.style.display = 'block';
         this.updateDialogueLogDisplay();
+        // Save log visibility state to localStorage
+        localStorage.setItem('dialogueLogVisible', 'true');
     }
 
     // Hide dialogue log
     hideDialogueLog() {
         this.logVisible = false;
         this.logContainer.style.display = 'none';
+        // Save log visibility state to localStorage
+        localStorage.setItem('dialogueLogVisible', 'false');
     }
 
     // Function used to skip one line

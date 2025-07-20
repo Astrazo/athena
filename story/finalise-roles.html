@@ -30,6 +30,7 @@
         import { updatePlayer, listenToRoom, progressDay, ackReshuffle } from "../src/js/main.js";
         import TypewriterDialogue from "../src/js/typewriter.js";
         import { setCurrentObjective } from "../src/js/objectives.js";
+        import toast from "../src/js/toast.js";
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
@@ -144,6 +145,11 @@
                 })
             }
 
+            // Show success toast for role confirmation
+            toast.success("Roles reshuffled", {
+                duration: 4000
+            });
+
             // Can we pause for 1 second here?
             setTimeout(() => {
                 document.getElementById("loadingContainer").style.display = "none";
@@ -173,7 +179,7 @@
                     }
                 }); 
             }
-            else {
+            else {  
                 typewriter.showSequence([
                     ">> ROLE ASSIGNMENTS CONFIRMED",
                     "Commander Reyes’s voice comes through clearly, approval evident.",

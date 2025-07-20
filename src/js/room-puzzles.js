@@ -4,13 +4,13 @@ export const roomPuzzles = {
             "server-room": {
                 "enabler": {
                     "title": "Identify Rougue IP Address",
-                    "prompt": "Given this traffic, which IP address most likely belongs to the Rougue AI and must be urgently reviewed?",
-                    "tableHeaders": ["Timestamp", "Source IP", "Destination", "Activity Description"],
+                    "prompt": "Review the captured traffic log below. Which IP address most likely belongs to the rogue AI and must be urgently reviewed?\n<pre><code class=\"language-bash\">[09:21:03] 10.0.0.45 → Server_1: Routine status check\n[09:21:07] 172.16.5.12 → Developer_Hub: Multiple authentication attempts failed\n[09:21:10] 10.0.0.77 → Research_Lab: Large encrypted data transfer initiated\n[09:21:15] 192.168.3.200 → Server_Room: Rapid port scanning detected</code></pre>",
+                    "tableHeaders": ["Option"],
                     "tableRows": [
-                        ["9:21:03", "10.0.0.45", "Server_1", "Routine status check"],
-                        ["9:21:07", "172.16.5.12", "Developer_Hub", "Multiple authentication attempts failed"],
-                        ["9:21:10", "10.0.0.77", "Research_Lab", "Large encrypted data transfer initiated"],
-                        ["9:21:15", "192.168.3.200", "Server_Room", "Rapid port scanning detected"]
+                        ["10.0.0.45"],
+                        ["172.16.5.12"],
+                        ["10.0.0.77"],
+                        ["192.168.3.200"]
                     ],
                     "correctAnswerIndex": 3,
                     "feedback": {
@@ -31,13 +31,12 @@ export const roomPuzzles = {
             "research-lab": {
                 "enabled": {
                     "title": "Idenfity Suspicious Login Attempt",
-                    "prompt": "Which server login attempt confirms the Data Scientist's suspicions?",
-                    "tableHeaders": ["Timestamp", "IP Adress", "Location", "Device", "Result"],
+                    "prompt": "Review the server login log excerpt below. Which IP address confirms the Data Scientist’s suspicion of a compromised account?\n<pre><code class=\"language-bash\">[2025-07-01 02:12:43] 192.168.1.10 — DevStation01 (Melbourne): Login Success\n[2025-07-01 02:14:05] 203.0.113.55 — Unknown Device (Tokyo): Login Success\n[2025-07-01 02:14:22] 192.168.1.10 — DevStation01 (Melbourne): Active Session\n[2025-07-01 02:15:10] 192.168.1.12 — DataNode03 (Melbourne): Login Success</code></pre>",
+                    "tableHeaders": ["IP Address"],
                     "tableRows": [
-                        ["2025-07-01 02:12:43", "192.168.1.10", "Melbourne", "DevStation01", "Success"],
-                        ["2025-07-01 02:14:05", "203.0.113.55", "Tokyo", "Unknown", "Success"],
-                        ["2025-07-01 02:14:22", "192.168.1.10", "Melbourne", "DevStation01", "Active Session"],
-                        ["2025-07-01 02:15:10", "192.168.1.12", "Melbourne", "DataNode03", "Success"]
+                        ["192.168.1.10"],
+                        ["203.0.113.55"],
+                        ["192.168.1.12"]
                     ],
                     "correctAnswerIndex": 1,
                     "feedback": {
@@ -60,13 +59,13 @@ export const roomPuzzles = {
             "command-centre": {
                 "enabler": {
                     "title": "Identify Compromised Interface",
-                    "prompt": "Which interface did the AI use to infiltrate the network?",
-                    "tableHeaders": ["Interface", "Avg. Traffic", "Recent Traffic", "Protocols"],
+                    "prompt": "Review the interface diagnostics log below. One of these interfaces shows clear signs of AI infiltration. Which one?<br><pre><code class=\"language-none\">Interface Report — July 1, 2025<br>----------------------------------<br>eth0:<br>  - Avg. Traffic: 200 MB<br>  - Recent Traffic: 195 MB<br>  - Protocols: SSH, HTTP<br><br>eth1:<br>  - Avg. Traffic: 150 MB<br>  - Recent Traffic: 580 MB<br>  - Protocols: SSH, TCP, Unknown<br><br>eth2:<br>  - Avg. Traffic: 300 MB<br>  - Recent Traffic: 310 MB<br>  - Protocols: FTP, SMB<br><br>eth3:<br>  - Avg. Traffic: 180 MB<br>  - Recent Traffic: 175 MB<br>  - Protocols: DNS, NTP</code></pre>",
+                    "tableHeaders": ["Interface"],
                     "tableRows": [
-                        ["eth0", "200 MB", "195 MB", "SSH, HTTP"],
-                        ["eth1", "150 MB", "580 MB", "SSH, TCP, Unknown"],
-                        ["eth2", "300 MB", "310 MB", "FTP, SMB"],
-                        ["eth3", "180 MB", "175 MB", "DNS, NTP"]
+                        ["eth0"],
+                        ["eth1"],
+                        ["eth2"],
+                        ["eth3"]
                     ],
                     "correctAnswerIndex": 1,
                     "feedback": {
@@ -87,14 +86,14 @@ export const roomPuzzles = {
             "developer-hub": {
                 "enabled": {
                     "title": "Identify Infected Nodes",
-                    "prompt": "Which node has the flagged IP interacted with the most?",
-                    "tableHeaders": ["Destination IP", "Protocol", "Connection Count", "Last Seen"],
+                    "prompt": "Analyze the AI's communication trace. Which node has the flagged IP interacted with the most?<br><pre><code class=\"language-none\">Connection Trace<br>--------------------------<br>Destination IP     Protocol     Count   Last Seen<br>192.168.1.20       ICMP         0       —<br>192.168.2.10       TCP          4       08:53<br>192.168.3.40       UDP          1       08:50<br>192.168.3.200      TCP         13       08:51<br>10.0.0.45          TCP          3       08:49</code></pre>",
+                    "tableHeaders": ["IP Address"],
                     "tableRows": [
-                        ["192.168.1.20", "ICMP", "0", "—"],
-                        ["192.168.2.10", "TCP", "4", "08:53"],
-                        ["192.168.3.40", "UDP", "1", "08:50"],
-                        ["192.168.3.200", "TCP", "13", "08:51"],
-                        ["10.0.0.45", "TCP", "3", "08:49"]
+                        ["192.168.1.20"],
+                        ["192.168.2.10"],
+                        ["192.168.3.40"],
+                        ["192.168.3.200"],
+                        ["10.0.0.45"]
                     ],
                     "correctAnswerIndex": 3,
                     "feedback": {
@@ -116,13 +115,13 @@ export const roomPuzzles = {
             "research-lab": {
                 "enabler": {
                     "title": "Identify Issue Git Commit",
-                    "prompt": "Which git commit may have caused the AI to go rougue?",
-                    "tableHeaders": ["Commit ID", "Message", "Effect Summary"],
+                    "prompt": "Review the recent commit history. Which commit most likely introduced poisoned data that corrupted the AI’s behavior?<br><pre><code class=\"language-none\">Git Log Summary<br>----------------------------------------------------------<br>Commit ID   | Message                                 | Effect<br>----------------------------------------------------------<br>AA12        | Skip null checks in value multiplier     | May introduce NaNs downstream<br>ZZ93        | Hardcode values temporarily for testing  | Inserts extreme outliers, can poison ML models<br>YY54        | Convert input to string for log display  | Type mismatch risk in pipelines<br>BB38        | Add optional status field                | Adds flexibility, no core risk</code></pre>",
+                    "tableHeaders": ["Commit ID"],
                     "tableRows": [
-                        ["AA12", "Skip null checks in value multiplier", "May introduce NaNs downstream"],
-                        ["ZZ93", "Hardcode values temporarily for testing", "Inserts extreme outliers, can poison ML models"],
-                        ["YY54", "Convert input to string for log display", "Type mismatch risk in pipelines"],
-                        ["BB38", "Add optional status field", "Adds flexibility, no core risk"]
+                        ["AA12"],
+                        ["ZZ93"],
+                        ["YY54"],
+                        ["BB38"]
                     ],
                     "correctAnswerIndex": 1,
                     "feedback": {
@@ -142,13 +141,13 @@ export const roomPuzzles = {
             "server-room": {
                 "enabled": {
                     "title": "Identify Infected Process",
-                    "prompt": "Which process should be contained?",
-                    "tableHeaders": ["Process Name", "Interface", "Memory Usage", "Hash Verified"],
+                    "prompt": "Review the system diagnostics below. Which process is most likely infected by the AI and should be contained immediately?<br><pre><code class=\"language-none\">Process Diagnostics Snapshot<br>--------------------------------------------------------------<br>Process Name   | Interface | Memory Usage | Hash Verified<br>--------------------------------------------------------------<br>db_sync        | eth0      | 20 MB        | Yes<br>log_agent      | eth1      | 32 MB        | Yes<br>systemd-1      | eth1      | 300 MB       | No<br>cache_clean    | eth2      | 28 MB        | Yes</code></pre>",
+                    "tableHeaders": ["Process"],
                     "tableRows": [
-                        ["db_sync", "eth0", "20 MB", "No", "Yes"],
-                        ["log_agent", "eth1", "32 MB", "No", "Yes"],
-                        ["systemd-1", "eth1", "300 MB", "Yes", "No"],
-                        ["cache_clean", "eth2", "28 MB", "No", "Yes"]
+                        ["db_sync"],
+                        ["log_agent"],
+                        ["systemd-1"],
+                        ["cache_clean"]
                     ],
                     "correctAnswerIndex": 2,
                     "feedback": {
@@ -170,13 +169,13 @@ export const roomPuzzles = {
             "developer-hub": {
                 "enabler": {
                     "title": "Identify Compromised Account",
-                    "prompt": "Which account have many been used by the AI to access the server?",
-                    "tableHeaders": ["User ID", "Session Count", "Avg. Actions", "Peak Memory (mb)"],
+                    "prompt": "Review the session activity report below. Which account has most likely been exploited by the AI to access the server?<br><pre><code class=\"language-none\">User Activity Summary\n--------------------------------------------------------------\nUser ID   | Session Count | Avg. Actions | Peak Memory (MB)\n--------------------------------------------------------------\nuser_01   | 4             | 3.2          | 420\nuser_02   | 5             | 3.5          | 390\nuser_03   | 4             | 3.0          | 405\nuser_99   | 2             | 15.2         | 950</code></pre>",
+                    "tableHeaders": ["Account"],
                     "tableRows": [
-                        ["user_01", "4", "3.2", "420"],
-                        ["user_02", "5", "3.5", "390"],
-                        ["user_03", "4", "3.0", "405"],
-                        ["user_99", "2", "15.2", "950"]
+                        ["user_01"],
+                        ["user_02"],
+                        ["user_03"],
+                        ["user_99"]
                     ],
                     "correctAnswerIndex": 3,
                     "feedback": {
@@ -196,13 +195,13 @@ export const roomPuzzles = {
             "command-centre": {
                 "enabled": {
                     "title": "Utilise Correct Data Cleaning Technique",
-                    "prompt": "Which of these endpoints is most likely under AI control and should be isolated immediately?",
-                    "tableHeaders": ["Cleaning Step", "Rationale"],
+                    "prompt": "You receive a dataset for model input. One of the features is shown below:<br><pre><code class=\"language-python\">feature_4 = [5, 6, 7, 8, 6, 5, 120, 7, 6, 8]</code></pre>What cleaning step is most appropriate before feeding this into a machine learning model?",
+                    "tableHeaders": ["Cleaning Step"],
                     "tableRows": [
-                        ["Drop or impute missing values", "A value is missing in one of the rows."],
-                        ["Remove or clip outliers", "All values are abnormally high, well beyond typical bounds."],
-                        ["Cast to numeric type", "Values are stored as strings, could break math operations."],
-                        ["No cleaning needed", "Data appears complete and well-typed."]
+                        ["Drop or impute missing values"],
+                        ["Remove or clip outliers"],
+                        ["Cast to numeric type"],
+                        ["No cleaning needed"]
                     ],
                     "correctAnswerIndex": 1,
                     "feedback": {
@@ -226,13 +225,13 @@ export const roomPuzzles = {
             "developer-hub": {
                 "enabler": {
                     "title": "Isolate AI-Controlled Endpoint",
-                    "prompt": "Which of these endpoints is most likely under AI control and should be isolated immediately?",
-                    "tableHeaders": ["Time", "Device ID", "User", "Activity Summary"],
+                    "prompt": "Review the system logs below. Which of these endpoints is most likely under AI control and should be isolated immediately?<br><pre style='font-family: monospace; font-size: 13px;'><code>Time       | Device ID | User        | Activity Summary\n--------------------------------------------------------------\n14:22:01   | DEV-045   | jsimons     | Attempted to disable OS-level firewall\n14:22:03   | DEV-312   | svc_deploy  | Established 9 simultaneous outbound SSH sessions\n14:22:08   | DEV-229   | root        | Launched code-signing tool without valid certificate\n14:22:11   | DEV-088   | svc_devbuild| Repeated privilege escalation attempts on internal APIs</code></pre>",
+                    "tableHeaders": ["Option"],
                     "tableRows": [
-                        ["14:22:01", "DEV-045", "jsimons", "Attempted to disable OS-level firewall"],
-                        ["14:22:03", "DEV-312", "svc_deploy", "Established 9 simultaneous outbound SSH sessions"],
-                        ["14:22:08", "DEV-229", "root", "Launched code-signing tool without valid certificate"],
-                        ["14:22:11", "DEV-088", "svc_devbuild", "Repeated privilege escalation attempts on internal APIs"]
+                      ["DEV-045"],
+                      ["DEV-312"],
+                      ["DEV-229"],
+                      ["DEV-088"]
                     ],
                     "correctAnswerIndex": 1,
                     "feedback": {
@@ -252,13 +251,13 @@ export const roomPuzzles = {
             "command-centre": {
                 "enabled": {
                     "title": "Isolate Subclass-Controlled Endpoint",
-                    "prompt": "Which endpoint is most likely being controlled by the injected subclass?",
-                    "tableHeaders": ["Endpoint ID", "Injected Class", "Command Frequency", "Outbound Ports Accessed", "Notes"],
+                    "prompt": "The AI appears to be leveraging a subclass injection technique. Review the diagnostic telemetry below. Which endpoint is most likely being controlled by the injected subclass?<br><pre style='font-family: monospace; font-size: 13px;'><code>Endpoint ID | Injected Class     | Cmd Frequency | Outbound Ports | Notes\n--------------------------------------------------------------------------\nE-221       | LoggerService      | Low           | 1              | Stable log activity\nE-314       | CommandRelay       | High          | 6              | Unusual spike in command throughput\nE-109       | TelemetryHandler   | Medium        | 2              | Polling interval slightly elevated\nE-403       | HealthCheck        | Low           | 0              | No anomalous behavior</code></pre>",
+                    "tableHeaders": ["Option"],
                     "tableRows": [
-                        ["E-221", "LoggerService", "Low", "1", "Stable log activity"],
-                        ["E-314", "CommandRelay", "High", "6", "Unusual spike in command throughput"],
-                        ["E-109", "TelemetryHandler", "Medium", "2", "Polling interval slightly elevated"],
-                        ["E-403", "HealthCheck", "Low", "0", "No anomalous behavior"]
+                        ["E-221"],
+                        ["E-314"],
+                        ["E-109"],
+                        ["E-403"]
                     ],
                     "correctAnswerIndex": 1,
                     "feedback": {
@@ -280,13 +279,13 @@ export const roomPuzzles = {
             "research-lab": {
                 "enabler": {
                     "title": "Trace Malicious Scheduled Script",
-                    "prompt": "Which scheduled script is most likely injecting manipulated telemetry data into research systems?",
-                    "tableHeaders": ["Script ID", "Schedule", "Data Type", "Anomaly Rate", "Triggered By"],
+                    "prompt": "You're reviewing scheduled scripts across the research network. One is suspected of injecting manipulated telemetry into sensitive systems.<br><pre style='font-family: monospace; font-size: 13px;'><code>Script ID   | Schedule     | Data Type           | Anomaly Rate | Triggered By\n---------------------------------------------------------------------------\nsched_001   | Every 5 min  | Temperature         | 0.3%         | SensorGroupA\nsched_019   | On reboot    | Pressure            | 0.4%         | SensorGroupC\nsched_112   | Every 10 min | Thermal + Pressure  | 8.9%         | Unknown\nsched_072   | Manual       | Telemetry Sync      | 0.0%         | System Admin</code></pre>",
+                    "tableHeaders": ["Option"],
                     "tableRows": [
-                        ["sched_001", "Every 5 min", "Temperature", "0.3%", "SensorGroupA"],
-                        ["sched_019", "On reboot", "Pressure", "0.4%", "SensorGroupC"],
-                        ["sched_112", "Every 10 min", "Thermal + Pressure", "8.9%", "Unknown"],
-                        ["sched_072", "Manual", "Telemetry Sync", "0.0%", "System Admin"]
+                        ["sched_001"],
+                        ["sched_019"],
+                        ["sched_112"],
+                        ["sched_072"]
                     ],
                     "correctAnswerIndex": 2,
                     "feedback": {
@@ -306,13 +305,13 @@ export const roomPuzzles = {
             "server-room": {
                 "enabled": {
                     "title": "Patch Faulty Monitoring Script",
-                    "prompt": "Which monitoring script must be patched to remove reliance on the leaky feature?",
-                    "tableHeaders": ["Script Name", "Feature Used", "Execution Time", "Devices Monitored", "Confidence Score"],
+                    "prompt": "You're auditing deployed monitoring scripts after the Data Scientist flagged a feature as leaky — it only becomes valid *after* an intrusion occurs. Which script is relying on this flawed input?<br><pre style='font-family: monospace; font-size: 13px;'><code>Script Name            | Feature Used          | Execution Time | Devices Monitored | Confidence Score\n---------------------------------------------------------------------------------------------\nendpoint_health.bat   | session_length        | 02:00          | 42                 | 0.71\ntrace_login_flow.cmd  | login_error_count     | 02:02          | 33                 | 0.68\nintrusion_check.bat   | post_intrusion_flag   | 02:05          | 50                 | 0.99\nuptime_scan.cmd       | access_freq           | 02:01          | 12                 | 0.55</code></pre>",
+                    "tableHeaders": ["Option"],
                     "tableRows": [
-                        ["endpoint_health.bat", "session_length", "02:00", "42", "0.71"],
-                        ["trace_login_flow.cmd", "login_error_count", "02:02", "33", "0.68"],
-                        ["intrusion_check.bat", "post_intrusion_flag", "02:05", "50", "0.99"],
-                        ["uptime_scan.cmd", "access_freq", "02:01", "12", "0.55"]
+                        ["endpoint_health.bat"],
+                        ["trace_login_flow.cmd"],
+                        ["intrusion_check.bat"],
+                        ["uptime_scan.cmd"]
                     ],
                     "correctAnswerIndex": 2,
                     "feedback": {
@@ -334,13 +333,13 @@ export const roomPuzzles = {
             "command-centre": {
                 "enabler": {
                     "title": "Trace Malicious Subclass Injection",
-                    "prompt": "Which subclass most likely introduces AI-modified behavior and should be flagged?",
-                    "tableHeaders": ["Class Name", "Base Class", "Overrides Method?", "Instantiated By", "Behavior Notes"],
+                    "prompt": "You're reviewing recent class definitions within the runtime environment. One subclass appears to override methods from its base class and is being instantiated by an unknown system. Which one is most likely introducing AI-modified behavior?<br><pre style='font-family: monospace; font-size: 13px;'><code>Class Name       | Base Class     | Overrides Method? | Instantiated By | Behavior Notes\n----------------------------------------------------------------------------------------\nTelemetryHandler | DeviceService  | Yes               | CoreSystem      | Standard data polling\nCommandRelay     | DeviceService  | Yes               | Unknown         | Injects dynamic runtime instructions\nHealthCheck      | SystemMonitor  | No                | CoreSystem      | Runs at fixed intervals\nLoggerService    | DeviceService  | No                | DevTools        | Logs standard operations</code></pre>",
+                    "tableHeaders": ["Option"],
                     "tableRows": [
-                        ["TelemetryHandler", "DeviceService", "Yes", "CoreSystem", "Standard data polling"],
-                        ["CommandRelay", "DeviceService", "Yes", "Unknown", "Injects dynamic runtime instructions"],
-                        ["HealthCheck", "SystemMonitor", "No", "CoreSystem", "Runs at fixed intervals"],
-                        ["LoggerService", "DeviceService", "No", "DevTools", "Logs standard operations"]
+                      ["TelemetryHandler"],
+                      ["CommandRelay"],
+                      ["HealthCheck"],
+                      ["LoggerService"]
                     ],
                     "correctAnswerIndex": 1,
                     "feedback": {
@@ -360,13 +359,13 @@ export const roomPuzzles = {
             "research-lab": {
                 "enabled": {
                     "title": "Identify Compromised Class",
-                    "prompt": "Which class has most likely been modified by the AI and should be deprecated immediately?",
-                    "tableHeaders": ["Class Name", "Origin IP", "Overrides Base?", "Active Instances", "Notes"],
+                    "prompt": "The AI has likely injected code into one of the runtime classes. Review the compilation report below and determine which class is most likely compromised.<br><pre style='font-family: monospace; font-size: 13px;'><code>Class Name       | Origin IP   | Overrides Base? | Active Instances | Notes\n-------------------------------------------------------------------------------\nTelemetryBase    | 10.1.2.17   | Yes             | 3                | Used by legacy sensors\nJobRunnerAI      | 10.1.2.56   | Yes             | 84               | Recompiled last 2 hours ago\nLoggerHelper     | 127.0.0.1   | No              | 12               | No recent changes\nAuthManager      | 10.1.2.78   | Yes             | 6                | Deprecated in latest build</code></pre>",
+                    "tableHeaders": ["Option"],
                     "tableRows": [
-                        ["TelemetryBase", "10.1.2.17", "Yes", "3", "Used by legacy sensors"],
-                        ["JobRunnerAI", "10.1.2.56", "Yes", "84", "Recompiled last 2 hours ago"],
-                        ["LoggerHelper", "127.0.0.1", "No", "12", "No recent changes"],
-                        ["AuthManager", "10.1.2.78", "Yes", "6", "Deprecated in latest build"]
+                        ["TelemetryBase"],
+                        ["JobRunnerAI"],
+                        ["LoggerHelper"],
+                        ["AuthManager"]
                     ],
                     "correctAnswerIndex": 1,
                     "feedback": {
@@ -388,13 +387,13 @@ export const roomPuzzles = {
             "server-room": {
                 "enabler": {
                     "title": "Flag Leaky Feature",
-                    "prompt": "Which engineered feature is likely causing data leakage in the intrusion detection model?",
-                    "tableHeaders": ["Feature Name", "Derived From", "Correlation to Intrusion", "Generated At", "Notes"],
+                    "prompt": "The intrusion detection model is showing unusually high performance — too good to be true. Review the engineered feature metadata below and identify which feature is causing data leakage.<br><pre style='font-family: monospace; font-size: 13px;'><code>Feature Name         | Derived From       | Correlation | Generated At        | Notes\n----------------------------------------------------------------------------------------------\nsession_length       | Login timestamp    | 0.15        | Start of session    | Standard behavioral metric\nlogin_error_count    | Syslog messages    | 0.23        | During session      | Stable, moderately predictive\npost_intrusion_flag  | Audit logs         | 0.97        | After incident      | High correlation but post-event\naccess_freq          | Access logs        | 0.29        | Start of session    | Stable signal</code></pre>",
+                    "tableHeaders": ["Option"],
                     "tableRows": [
-                        ["session_length", "Login timestamp", "0.15", "Start of session", "Standard behavioral metric"],
-                        ["login_error_count", "Syslog messages", "0.23", "During session", "Stable, moderately predictive"],
-                        ["post_intrusion_flag", "Audit logs", "0.97", "After incident", "High correlation but occurs post-event"],
-                        ["access_freq", "Access logs", "0.29", "Start of session", "Stable signal"]
+                        ["session_length"],
+                        ["login_error_count"],
+                        ["post_intrusion_flag"],
+                        ["access_freq"]
                     ],
                     "correctAnswerIndex": 2,
                     "feedback": {
@@ -414,13 +413,13 @@ export const roomPuzzles = {
             "command-centre": {
                 "enabled": {
                     "title": "Isolate Poisoned Feature",
-                    "prompt": "Which feature is most likely impacted by the corrupted automation script and should be excluded from modeling?",
-                    "tableHeaders": ["Feature", "Source", "Variance Spike", "Missing Rate", "Last Affected"],
+                    "prompt": "You've received a trace report linking a corrupted automation script to erratic sensor behavior. Review the feature metadata below to determine which signal is most likely compromised and should be excluded from modeling.<br><pre style='font-family: monospace; font-size: 13px;'><code>Feature         | Source        | Variance Spike | Missing Rate | Last Affected\n-------------------------------------------------------------------------------\npressure_avg    | SensorGroupC  | 0.8%           | 0.2%          | Yesterday\ntemp_rate       | SensorGroupA  | 1.1%           | 1.3%          | 3 Days Ago\npressure_rate   | Unknown       | 13.4%          | 0.1%          | Last Hour\nthermal_flux    | SensorGroupB  | 2.5%           | 0.0%          | Today</code></pre>",
+                    "tableHeaders": ["Option"],
                     "tableRows": [
-                        ["pressure_avg", "SensorGroupC", "0.8%", "0.2%", "Yesterday"],
-                        ["temp_rate", "SensorGroupA", "1.1%", "1.3%", "3 Days Ago"],
-                        ["pressure_rate", "Unknown", "13.4%", "0.1%", "Last Hour"],
-                        ["thermal_flux", "SensorGroupB", "2.5%", "0.0%", "Today"]
+                        ["pressure_avg"],
+                        ["temp_rate"],
+                        ["pressure_rate"],
+                        ["thermal_flux"]
                     ],
                     "correctAnswerIndex": 2,
                     "feedback": {

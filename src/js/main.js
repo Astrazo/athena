@@ -388,11 +388,11 @@ export async function generatePuzzle(actionsContainer, currentDay, roomName, cur
 
     // Create table container
     const tableContainer = document.createElement("div");
-    tableContainer.className = "puzzle-table-container";
+    tableContainer.className = "game-table-container";
 
     // Create table
     const table = document.createElement("table");
-    table.className = "puzzle-table";
+    table.className = "game-table";
 
     // Create table header
     const thead = document.createElement("thead");

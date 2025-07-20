@@ -134,8 +134,32 @@
                 if (playerId === userId) {
                     li.classList.add('current-player');
                 }
-                const role = player.role ? roleNames[player.role] || player.role : 'Choosing...';
-                li.textContent = `${player.name} - ${role}`;
+                li.textContent = player.name;
+                
+                // Create status container
+                const statusContainer = document.createElement("div");
+                statusContainer.className = "status-container";
+                
+                // Create status text
+                const statusText = document.createElement("span");
+                statusText.className = "status-text";
+                
+                // Determine if player has chosen a role
+                const hasChosenRole = player.role && player.role !== null;
+                const role = hasChosenRole ? roleNames[player.role] || player.role : 'Choosing...';
+                
+                statusText.textContent = role;
+                statusText.style.color = hasChosenRole ? "#4CAF50" : "#ff6b6b";
+                
+                // Create status light
+                const statusLight = document.createElement("div");
+                statusLight.className = "status-light";
+                statusLight.style.backgroundColor = hasChosenRole ? "#4CAF50" : "#ff6b6b";
+                statusLight.style.boxShadow = hasChosenRole ? "0 0 8px #4CAF50" : "0 0 8px #ff6b6b";
+                
+                statusContainer.appendChild(statusText);
+                statusContainer.appendChild(statusLight);
+                li.appendChild(statusContainer);
                 listContainer.appendChild(li);
             });
         }
