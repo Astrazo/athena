@@ -336,8 +336,15 @@ export function updateRoleList(roomData, playersList) {
     playersList.innerHTML = "";
     
     if (roomData && roomData["roomPlayers"]) {
+        // Sort players alphabetically by name
+        const sortedPlayers = Object.entries(roomData["roomPlayers"]).sort((a, b) => {
+            const nameA = a[1].name.toLowerCase();
+            const nameB = b[1].name.toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+        
         // Display player list
-        Object.entries(roomData["roomPlayers"]).forEach(([playerId, player]) => {
+        sortedPlayers.forEach(([playerId, player]) => {
             const li = document.createElement("li");
             const roleNames = {
                 "ds": "Data Scientist",

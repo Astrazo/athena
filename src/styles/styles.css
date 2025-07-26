@@ -177,13 +177,23 @@ h1 {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.119); /* Semi-transparent background */
+    background-color: rgba(0, 0, 0, 0.8); /* Much darker background */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 20px;
     z-index: 2000;
+}
+
+.loading-message {
+    color: #4CAF50;
+    font-family: 'Courier New', monospace;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+    letter-spacing: 1px;
+    margin-top: 10px;
 }
 
 .loading-spinner {
@@ -799,6 +809,7 @@ h1 {
     max-width: 400px;
     min-width: 220px;
     transition: box-shadow 0.3s;
+    text-align: center;
 }
 
 .player-list.game-style h3 {
@@ -951,11 +962,10 @@ h1 {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 60vh;
 }
 
 #rolePlayerList {
-    margin-bottom: 24px;
+    margin: 0 auto 24px auto;
     width: 100%;
     max-width: 400px;
 }
