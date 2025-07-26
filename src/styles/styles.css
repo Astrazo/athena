@@ -330,7 +330,7 @@ h1 {
     position: fixed;
     top: 80px;
     left: 20px;
-    z-index: 1000;
+    z-index: -1;
     max-width: 320px;
     min-width: 180px;
 }
@@ -607,7 +607,7 @@ h1 {
 
 /* Puzzle styles */
 .puzzle-container {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 20px auto;
     padding: 30px;
     background: rgba(0, 0, 0, 0.92);
@@ -616,6 +616,7 @@ h1 {
     box-shadow: 0 0 20px rgba(76, 175, 80, 0.15);
     color: #e0e0e0;
     font-family: 'Courier New', monospace;
+    line-height: 1.6;
 }
 
 .puzzle-title {
@@ -634,6 +635,29 @@ h1 {
     margin-bottom: 25px;
     font-size: 1.1rem;
     line-height: 1.5;
+}
+
+.puzzle-description pre {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #4CAF50;
+    border-radius: 6px;
+    padding: 20px;
+    margin: 15px 0;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.puzzle-description pre code {
+    font-family: 'Courier New', monospace;
+    white-space: pre;
+    display: block;
+    width: 100%;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    tab-size: 4;
 }
 
 .puzzle-table-container {
@@ -1023,6 +1047,13 @@ h1 {
     max-width: 380px;
     min-width: 180px;
     transition: box-shadow 0.3s;
+}
+
+/* Fixed height for game info panel to prevent layout shifts */
+.game-info.game-panel {
+    height: 180px;
+    overflow-y: auto;
+    z-index: -1;
 }
 
 .objective-display.game-panel h3,

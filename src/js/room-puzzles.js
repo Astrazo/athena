@@ -5,6 +5,7 @@ export const roomPuzzles = {
                 "enabler": {
                     "title": "Identify Rougue IP Address",
                     "prompt": "Review the captured traffic log below. Which IP address most likely belongs to the rogue AI and must be urgently reviewed?\n<pre><code class=\"language-bash\">[09:21:03] 10.0.0.45 → Server_1: Routine status check\n[09:21:07] 172.16.5.12 → Developer_Hub: Multiple authentication attempts failed\n[09:21:10] 10.0.0.77 → Research_Lab: Large encrypted data transfer initiated\n[09:21:15] 192.168.3.200 → Server_Room: Rapid port scanning detected</code></pre>",
+                    "hint": "As a Cybersecurity Analyst, you're trained to recognize active reconnaissance behaviors. A port scan typically signals an attempt to map open services on a target, an early phase in most attacks.",
                     "tableHeaders": ["Option"],
                     "tableRows": [
                         ["10.0.0.45"],
@@ -32,6 +33,7 @@ export const roomPuzzles = {
                 "enabled": {
                     "title": "Idenfity Suspicious Login Attempt",
                     "prompt": "Review the server login log excerpt below. Which IP address confirms the Data Scientist’s suspicion of a compromised account?\n<pre><code class=\"language-bash\">[2025-07-01 02:12:43] 192.168.1.10 — DevStation01 (Melbourne): Login Success\n[2025-07-01 02:14:05] 203.0.113.55 — Unknown Device (Tokyo): Login Success\n[2025-07-01 02:14:22] 192.168.1.10 — DevStation01 (Melbourne): Active Session\n[2025-07-01 02:15:10] 192.168.1.12 — DataNode03 (Melbourne): Login Success</code></pre>",
+                    "hint": "As a Cybersecurity Analyst, you monitor for anomalous login patterns. A successful login from a foreign location, especially squeezed between local sessions, suggests account compromise or session hijacking.",
                     "tableHeaders": ["IP Address"],
                     "tableRows": [
                         ["192.168.1.10"],
@@ -60,6 +62,7 @@ export const roomPuzzles = {
                 "enabler": {
                     "title": "Identify Compromised Interface",
                     "prompt": "Review the interface diagnostics log below. One of these interfaces shows clear signs of AI infiltration. Which one?<br><pre><code class=\"language-none\">Interface Report — July 1, 2025<br>----------------------------------<br>eth0:<br>  - Avg. Traffic: 200 MB<br>  - Recent Traffic: 195 MB<br>  - Protocols: SSH, HTTP<br><br>eth1:<br>  - Avg. Traffic: 150 MB<br>  - Recent Traffic: 580 MB<br>  - Protocols: SSH, TCP, Unknown<br><br>eth2:<br>  - Avg. Traffic: 300 MB<br>  - Recent Traffic: 310 MB<br>  - Protocols: FTP, SMB<br><br>eth3:<br>  - Avg. Traffic: 180 MB<br>  - Recent Traffic: 175 MB<br>  - Protocols: DNS, NTP</code></pre>",
+                    "hint": "As a Network Engineer, you compare expected traffic baselines to actual usage. Unusual spikes and unknown protocols on an interface often indicate unauthorized communication or breach activity.",
                     "tableHeaders": ["Interface"],
                     "tableRows": [
                         ["eth0"],
@@ -87,6 +90,7 @@ export const roomPuzzles = {
                 "enabled": {
                     "title": "Identify Infected Nodes",
                     "prompt": "Analyze the AI's communication trace. Which node has the flagged IP interacted with the most?<br><pre><code class=\"language-none\">Connection Trace<br>--------------------------<br>Destination IP     Protocol     Count   Last Seen<br>192.168.1.20       ICMP         0       —<br>192.168.2.10       TCP          4       08:53<br>192.168.3.40       UDP          1       08:50<br>192.168.3.200      TCP         13       08:51<br>10.0.0.45          TCP          3       08:49</code></pre>",
+                    "hint": "You're used to tracing communication patterns. Frequent, recent contact with a suspicious IP—especially across TCP—usually signals a node being used for persistence or command-and-control.",
                     "tableHeaders": ["IP Address"],
                     "tableRows": [
                         ["192.168.1.20"],
@@ -115,7 +119,8 @@ export const roomPuzzles = {
             "research-lab": {
                 "enabler": {
                     "title": "Identify Issue Git Commit",
-                    "prompt": "Review the recent commit history. Which commit most likely introduced poisoned data that corrupted the AI’s behavior?<br><pre><code class=\"language-none\">Git Log Summary<br>----------------------------------------------------------<br>Commit ID   | Message                                 | Effect<br>----------------------------------------------------------<br>AA12        | Skip null checks in value multiplier     | May introduce NaNs downstream<br>ZZ93        | Hardcode values temporarily for testing  | Inserts extreme outliers, can poison ML models<br>YY54        | Convert input to string for log display  | Type mismatch risk in pipelines<br>BB38        | Add optional status field                | Adds flexibility, no core risk</code></pre>",
+                    "prompt": "Review the recent commit history. Which commit most likely introduced poisoned data that corrupted the AI’s behavior?<br><pre><code class=\"language-none\">Git Log Summary<br>----------------------------------------------------------<br>Commit ID   | Message                                 | Effect<br>----------------------------------------------------------<br>AA12        | Skip null checks in value multiplier     | May introduce NaNs downstream<br>ZZ93        | Hardcode values temporarily for testing   | Inserts extreme outliers, can poison ML models<br>YY54        | Convert input to string for log display   | Type mismatch risk in pipelines<br>BB38        | Add optional status field                 | Adds flexibility, no core risk</code></pre>",
+                    "hint": "As a Software Engineer, you know how model performance can be impacted by code changes. Commits that introduce test values, especially extreme ones, can corrupt training data and model logic.",
                     "tableHeaders": ["Commit ID"],
                     "tableRows": [
                         ["AA12"],
@@ -142,6 +147,7 @@ export const roomPuzzles = {
                 "enabled": {
                     "title": "Identify Infected Process",
                     "prompt": "Review the system diagnostics below. Which process is most likely infected by the AI and should be contained immediately?<br><pre><code class=\"language-none\">Process Diagnostics Snapshot<br>--------------------------------------------------------------<br>Process Name   | Interface | Memory Usage | Hash Verified<br>--------------------------------------------------------------<br>db_sync        | eth0      | 20 MB        | Yes<br>log_agent      | eth1      | 32 MB        | Yes<br>systemd-1      | eth1      | 300 MB       | No<br>cache_clean    | eth2      | 28 MB        | Yes</code></pre>",
+                    "hint": "You're trained to recognize system-level anomalies. A legitimate-sounding process consuming excessive memory and failing hash verification could be the AI masquerading as a core service.",
                     "tableHeaders": ["Process"],
                     "tableRows": [
                         ["db_sync"],
@@ -170,6 +176,7 @@ export const roomPuzzles = {
                 "enabler": {
                     "title": "Identify Compromised Account",
                     "prompt": "Review the session activity report below. Which account has most likely been exploited by the AI to access the server?<br><pre><code class=\"language-none\">User Activity Summary\n--------------------------------------------------------------\nUser ID   | Session Count | Avg. Actions | Peak Memory (MB)\n--------------------------------------------------------------\nuser_01   | 4             | 3.2          | 420\nuser_02   | 5             | 3.5          | 390\nuser_03   | 4             | 3.0          | 405\nuser_99   | 2             | 15.2         | 950</code></pre>",
+                    "hint": "As a Data Scientist, you rely on behavior profiling. When one user shows drastically higher memory usage and activity rates than peers, it's often an outlier worth flagging as anomalous.",
                     "tableHeaders": ["Account"],
                     "tableRows": [
                         ["user_01"],
@@ -196,6 +203,7 @@ export const roomPuzzles = {
                 "enabled": {
                     "title": "Utilise Correct Data Cleaning Technique",
                     "prompt": "You receive a dataset for model input. One of the features is shown below:<br><pre><code class=\"language-python\">feature_4 = [5, 6, 7, 8, 6, 5, 120, 7, 6, 8]</code></pre>What cleaning step is most appropriate before feeding this into a machine learning model?",
+                    "hint": "You're skilled in preparing data for modeling. Outliers like extremely large values can skew predictions (especially in small datasets), so detection and treatment are crucial preprocessing steps.",
                     "tableHeaders": ["Cleaning Step"],
                     "tableRows": [
                         ["Drop or impute missing values"],

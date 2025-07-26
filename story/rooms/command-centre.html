@@ -31,6 +31,12 @@
         <div class="loading-spinner"></div>
         <div id="loadingMessage" class="loading-message">Loading...</div>
     </div>
+    
+    <!-- Objective Display -->
+    <div id="objectiveDisplay" class="objective-display game-panel">
+        <h3>Objective</h3>
+        <p>Loading objective...</p>
+    </div>
 
     <script type="module">
         import { updatePlayer, listenToRoom, updateRoleList, generateActions, navigateToRoom } from "../../src/js/main.js";
@@ -232,6 +238,34 @@
             } else {
                 return "You should investigate some other rooms in case you can assist further.";
             }
+        }
+
+        // Populate player list immediately from localStorage BEFORE any default rendering
+        function populateFromLocalStorage() {
+            const storedRoomData = JSON.parse(localStorage.getItem("localRoomData") || "{}");
+            if (storedRoomData && storedRoomData.roomPlayers) {
+                // Check if any players have valid roles (not null)
+                const hasValidRoles = Object.values(storedRoomData.roomPlayers).some(player => player.role !== null);
+                
+                if (hasValidRoles) {
+                    // Only populate if we have valid role data
+                    updateGameInfo(storedRoomData);
+                    updateRoleList(storedRoomData, document.getElementById("players"));
+                } else {
+                    // If roles are null, hide the list until Firebase provides real data
+                    document.getElementById("players").innerHTML = "";
+                }
+            } else {
+                // If no stored data, hide the player list until we get real data
+                document.getElementById("players").innerHTML = "";
+            }
+        }
+
+        // Populate immediately when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', populateFromLocalStorage);
+        } else {
+            populateFromLocalStorage();
         }
 
         // Set up real-time listener for game info updates

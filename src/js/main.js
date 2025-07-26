@@ -352,6 +352,10 @@ export function updateRoleList(roomData, playersList) {
                 "ne": "Network Engineer",
                 "ca": "Cybersecurity Analyst"
             };
+            
+            // Debug: log the role value to see what's actually stored
+            console.log(`Player ${player["name"]} has role:`, player["role"]);
+            
             const roleName = roleNames[player["role"]] || "Unassigned";
             li.innerHTML = `${player["name"].replace("You", "<br>")} - ${roleName}`;
             if (playerId === localStorage.getItem("connectedUserId")) {
