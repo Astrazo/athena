@@ -68,7 +68,7 @@
                 document.getElementById("roomName").textContent = `Room: ${roomData["roomName"]}`;
                 const playersArray = roomData["roomPlayers"] ? Object.values(roomData["roomPlayers"]) : [];
                 document.getElementById("playerCount").textContent = `Players: ${playersArray.length}/4`;
-                document.getElementById("yourName").textContent = `You: ${username}`;
+                document.getElementById("yourName").textContent = "";
 
                 // Track enabledValue changes for toast notifications
                 const currentEnabledValue = roomData["roomPlayers"][localUserId]["enabledValue"];

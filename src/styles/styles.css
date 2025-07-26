@@ -68,7 +68,7 @@ h1 {
 .player-list {
     width: auto;
     max-width: none;
-    margin: 0;
+    margin: 20px 0 0 0;
     text-align: left;
     background: none;
     border-radius: 0;
@@ -1020,7 +1020,7 @@ h1 {
     font-family: 'Courier New', monospace;
     padding: 18px 24px 18px 24px;
     margin: 0 auto 24px auto;
-    max-width: 320px;
+    max-width: 380px;
     min-width: 180px;
     transition: box-shadow 0.3s;
 }

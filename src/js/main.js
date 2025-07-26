@@ -353,7 +353,7 @@ export function updateRoleList(roomData, playersList) {
                 "ca": "Cybersecurity Analyst"
             };
             const roleName = roleNames[player["role"]] || "Unassigned";
-            li.textContent = `${player["name"]} - ${roleName}`;
+            li.innerHTML = `${player["name"].replace("You", "<br>")} - ${roleName}`;
             if (playerId === localStorage.getItem("connectedUserId")) {
                 li.classList.add("current-player");
                 li.style.fontWeight = "bold";
