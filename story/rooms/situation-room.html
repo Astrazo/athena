@@ -11,6 +11,7 @@
     <!-- Game Info Display -->
     <div id="gameInfo" class="game-info game-panel">
         <div id="roomName">Room: Loading...</div>
+        <div id="currentDay">Day: Loading...</div>
         <div id="playerCount">Players: Loading...</div>
         <div id="yourName">You: Loading...</div>
         <div id="playerList" class="player-list">
@@ -72,6 +73,7 @@
             if (roomData) {
                 // Update general room info
                 document.getElementById("roomName").textContent = `Room: ${roomData["roomName"]}`;
+                document.getElementById("currentDay").textContent = `Day: ${roomData["currentDay"]}`;
                 const playersArray = roomData["roomPlayers"] ? Object.values(roomData["roomPlayers"]) : [];
                 document.getElementById("playerCount").textContent = `Players: ${playersArray.length}/4`;
                 document.getElementById("yourName").textContent = "";
@@ -153,7 +155,7 @@
                     "\"We must disrupt her footholds, isolate compromised systems, and regain critical control.\"",
                     "\"Coordinate your skills, communicate clearly, and move swiftly.\"",
                     "\"Let’s show Athena what humanity’s capable of.\"",
-                    "New rooms unlock, systems primed for your next move."
+                    "The rooms unlock, systems primed for your next move."
                 ]);
                     break;
                 case 3:
@@ -383,7 +385,9 @@
                             await incrementEnabledCompletions(roomId, true);
                             updatedRoomData = await loadRooms(undefined, roomId, undefined);
                         } 
-                        else {    
+                        else {
+                            document.getElementById("loadingContainer").style.display = "flex";
+                            document.getElementById("loadingMessage").textContent = "Waiting for host to progress to the next day...";
                             while (true) {
                                 await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
                                 updatedRoomData = await loadRooms(undefined, roomId, undefined);
@@ -396,14 +400,11 @@
                             }
                         }
 
-
-
                         // Save score and reset day (this will trigger a db reset 3 times)
                         localStorage.setItem("introDialogueSeen", "0") // set for all players
                         localStorage.setItem("enabledValueToastShown", "false") // set for all players
-                        document.getElementById("loadingContainer").style.display = "flex";
+               
                         
-
                         // Every client now resets their enabler/enabled/enabled value states
                         await updatePlayer(localUserId, roomId, "enablerComplete", false);
                         await updatePlayer(localUserId, roomId, "enabledComplete", false);
@@ -423,6 +424,7 @@
                         // Need host to update the scores
                         let updatedRoomData = null;
                         document.getElementById("loadingContainer").style.display = "flex";
+                        document.getElementById("loadingMessage").textContent = "Loading...";
                         if (isHost === "1") {
                             await appendDayScore(roomId, dayScore);
                             await progressDay(roomId, true);

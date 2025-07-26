@@ -12,6 +12,7 @@
     <!-- Game Info Display -->
     <div id="gameInfo" class="game-info game-panel">
         <div id="roomName">Room: Loading...</div>
+        <div id="currentDay">Day: Loading...</div>
         <div id="playerCount">Players: Loading...</div>
         <div id="yourName">You: Loading...</div>
         <div id="playerList" class="player-list">
@@ -72,6 +73,7 @@
             if (roomData) {
                 // Update general room info
                 document.getElementById("roomName").textContent = `Room: ${roomData["roomName"]}`;
+                document.getElementById("currentDay").textContent = `Day: ${roomData["currentDay"]}`;
                 const playersArray = roomData["roomPlayers"] ? Object.values(roomData["roomPlayers"]) : [];
                 document.getElementById("playerCount").textContent = `Players: ${playersArray.length}/4`;
                 document.getElementById("yourName").textContent = "";

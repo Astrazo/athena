@@ -197,18 +197,52 @@ h1 {
 }
 
 .loading-spinner {
-    border: 8px solid #f3f3f3;
-    border-top: 8px solid #4CAF50;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1s linear infinite;
-    /* Remove position: fixed, top, left, transform - let flexbox handle centering */
+    position: relative;
+    width: 80px;
+    height: 80px;
     z-index: 2001;
 }
+
+.loading-spinner::before,
+.loading-spinner::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.loading-spinner::before {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(76, 175, 80, 0.7), transparent);
+    border: 3px solid rgba(76, 175, 80, 0.6);
+    animation: spin 1.5s linear infinite, pulse 2s ease-in-out infinite;
+}
+
+.loading-spinner::after {
+    width: 60%;
+    height: 60%;
+    top: 20%;
+    left: 20%;
+    background: linear-gradient(45deg, transparent, rgba(76, 175, 80, 0.9), transparent);
+    border: 2px solid rgba(76, 175, 80, 0.8);
+    animation: spin 1s linear infinite reverse, pulse 2s ease-in-out infinite 0.5s;
+}
+
 @keyframes spin {
-    0% { transform: rotate(0deg);}
-    100% { transform: rotate(360deg);}
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        opacity: 0.6;
+        box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+    }
+    50% { 
+        opacity: 1;
+        box-shadow: 0 0 40px rgba(76, 175, 80, 0.8), 0 0 60px rgba(76, 175, 80, 0.5);
+    }
 }
 
 /* Join Room styles */
@@ -1051,7 +1085,7 @@ h1 {
 
 /* Fixed height for game info panel to prevent layout shifts */
 .game-info.game-panel {
-    height: 180px;
+    height: 190px;
     overflow-y: auto;
     z-index: -1;
 }

@@ -453,9 +453,12 @@ export async function generatePuzzle(actionsContainer, currentDay, roomName, cur
     // Create hint text
     const hints = document.createElement("p");
     hints.className = "puzzle-instruction";
-    hints.textContent = "Possible hints here";
+    hints.textContent = puzzleData["hint"] || "No hint available";
     hints.style.display = "none";
     puzzleContainer.appendChild(hints);
+
+    // Track if hint was used
+    let hintUsed = false;
 
     // Create button container
     const buttonContainer = document.createElement("div");
@@ -476,6 +479,7 @@ export async function generatePuzzle(actionsContainer, currentDay, roomName, cur
     hintButton.addEventListener("click", () => {
         hints.style.display = "block";
         hintButton.style.display = "none";
+        hintUsed = true;
     })
     
     submitButton.addEventListener("click", async () => {
@@ -529,6 +533,7 @@ export async function generatePuzzle(actionsContainer, currentDay, roomName, cur
                     "role": currentRole,
                     "correct": isCorrect,
                     "selectedIndex": selectedIndex,
+                    "hintUsed": hintUsed,
                     "timestamp": new Date().toISOString()
                 };
 
