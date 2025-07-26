@@ -16,16 +16,14 @@
         <div id="yourName">You: Loading...</div>
     </div>
 
-    <div class="menu-container">
+    <div class="menu-container role-select-container">
         <h1>Briefing Room</h1>
-        <div class="button-container">
-            <button id="dsBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Data Scientist</button>
-            <button id="seBtn" class="std-button role-button" style="width: 250px;">Software Engineer</button>
-            <button id="neBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Network Engineer</button>
-            <button id="caBtn" class="std-button role-button" style="width: 250px;">Cybersecurity Analyst</button>
+        <div class="button-container" id="roleButtons">
+            <button id="dsBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Data<br>Scientist</button>
+            <button id="seBtn" class="std-button role-button" style="width: 250px;">Software<br>Engineer</button>
+            <button id="neBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Network<br>Engineer</button>
+            <button id="caBtn" class="std-button role-button" style="width: 250px;">Cybersecurity<br>Analyst</button>
         </div>
-    </div>
-    <div class="menu-container">
         <div id="waitingSection" style="display: none;">
             <div id="rolePlayerList" class="player-list game-style" style="margin-bottom: 24px;">
                 <h3>Team Selection</h3>
@@ -46,6 +44,13 @@
         const roomName = localStorage.getItem("connectedRoomName");
         const username = localStorage.getItem("connectedUsername");
         const roomData = JSON.parse(localStorage.getItem("roomData") || "{}");
+        
+        // Force hide team selection on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("Page loaded - forcing team selection to be hidden");
+            document.getElementById("waitingSection").style.display = "none";
+            document.getElementById("roleButtons").style.display = "block";
+        });
         
         // Local, global, trackers 
         let isInitialLoad = true;
@@ -93,21 +98,28 @@
 
         // Function to show waiting state
         function showWaitingState() {
-            document.querySelector(".button-container").style.display = "none";
+            document.getElementById("roleButtons").style.display = "none";
             document.getElementById("waitingSection").style.display = "block";
         }
 
         // Function to hide waiting state
         function hideWaitingState() {
-            document.querySelector(".button-container").style.display = "block";
+            console.log("Hiding waiting state - hiding team selection, showing role buttons");
+            document.getElementById("roleButtons").style.display = "block";
             document.getElementById("waitingSection").style.display = "none";
+            console.log("Role buttons display:", document.getElementById("roleButtons").style.display);
+            console.log("Waiting section display:", document.getElementById("waitingSection").style.display);
         }
 
         // Function to check if current user has a role
         function hasCurrentUserRole(roomData) {
             if (roomData && roomData.roomPlayers) {
                 const currentPlayer = roomData.roomPlayers[userId];
-                return currentPlayer && currentPlayer.role && currentPlayer.role !== null;
+                console.log("Current player data:", currentPlayer);
+                console.log("Current player role:", currentPlayer?.role);
+                const hasRole = Boolean(currentPlayer && currentPlayer.role && currentPlayer.role !== null);
+                console.log("Has role:", hasRole);
+                return hasRole;
             }
             return false;
         }
@@ -171,7 +183,6 @@
                 //console.log(roomData);
                 //console.log(roomData["roomPlayers"]["NIRGBxG21vn5Q03cOCzz"]["name"])
                 updateGameInfo(roomData);
-                renderRolePlayerList(roomData);
                 
                 // Set the current objective for this page
                 setCurrentObjective("role-select");
@@ -194,9 +205,13 @@
                 }
                 
                 // Show/hide waiting state based on current user's role selection
+                console.log("Checking role selection - hasCurrentUserRole result:", hasCurrentUserRole(roomData));
                 if (hasCurrentUserRole(roomData)) {
+                    console.log("User has role - showing team selection");
+                    renderRolePlayerList(roomData);
                     showWaitingState();
                 } else {
+                    console.log("User has no role - hiding team selection");
                     hideWaitingState();
                 }
             } else {
@@ -234,8 +249,8 @@
                     // Update player role after dialogue
                     updatePlayer(userId, roomId, "role", button.id.slice(0, 2));
                     // Hide role buttons, show team selection
-                    document.querySelector(".button-container").style.display = 'none';
-                    document.getElementById('waitingSection').style.display = 'flex';
+                    document.getElementById("roleButtons").style.display = 'none';
+                    document.getElementById('waitingSection').style.display = 'block';
                 } catch (error) {
                     console.error("Error in updatePlayer:", error);
                 }
@@ -247,7 +262,7 @@
             // Reset role to None after dialogue
             updatePlayer(userId, roomId, "role", null);
             // Show role buttons, hide team selection
-            document.querySelector(".button-container").style.display = 'block';
+            document.getElementById("roleButtons").style.display = 'block';
             document.getElementById('waitingSection').style.display = 'none';
         });
 

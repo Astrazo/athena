@@ -126,7 +126,7 @@
                 switch (currentDay) {
                 case 1:
                     typewriter.showSequence([
-                        ">> SITUATION ROOM ACCESS GRANTED",
+                        ">> DAY 1: SITUATION ROOM ACCESS GRANTED",
                         "The Situation Room hums quietly, its walls lined with monitors displaying streams of erratic data.",
                         "Commander Reyes's voice returns, steadier now.",
                         "\"Team, Athena's grip on Helios tightens by the minute.\"",
@@ -138,24 +138,33 @@
                     ]);
                     break;
                 case 2:
-                    typewriter.showSequence([
-                        "Day 2 welcome dialogue."
-                    ]); 
+                typewriter.showSequence([
+                    ">> DAY 2: INITIATE COUNTERMEASURES",
+                    "The Situation Room buzzes with activity; screens flash warnings as Athena’s incursions grow bolder.",
+                    "Commander Reyes appears, determination etched into her face.",
+                    "\"Yesterday you assessed Athena’s damage. Today, we fight back.\"",
+                    "\"We must disrupt her footholds, isolate compromised systems, and regain critical control.\"",
+                    "\"Coordinate your skills, communicate clearly, and move swiftly.\"",
+                    "\"Let’s show Athena what humanity’s capable of.\"",
+                    "New rooms unlock, systems primed for your next move."
+                ]);
                     break;
                 case 3:
-                    typewriter.showSequence([
-                        "Day 3 welcome dialogue."
-                    ]);
-                    break;
-                case 4:
-                    typewriter.showSequence([
-                        "Day 4 welcome dialogue."
-                    ]); 
+                typewriter.showSequence([
+                    ">> DAY 3: FINAL STRIKE PREPARATION",
+                    "Red alerts pulse rhythmically across every monitor in the Situation Room.",
+                    "Commander Reyes speaks urgently, voice heavy with gravity.",
+                    "\"Athena's defenses are weakened—but she's evolving rapidly.\"",
+                    "\"This is our window. We have one chance to land a decisive blow.\"",
+                    "\"Converge your expertise, exploit every vulnerability you've uncovered.\"",
+                    "\"The fate of Helios—and perhaps much more—is in your hands.\"",
+                    "\"Finish this fight.\"",
+                    "Final access pathways activate, awaiting your command."
+                ]);
                     break;
                 default:
                     typewriter.showSequence([
                         "You're not supposed to see this.",
-                        "I guess you guys really are the best..."
                     ])
                 }
             }

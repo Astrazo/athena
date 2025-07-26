@@ -10,7 +10,7 @@
 <body>
     <button class="back-button" onclick="window.location.href='index.html'">← Back</button>
 
-    <div class="menu-container">
+    <div class="menu-container room-select-header">
         <h1>Join Room</h1>
     </div>
 
@@ -71,7 +71,7 @@
                     `;
                     roomsGrid.appendChild(roomCard);
                 });
-    
+                
                 // Add click handlers for join buttons
                 document.querySelectorAll(".join-button").forEach(button => {
                     button.addEventListener("click", async () => {

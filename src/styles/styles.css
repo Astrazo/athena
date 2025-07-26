@@ -202,6 +202,22 @@ h1 {
 }
 
 /* Join Room styles */
+.room-select-header {
+    min-height: auto !important;
+    margin-top: 0 !important;
+    padding: 20px;
+}
+
+.role-select-container {
+    min-height: 100vh !important;
+    margin-top: -60px !important;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 .no-rooms {
     text-align: center;
     font-size: 1.2rem;
@@ -931,7 +947,7 @@ h1 {
 }
 
 #waitingSection {
-    display: flex !important;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
