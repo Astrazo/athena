@@ -44,7 +44,7 @@
         import TypewriterDialogue from "../../src/js/typewriter.js";
         import { dialogue } from "../../src/js/dialogue.js";
         import { roomActions } from "../../src/js/room-actions.js";
-        import { setCurrentObjective } from "../../src/js/objectives.js";
+        import { setCurrentObjective, updateObjective } from "../../src/js/objectives.js";
         import { enablerMap } from "../../src/js/enabler-map.js";
         import toast from "../../src/js/toast.js";
 
@@ -94,7 +94,9 @@
                 if (currentEnabledValue !== null && currentEnabledValue != previousEnabledValue) {
                     // Only show toast if we haven't shown it for this enabledValue
                     if (!localStorage.getItem('enabledValueToastShown')) {
-                        showEnabledValueToast();
+                        showEnabledValueToast().catch(error => {
+                            console.warn('Error showing enabled value toast:', error);
+                        });
                         localStorage.setItem('enabledValueToastShown', 'true');
                     }
                 }
@@ -110,7 +112,7 @@
         }
 
         // Function to show toast when enabledValue is received
-        function showEnabledValueToast() {
+        async function showEnabledValueToast() {
             const roleNames = {
                 "ds": "Data Scientist",
                 "se": "Software Engineer", 
@@ -123,6 +125,14 @@
             const enablerName = roleNames[enablerRole];
 
             toast.success(`The ${enablerName} has sent you some information to be used in another room.`);
+            
+            // Play notification sound when receiving enabled value
+            try {
+                const { playNotification } = await import("../../src/js/audio.js");
+                playNotification();
+            } catch (error) {
+                console.warn('Audio not available:', error);
+            }
             
             // Check if player is in the correct room for their enabled puzzle
             if (isInEnabledPuzzleRoom()) {
@@ -230,6 +240,8 @@
         // Helper function to determine the correct completion message
         function getCompletionMessage() {
             if (enabledComplete && enablerComplete) {
+                // Update objective immediately when both tasks are complete
+                updateObjective('Objective', "Return to situation room and wait.");
                 return "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up.";
             } else {
                 return "You should investigate some other rooms in case you can assist further.";

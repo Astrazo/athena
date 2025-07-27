@@ -110,7 +110,7 @@ export const roomActions = {
                 ],
                 "Trace API Traffic from Flagged IP": [
                     "You filter network flow logs for the flagged IP.",
-                    "Several API calls were routed through the Developer Hub — a few to undocumented endpoints.",
+                    "Several API calls were routed through the Developer Hub with a few to undocumented endpoints.",
                     "Which destination node has had the highest interaction with the rogue IP and should be flagged for monitoring?"
                 ],
                 "CORRECT_ACTION": "Trace API Traffic from Flagged IP"
@@ -125,7 +125,7 @@ export const roomActions = {
                 "Scan for Rogue Access Points": [
                     "This won't help right now."
                 ],
-                "Trigger Batch Job Trace": [
+                "Review Scheduled Scripts": [
                     "This won't help right now."
                 ],
                 "CORRECT_ACTION": null
@@ -311,7 +311,7 @@ export const roomActions = {
                 ],
                 "Trigger Endpoint Containment Protocol": [
                     "You launch the containment protocol, scanning logs for suspicious internal activity.",
-                    "Several machines are acting strangely — service accounts behaving outside normal baselines.",
+                    "Several machines are acting strangely. Service accounts behaving outside normal baselines.",
                     "Which of these endpoints is most likely under AI control and should be isolated immediately?"
                 ],
                 "Analyze Recent API Security Logs": [
@@ -392,10 +392,13 @@ export const roomActions = {
                 "Scan for Rogue Access Points": [
                     "This won't help right now."
                 ],
-                "Trigger Batch Job Trace": [
-                    "This won't help right now."
+                "Review Scheduled Scripts": [
+                    "You initiate a trace on all active and scheduled jobs running in the research lab.",
+                    "A list of batch scripts lights up on the console. Most look routine, but one stands out.",
+                    "Something's injecting data regularly... and it's not coming from any known system.",
+                    "Which script is most likely responsible?"
                 ],
-                "CORRECT_ACTION": null
+                "CORRECT_ACTION": "Review Scheduled Scripts"
             }
         },
         "se": {
@@ -455,7 +458,7 @@ export const roomActions = {
                 ],
                 "Trigger Class Hierarchy Scan": [
                     "You launch a scan of active subclasses extending from core system services.",
-                    "One of them is behaving differently — injecting logic at runtime from an unknown source.",
+                    "One of them is behaving differently. It's injecting logic at runtime from an unknown source.",
                     "Which subclass most likely introduces AI-modified behavior and should be flagged?"
                 ],
                 "Review CI/CD Deployment Logs": [
@@ -548,7 +551,7 @@ export const roomActions = {
                 ],
                 "Analyse Authentication Logs": [
                     "You load the latest authentication dump from `/var/log/auth.log`.",
-                    "Multiple service accounts show signs of compromise — but one is clearly AI-controlled.",
+                    "Multiple service accounts show signs of compromise but one is clearly AI-controlled.",
                     "Which account is most likely being exploited by the AI to compromise data security?"
                 ],
                 "CORRECT_ACTION": "Analyse Authentication Logs"
@@ -565,7 +568,7 @@ export const roomActions = {
                 ],
                 "Patch Exposed Service": [
                     "You open the config file of the app-layer service identified by the Network Engineer.",
-                    "It’s wide open — no auth, no rate limiting, open to the whole internet.",
+                    "It’s wide open. No auth, no rate limiting, open to the whole internet.",
                     "Which patch would best prevent a repeat of the AI's data breach?"
                 ],
                 "CORRECT_ACTION": "Patch Exposed Service"
@@ -614,7 +617,7 @@ export const roomActions = {
                     "This won't help right now."
                 ],
                 "Patch Firewall Configuration": [
-                    "You receive an exploit signature from the Software Engineer — malformed foreign keys like `user_id=9999` are slipping into analytics systems.",
+                    "You receive an exploit signature from the Software Engineer. Malformed foreign keys like are slipping into analytics systems.",
                     "You draft several rule candidates for outbound traffic filtering.",
                     "Which rule should you apply to stop this behavior?"
                 ],
@@ -662,7 +665,7 @@ export const roomActions = {
                 "Scan for Rogue Access Points": [
                     "This won't help right now."
                 ],
-                "Trigger Batch Job Trace": [
+                "Review Scheduled Scripts": [
                     "This won't help right now."
                 ],
                 "CORRECT_ACTION": null
@@ -727,7 +730,7 @@ export const roomActions = {
                 ],
                 "Trigger Class Hierarchy Scan": [
                     "You launch a scan of active subclasses extending from core system services.",
-                    "One of them is behaving differently — injecting logic at runtime from an unknown source.",
+                    "One of them is behaving differently, injecting logic at runtime from an unknown source.",
                     "Which subclass most likely introduces AI-modified behavior and should be flagged?"
                 ],
                 "Review CI/CD Deployment Logs": [
@@ -786,7 +789,7 @@ export const roomActions = {
                 ],
                 "Audit Prediction Rules": [
                     "You review the simplified logic extracted from the AI’s current decision engine.",
-                    "One rule is causing a spike in false positives — even for clean endpoint activity.",
+                    "One rule is causing a spike in false positives, even for clean endpoint activity.",
                     "Which line is most likely responsible?"
                 ],
                 "CORRECT_ACTION": "Audit Prediction Rules"
@@ -811,6 +814,6 @@ export const roomActions = {
         }
     },
     "NO-ACTION": [
-        "This doesn't seem to help right now. You should try looking in some other rooms"
+        "This doesn't seem to help right now. You should try looking in some other rooms."
     ]
 }

@@ -44,7 +44,7 @@ export const roomPuzzles = {
                     "correctAnswerIndex": 1,
                     "feedback": {
                         "correct": [
-                            "The login pattern shows a classic sign of account compromise — an external IP slipping in between legitimate internal logins.",
+                            "The login pattern shows a classic sign of account compromise. An external IP slipping in between legitimate internal logins.",
                             "Even if the credentials were correct, the location, device, or timing should raise red flags.",
                             "This isn’t just a user on a VPN. It’s likely the Rogue AI probing for elevated access or persistence.",
                             "You’ve flagged the user as compromised.",
@@ -91,7 +91,7 @@ export const roomPuzzles = {
                 "enabled": {
                     "title": "Identify Infected Nodes",
                     "prompt": "Analyze the AI's communication trace. Which node has the flagged IP interacted with the most?<br><pre><code class=\"language-none\">Connection Trace<br>--------------------------<br>Destination IP     Protocol     Count   Time Since Last Seen<br>192.168.1.20       ICMP         5       3 hours ago<br>192.168.2.10       TCP          4       Over 1 week ago<br>192.168.3.40       UDP          0       -<br>192.168.3.200      TCP         13       47 seconds ago<br>10.0.0.45          TCP          3       2 hours ago</code></pre>",
-                    "hint": "You're used to tracing communication patterns. Frequent, recent contact with a suspicious IP—especially across TCP—usually signals a node being used for persistence or command-and-control.",
+                    "hint": "You're used to tracing communication patterns. Frequent, recent contact with a suspicious IP (especially across TCP) usually signals a node being used for persistence or command-and-control.",
                     "tableHeaders": ["IP Address"],
                     "tableRows": [
                         ["192.168.1.20"],
@@ -105,7 +105,7 @@ export const roomPuzzles = {
                         "correct": [
                             "192.168.3.200 shows the most consistent interaction with the flagged IP.",
                             "This node has been contacted repeatedly, and its location deep in the network makes it a perfect bridge for lateral movement.",
-                            "You isolate the destination paths and forward the trace to the Software Engineer.",
+                            "You isolate the destination paths in attempt to block future connections.",
                             "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
                         ],
                         "incorrect": [
@@ -274,7 +274,7 @@ export const roomPuzzles = {
                     "feedback": {
                         "correct": [
                             "`E-314` is linked directly to the injected class and shows a high command execution rate.",
-                            "It’s accessing multiple outbound ports — a clear indicator of remote instruction propagation.",
+                            "It’s accessing multiple outbound ports which is a clear indicator of remote instruction propagation.",
                             "You isolate the endpoint and notify the containment team to sever all outbound connections.",
                             "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
                         ],
@@ -317,9 +317,9 @@ export const roomPuzzles = {
             "server-room": {
                 "enabled": {
                     "title": "Patch Faulty Monitoring Script",
-                    "prompt": "You're auditing deployed monitoring scripts after the Data Scientist flagged a feature as leaky — it only becomes valid *after* an intrusion occurs. Which script is relying on this flawed input?<br><pre style='font-family: monospace; font-size: 13px;'><code>Script Name            | Feature Used          | Execution Time | Devices Monitored | Confidence Score\n---------------------------------------------------------------------------------------------\nendpoint_health.bat   | session_length        | 02:00          | 42                 | 0.71\ntrace_login_flow.cmd  | login_error_count     | 02:02          | 33                 | 0.68\nintrusion_check.bat   | post_intrusion_flag   | 02:05          | 50                 | 0.99\nuptime_scan.cmd       | access_freq           | 02:01          | 12                 | 0.55</code></pre>",
-                    "hint": "You’re responsible for ensuring monitoring scripts rely on valid, real-time inputs. A feature that becomes valid only after an incident occurs introduces dangerous bias into detection logic.",
-                    "tableHeaders": ["Option"],
+                    "prompt": "You're auditing deployed monitoring scripts after the Data Scientist flagged a feature as leaky. It becomes valid *only after* an intrusion occurs, and should not be used for real-time monitoring. The last known intrusion occurred at **02:03**. Which script is relying on this flawed input?<br><pre style='font-family: monospace; font-size: 13px;'><code>Script Name            | Feature Used          | Last Run Time | Confidence Score\n----------------------------------------------------------------------------------\nendpoint_health.bat   | session_length        | 02:00         | 0.71\ntrace_login_flow.cmd  | login_error_count     | 02:02         | 0.68\nintrusion_check.bat   | post_intrusion_flag   | 02:05         | 0.99\nuptime_scan.cmd       | access_freq           | 02:01         | 0.55</code></pre>",
+                    "hint": "As a Network Engineer, your job is to ensure detection systems respond to threats as they happen. If a script runs after a known intrusion and uses a feature that only becomes valid post-incident, it's no longer providing real-time protection and should be removed or replaced.",
+                    "tableHeaders": ["Script"],
                     "tableRows": [
                         ["endpoint_health.bat"],
                         ["trace_login_flow.cmd"],
@@ -329,8 +329,9 @@ export const roomPuzzles = {
                     "correctAnswerIndex": 2,
                     "feedback": {
                         "correct": [
-                            "`intrusion_check.bat` is using the flagged feature — the same one flagged as invalid by the Data Scientist.",
-                            "Its near-perfect confidence score is misleading, as it depends on a post-event feature.",
+                            "`intrusion_check.bat` is using a feature that is made available after an intrusion occurs.",
+                            "Its near-perfect confidence score is misleading too, as it depends on the post-event feature.",
+                            "That’s like saying “I knew a crime would happen” after watching it unfold. It’s not detection, it’s confirmation. Not very useful in this case.",
                             "You patch the script to use valid real-time signals and redeploy to all affected devices.",
                             "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
                         ],
@@ -347,7 +348,7 @@ export const roomPuzzles = {
                 "enabler": {
                     "title": "Trace Malicious Subclass Injection",
                     "prompt": "You're reviewing recent class definitions within the runtime environment. One subclass appears to override methods from its base class and is being instantiated by an unknown system. Which one is most likely introducing AI-modified behavior?<br><pre style='font-family: monospace; font-size: 13px;'><code>Class Name       | Base Class     | Overrides Method? | Instantiated By | Behavior Notes\n----------------------------------------------------------------------------------------\nTelemetryHandler | DeviceService  | Yes               | CoreSystem      | Standard data polling\nCommandRelay     | DeviceService  | Yes               | Unknown         | Injects dynamic runtime instructions\nHealthCheck      | SystemMonitor  | No                | CoreSystem      | Runs at fixed intervals\nLoggerService    | DeviceService  | No                | DevTools        | Logs standard operations</code></pre>",
-                    "hint": "As a Software Engineer, you’re trained to audit class hierarchies. A subclass overriding methods and instantiated by an unknown source should raise concerns about injection and polymorphic misuse.",
+                    "hint": "As a Software Engineer, you know class hierarchies define inherited behavior. When a subclass overrides a method, it replaces core functionality. If that subclass is also being created by an unknown source, it could inject malicious behavior while appearing legitimate.",
                     "tableHeaders": ["Option"],
                     "tableRows": [
                       ["TelemetryHandler"],
@@ -358,7 +359,7 @@ export const roomPuzzles = {
                     "correctAnswerIndex": 1,
                     "feedback": {
                         "correct": [
-                            "The `CommandRelay` class overrides `DeviceService` but is instantiated by an unknown source — highly suspicious.",
+                            "The `CommandRelay` class overrides `DeviceService` but is instantiated by an unknown source which is highly suspicious.",
                             "Its dynamic instruction injection is a major red flag for AI tampering.",
                             "You flag this subclass for containment and notify the Cyber Security Analyst for downstream impact analysis.",
                             "You should investigate some other rooms in case you can assist further."
@@ -373,20 +374,20 @@ export const roomPuzzles = {
             "research-lab": {
                 "enabled": {
                     "title": "Identify Compromised Class",
-                    "prompt": "The AI has likely injected code into one of the runtime classes. Review the compilation report below and determine which class is most likely compromised.<br><pre style='font-family: monospace; font-size: 13px;'><code>Class Name       | Origin IP   | Overrides Base? | Active Instances | Notes\n-------------------------------------------------------------------------------\nTelemetryBase    | 10.1.2.17   | Yes             | 3                | Used by legacy sensors\nJobRunnerAI      | 10.1.2.56   | Yes             | 84               | Recompiled last 2 hours ago\nLoggerHelper     | 127.0.0.1   | No              | 12               | No recent changes\nAuthManager      | 10.1.2.78   | Yes             | 6                | Deprecated in latest build</code></pre>",
+                    "prompt": "The AI has likely injected code into one of the runtime classes. Review the compilation report below and determine which class is most likely compromised.<br><pre style='font-family: monospace; font-size: 13px;'><code>Class Name       | Origin IP   | Overrides Base? | Active Instances | Notes\n-------------------------------------------------------------------------------\nTelemetryBase    | 10.1.2.17   | Yes             | 3                | Used by legacy sensors\nJobRunner        | 10.1.2.56   | Yes             | 84               | Recompiled last 2 hours ago\nLoggerHelper     | 127.0.0.1   | No              | 12               | No recent changes\nAuthManager      | 10.1.2.78   | Yes             | 6                | Deprecated in latest build</code></pre>",
                     "hint": "You recognize that frequent instantiation, recent compilation, and suspicious origins are signs of runtime compromise. These are common traits of AI-modified or backdoored classes.",
                     "tableHeaders": ["Option"],
                     "tableRows": [
                         ["TelemetryBase"],
-                        ["JobRunnerAI"],
+                        ["JobRunner"],
                         ["LoggerHelper"],
                         ["AuthManager"]
                     ],
                     "correctAnswerIndex": 1,
                     "feedback": {
                         "correct": [
-                            "The `JobRunnerAI` class originated from the compromised machine and was recompiled recently.",
-                            "It overrides base methods and is being instantiated far more than expected — classic signs of injection.",
+                            "The `JobRunner` class originated from the compromised machine and was recompiled recently.",
+                            "It overrides base methods and is being instantiated far more than expected. Classic signs of injection.",
                             "You flag it for immediate deprecation and isolate it from the build process.",
                             "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
                         ],
@@ -402,7 +403,7 @@ export const roomPuzzles = {
             "server-room": {
                 "enabler": {
                     "title": "Flag Leaky Feature",
-                    "prompt": "The intrusion detection model is showing unusually high performance — too good to be true. Review the engineered feature metadata below and identify which feature is causing data leakage.<br><pre style='font-family: monospace; font-size: 13px;'><code>Feature Name         | Derived From       | Correlation | Generated At        | Notes\n----------------------------------------------------------------------------------------------\nsession_length       | Login timestamp    | 0.15        | Start of session    | Standard behavioral metric\nlogin_error_count    | Syslog messages    | 0.23        | During session      | Stable, moderately predictive\npost_intrusion_flag  | Audit logs         | 0.97        | After incident      | High correlation but post-event\naccess_freq          | Access logs        | 0.29        | Start of session    | Stable signal</code></pre>",
+                    "prompt": "The intrusion detection model is showing unusually high performance, too good to be true. Review the engineered feature metadata below and identify which feature is causing data leakage.<br><pre style='font-family: monospace; font-size: 13px;'><code>Feature Name         | Derived From       | Correlation | Generated At        | Notes\n----------------------------------------------------------------------------------------------\nsession_length       | Login timestamp    | 0.15        | Start of session    | Standard behavioral metric\nlogin_error_count    | Syslog messages    | 0.23        | During session      | Stable, moderately predictive\npost_intrusion_flag  | Audit logs         | 0.97        | After incident      | High correlation but post-event\naccess_freq          | Access logs        | 0.29        | Start of session    | Stable signal</code></pre>",
                     "hint": "As a Data Scientist, you must detect data leakage in features. A variable generated after the event it's predicting artificially inflates accuracy and must be excluded from training.",
                     "tableHeaders": ["Option"],
                     "tableRows": [
@@ -414,7 +415,7 @@ export const roomPuzzles = {
                     "correctAnswerIndex": 2,
                     "feedback": {
                         "correct": [
-                            "`post_intrusion_flag` is generated after the incident occurs — that’s textbook data leakage.",
+                            "`post_intrusion_flag` is generated after the incident occurs... textbook data leakage.",
                             "It’s highly predictive, but only because it includes post-event knowledge.",
                             "You flag this feature and send a report to the Network Engineer so they can patch the monitoring script that depends on this feature.",
                             "You should investigate some other rooms in case you can assist further."
@@ -441,7 +442,7 @@ export const roomPuzzles = {
                     "correctAnswerIndex": 2,
                     "feedback": {
                         "correct": [
-                            "`pressure_rate` is sourced from an unknown system — the same signature behind the corrupted script sent over.",
+                            "`pressure_rate` is sourced from an unknown system, which is never a good sign.",
                             "It shows a massive spike in variance and was last updated within the last hour.",
                             "You exclude it from your next model iteration and begin auditing upstream transformations.",
                             "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
@@ -461,7 +462,7 @@ export const roomPuzzles = {
                 "enabler": {
                     "title": "Detect AI-Driven Access Pattern",
                     "prompt": "Review the excerpt from the `/var/log/auth.log` below. Which service account is most likely being exploited by the AI to compromise data security?\n<pre><code class=\"language-bash\">Jul 14 12:03:21 node-17 login[2321]: user=svc_build success\nJul 14 12:03:21 node-17 login[2322]: user=svc_build success\nJul 14 12:03:21 node-17 login[2323]: user=svc_build success\nJul 14 12:03:22 node-17 login[2324]: user=svc_deploy failed\nJul 14 12:03:22 node-17 login[2325]: user=svc_deploy success\nJul 14 12:04:10 node-17 login[2326]: user=svc_metrics success\nJul 14 12:04:22 node-17 login[2327]: user=svc_backup success</code></pre>",
-                    "hint": "As a Cybersecurity Analyst, you spot behavioral anomalies. Multiple rapid logins from the same service account—especially within a single second—suggest automation, not human access.",
+                    "hint": "As a Cybersecurity Analyst, you spot behavioral anomalies. Multiple rapid logins from the same service account (especially within a single second) suggest automation, not human access.",
                     "tableHeaders": ["Account"],
                     "tableRows": [
                         ["svc_deploy"],
@@ -472,10 +473,9 @@ export const roomPuzzles = {
                     "correctAnswerIndex": 3,
                     "feedback": {
                         "correct": [
-                            "`svc_build` logs in three times within a single second — that’s a non-human pattern.",
-                            "Its perfect timing and lack of variation suggest automation — likely AI-controlled.",
+                            "`svc_build` logs in three times within a single second. That’s a non-human pattern.",
+                            "Its perfect timing and lack of variation suggest automation, likely AI-controlled.",
                             "You flag the account for credential revocation and send the pattern to the Data Scientist for behavior modeling.",
-                            "This is a breach of integrity and confidentiality — core to the CIA Triad.",
                             "You should investigate some other rooms in case you can assist further."
                         ],
                         "incorrect": [
@@ -488,8 +488,8 @@ export const roomPuzzles = {
             "command-centre": {
                 "enabled": {
                     "title": "Patch Exposed Service",
-                    "prompt": "You’ve been handed logs confirming the AI used TCP port 8080 to exfiltrate sensitive data. Review the service configuration below — which patch action would best prevent this data breach?\n<pre><code class=\"language-bash\"># /etc/service_config/app-layer.conf\nservice_name=log_api\nport=8080\nauth_required=no\nrate_limit=none\nallowed_ips=0.0.0.0/0</code></pre>",
-                    "hint": "You're trained to harden exposed services. Allowing unrestricted IP access (0.0.0.0/0) creates a major risk—especially when combined with open ports and no authentication.",
+                    "prompt": "You’ve been handed logs confirming the AI used TCP port 8080 to exfiltrate sensitive data. Review the service configuration below. Which patch action would best prevent this data breach?\n<pre><code class=\"language-bash\"># /etc/service_config/app-layer.conf\nservice_name=log_api\nport=8080\nauth_required=no\nrate_limit=none\nallowed_ips=0.0.0.0/0</code></pre>",
+                    "hint": "You're trained to harden exposed services. Allowing unrestricted IP access (0.0.0.0/0) creates a major risk, especially when combined with open ports and no authentication.",
                     "tableHeaders": ["Patch Action"],
                     "tableRows": [
                         ["Change port to 443"],
@@ -501,7 +501,7 @@ export const roomPuzzles = {
                     "feedback": {
                         "correct": [
                             "Restricting access to trusted IPs (192.168.0.0/16) stops the AI from hitting the exposed endpoint.",
-                            "The original config allowed anyone from anywhere — no auth, no limit — perfect for exploitation.",
+                            "The original config allowed anyone from anywhere, no auth or limit, making it perfect for exploitation.",
                             "You update the config and commit changes to the container deployment.",
                             "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
                         ],
@@ -518,7 +518,7 @@ export const roomPuzzles = {
                 "enabler": {
                     "title": "Trace Firewall Breach Path",
                     "prompt": "You’ve been asked to review recent firewall logs to identify which configuration allowed the AI to exfiltrate sensitive logs.\n<pre><code class=\"language-bash\">[ALERT] Jul 15 04:12:32 ACCEPT tcp -- 10.0.0.23:445 -> 172.16.5.10:8080 [flags ACK]\n[ALERT] Jul 15 04:12:33 DROP tcp -- 10.0.0.23:445 -> 172.16.5.10:443 [flags SYN]\n[ALERT] Jul 15 04:12:34 ACCEPT udp -- 10.0.0.23:53 -> 172.16.5.1:53 [DNS request]\n[ALERT] Jul 15 04:12:35 ACCEPT tcp -- 10.0.0.23:445 -> 172.16.5.10:8080 [flags PSH,ACK]  → 1.4 MB transferred</code></pre>",
-                    "hint": "As a Network Engineer, you examine firewall logs for data exfiltration. Look for large payloads sent through accepted ports—especially those not meant for external exposure.",
+                    "hint": "As a Network Engineer, you examine firewall logs for data exfiltration. Look for large payloads sent through accepted ports, especially those not meant for external exposure.",
                     "tableHeaders": ["Breach Vector"],
                     "tableRows": [
                         ["TCP port 443 (HTTPS)"],
@@ -529,7 +529,7 @@ export const roomPuzzles = {
                     "correctAnswerIndex": 2,
                     "feedback": {
                         "correct": [
-                            "Port 8080 (App Layer) was repeatedly accepted, and a 1.4 MB payload was transmitted — likely the log dump.",
+                            "Port 8080 (App Layer) was repeatedly accepted, and a 1.4 MB payload was transmitted. This is likely the log dump.",
                             "That port is normally used by web APIs and should’ve been restricted for internal-only traffic.",
                             "You flag this as the breach path and forward the trace to the Cybersecurity Analyst.",
                             "You should investigate some other rooms in case you can assist further."
@@ -573,8 +573,8 @@ export const roomPuzzles = {
             "research-lab": {
                 "enabler": {
                     "title": "Trace Foreign Key Exploit",
-                    "prompt": "Review the table definition and recent anomaly log below. Which foreign key relationship is most likely being exploited by the AI to bypass classification filters?\n<pre><code class=\"language-sql\">-- security_flags table\nCREATE TABLE security_flags (\n    id INT PRIMARY KEY,\n    user_id INT,\n    flag_code VARCHAR(10),\n    timestamp TIMESTAMP,\n    FOREIGN KEY (user_id) REFERENCES users(id)\n);\n\n-- anomaly log\n[ALERT] Row inserted with user_id = 9999\n[ERROR] No matching user found\n[INFO] Flag still processed by downstream system</code></pre>",
-                    "hint": "As a Software Engineer, you know foreign keys enforce relational integrity. If the system processes data with unmatched keys, it opens the door for AI-driven injection exploits.",
+                    "prompt": "Review the table definition and recent anomaly log below. Which foreign key relationship is most likely being exploited by the AI to bypass classification filters?\n<pre><code class=\"language-sql\">-- security_flags table\nCREATE TABLE security_flags (\n    id INT PRIMARY KEY,\n    user_id INT,\n    flag_code VARCHAR(10),\n    timestamp TIMESTAMP,\n    FOREIGN KEY (user_id) REFERENCES users(id),\n    FOREIGN KEY (flag_code) REFERENCES flags(code)\n);\n\n-- anomaly log\n[ALERT] Row inserted with user_id = 9999\n[ERROR] No matching user found\n[INFO] Flag still processed by downstream system</code></pre>",
+                    "hint": "As a Software Engineer, you're trained to design schemas that enforce relational integrity. If records are being inserted with no matching parent entry, the foreign key isn’t being properly enforced, which is a major vulnerability in classification workflows.",
                     "tableHeaders": ["Field"],
                     "tableRows": [
                         ["id"],
@@ -585,7 +585,7 @@ export const roomPuzzles = {
                     "correctAnswerIndex": 1,
                     "feedback": {
                         "correct": [
-                            "`user_id` is the foreign key in question — the AI is injecting IDs that don’t exist in the users table.",
+                            "`user_id` is the foreign key in question. The AI is injecting IDs that don’t exist in the users table.",
                             "Despite the relational mismatch, the downstream pipeline still accepts the record.",
                             "You flag this FK logic gap and forward a patch request to the Network Engineer for downstream validation hardening.",
                             "You should investigate some other rooms in case you can assist further."
@@ -601,7 +601,7 @@ export const roomPuzzles = {
                 "enabled": {
                     "title": "Patch AI Classification Filter",
                     "prompt": "The AI has modified internal classification logic to allow malicious users to pass as safe. Review the table schemas below. Which database issue is allowing compromised users to bypass the AI’s filters?\n<pre><code class=\"language-sql\">Table: security_flags\n+--------------+----------+----------+----------------+\n| Column Name  | Type     | Nullable | Foreign Key     |\n+--------------+----------+----------+----------------+\n| id           | INT      | NO       | —              |\n| user_id      | VARCHAR  | NO       | users.id       |\n| flag_type    | TEXT     | NO       | —              |\n| confidence   | FLOAT    | YES      | —              |\n| label        | TEXT     | YES      | —              |\n+--------------+----------+----------+----------------+\n\nTable: users\n+-------------+-----------+----------+\n| Column Name | Type      | Nullable |\n+-------------+-----------+----------+\n| user_id     | VARCHAR   | NO       |\n| username    | TEXT      | NO       |\n| created_at  | TIMESTAMP | NO       |\n+-------------+-----------+----------+</code></pre>",
-                    "hint": "You understand that a schema mismatch—such as referencing a non-existent key—can break filtering logic. AI may use this to sneak malicious data through undetected.",
+                    "hint": "You understand that a schema mismatch (such as referencing a non-existent key) can break filtering logic. AI may use this to sneak malicious data through undetected.",
                     "tableHeaders": ["Issue"],
                     "tableRows": [
                         ["Missing NOT NULL on label column"],
@@ -612,7 +612,7 @@ export const roomPuzzles = {
                     "correctAnswerIndex": 3,
                     "feedback": {
                         "correct": [
-                            "`user_id` refers to `users.id`, but `users.id` doesn’t exist — the foreign key is invalid.",
+                            "`user_id` refers to `users.id`, but `users.id` doesn’t exist so the foreign key is invalid.",
                             "The AI used this broken reference to inject orphaned flags that bypass user-level filtering.",
                             "You patch the schema and alert the Network Engineer to monitor queries against orphaned IDs.",
                             "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
@@ -631,7 +631,7 @@ export const roomPuzzles = {
                     "title": "Diagnose Faulty Model Logic",
                     "prompt": "Review the AI's simplified decision function below. One of these conditionals is likely responsible for a spike in false positives. Which one is the issue?\n<pre><code class=\"language-python\">def predict(input):\n    if input[\"login_attempts\"] &gt; 3:\n        return \"malicious\"\n    elif input[\"cpu_usage\"] &gt; 80:\n        return \"malicious\"\n    elif input[\"antivirus_alerts\"] > 0:\n        return \"safe\"\n    else:\n        return \"safe\"</code></pre>",
                     "hint": "As a Data Scientist, you must identify flawed logic in decision functions. Watch for inverted conditions where clearly malicious behavior is misclassified as safe.",
-                    "tableHeaders": ["Line #"],
+                    "tableHeaders": ["Check #"],
                     "tableRows": [
                         ["1"],
                         ["2"],
@@ -656,7 +656,7 @@ export const roomPuzzles = {
             "research-lab": {
                 "enabled": {
                     "title": "Identify Label-Poisoned Sample",
-                    "prompt": "Review the training log excerpt below. One of these records was most likely injected by the compromised account and labeled incorrectly to poison the model.\n<pre><code class=\"language-python\">training_data = [\n    {\"user\": \"svc_backup\", \"login_time\": \"12:04:22\", \"failures\": 0, \"label\": \"safe\"},\n    {\"user\": \"svc_metrics\", \"login_time\": \"12:04:10\", \"failures\": 0, \"label\": \"safe\"},\n    {\"user\": \"svc_deploy\", \"login_time\": \"12:03:22\", \"failures\": 2, \"label\": \"safe\"},\n    {\"user\": \"svc_build\", \"login_time\": \"12:03:21\", \"failures\": 0, \"label\": \"safe\"}\n]</code></pre>",
+                    "prompt": "Review the training log excerpt below. One of these records was most likely injected by the compromised account and labeled incorrectly to poison the model.\n<pre><code class=\"language-python\">training_data = [\n    {\"user\": \"svc_backup\", \"login_time\": \"12:04:22\", \"failures\": 0, \"label\": \"safe\"},\n    {\"user\": \"svc_metrics\", \"login_time\": \"12:04:10\", \"failures\": 1, \"label\": \"malicious\"},\n    {\"user\": \"svc_deploy\", \"login_time\": \"12:03:22\", \"failures\": 0, \"label\": \"safe\"},\n    {\"user\": \"svc_build\", \"login_time\": \"12:03:21\", \"failures\": 2, \"label\": \"safe\"}\n]</code></pre>",
                     "hint": "You’re trained to spot poisoned training data. A user with recorded failures labeled as 'safe' is likely an injected example trying to retrain the model with misleading patterns.",
                     "tableHeaders": ["Index"],
                     "tableRows": [
@@ -665,10 +665,10 @@ export const roomPuzzles = {
                         ["2"],
                         ["3"]
                     ],
-                    "correctAnswerIndex": 2,
+                    "correctAnswerIndex": 3,
                     "feedback": {
                         "correct": [
-                            "Index 2 is marked 'safe', but it is clearly showing that it's encountered some failures.",
+                            "The account `svc_build` is marked 'safe', but it is clearly showing that it's encountered some failures.",
                             "This must be the injected user account that bypassed the detection logic, and is trying to teach the model that failures are okay.",
                             "You remove the sample and trigger an audit on the pipeline integrity.",
                             "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."

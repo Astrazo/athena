@@ -68,6 +68,32 @@
         document.getElementById("commandBtn").addEventListener("click", () => navigateToRoom("Command Centre"));
         document.getElementById("developerBtn").addEventListener("click", () => navigateToRoom("Developer Hub"));
 
+        // Add test audio button (temporary for debugging)
+        /*const testAudioBtn = document.createElement('button');
+        testAudioBtn.textContent = 'Test Audio';
+        testAudioBtn.style.position = 'fixed';
+        testAudioBtn.style.bottom = '20px';
+        testAudioBtn.style.left = '20px';
+        testAudioBtn.style.zIndex = '10000';
+        testAudioBtn.style.padding = '10px';
+        testAudioBtn.style.backgroundColor = '#4CAF50';
+        testAudioBtn.style.color = 'white';
+        testAudioBtn.style.border = 'none';
+        testAudioBtn.style.borderRadius = '5px';
+        testAudioBtn.style.cursor = 'pointer';
+        
+        testAudioBtn.addEventListener('click', async () => {
+            try {
+                const { default: audioManager } = await import("../../src/js/audio.js");
+                audioManager.testAudio();
+            } catch (error) {
+                console.error('Error testing audio:', error);
+            }
+        });
+        
+        document.body.appendChild(testAudioBtn);
+        */
+
         // Function to update general game info in the top right
         function updateGameInfo(roomData) {
             if (roomData) {
@@ -83,11 +109,25 @@
                 currentDay = roomData["currentDay"];
 
                 // Check if enabledValue just changed from null to a value
+                console.log('Checking enabledValue change:', {
+                    current: currentEnabledValue,
+                    previous: previousEnabledValue,
+                    isNull: currentEnabledValue !== null,
+                    isDifferent: currentEnabledValue != previousEnabledValue,
+                    toastShown: localStorage.getItem('enabledValueToastShown')
+                });
+                
                 if (currentEnabledValue !== null && currentEnabledValue != previousEnabledValue) {
+                    console.log('EnabledValue changed! Triggering notification...');
                     // Only show toast if we haven't shown it for this enabledValue
                     if (!localStorage.getItem('enabledValueToastShown')) {
-                        showEnabledValueToast();
+                        console.log('Toast not shown yet, showing now...');
+                        showEnabledValueToast().catch(error => {
+                            console.warn('Error showing enabled value toast:', error);
+                        });
                         localStorage.setItem('enabledValueToastShown', 'true');
+                    } else {
+                        console.log('Toast already shown for this enabledValue');
                     }
                 }
 
@@ -102,7 +142,8 @@
         }
 
         // Function to show toast when enabledValue is received
-        function showEnabledValueToast() {
+        async function showEnabledValueToast() {
+            console.log('showEnabledValueToast called (situation room)');
             const roleNames = {
                 "ds": "Data Scientist",
                 "se": "Software Engineer", 
@@ -115,6 +156,16 @@
             const enablerName = roleNames[enablerRole];
 
             toast.success(`The ${enablerName} has sent you some information to be used in another room.`);
+            
+            // Play notification sound when receiving enabled value
+            try {
+                console.log('Importing audio module... (situation room)');
+                const { playNotification } = await import("../../src/js/audio.js");
+                console.log('Audio module imported, playing notification... (situation room)');
+                playNotification();
+            } catch (error) {
+                console.warn('Audio not available:', error);
+            }
         }
 
         // Function to find which role enabled the current player
@@ -163,10 +214,10 @@
                     ">> DAY 3: FINAL STRIKE PREPARATION",
                     "Red alerts pulse rhythmically across every monitor in the Situation Room.",
                     "Commander Reyes speaks urgently, voice heavy with gravity.",
-                    "\"Athena's defenses are weakened—but she's evolving rapidly.\"",
+                    "\"Athena's defenses are weakened but she's evolving rapidly.\"",
                     "\"This is our window. We have one chance to land a decisive blow.\"",
                     "\"Converge your expertise, exploit every vulnerability you've uncovered.\"",
-                    "\"The fate of Helios—and perhaps much more—is in your hands.\"",
+                    "\"The fate of Helios and perhaps much more is in your hands.\"",
                     "\"Finish this fight.\"",
                     "Final access pathways activate, awaiting your command."
                 ]);
@@ -230,6 +281,21 @@
                 }
             }
             
+            // Simulate incoming trasmission for 3 seconds in case people anre't looking at the dialogue due to them waiting
+            document.getElementById("loadingContainer").style.display = "flex";
+            document.getElementById("loadingMessage").textContent = "Incoming transmission...";
+            // Play transmission sound
+            try {
+                const { playTransmission } = await import("../../src/js/audio.js");
+                playTransmission();
+            } catch (error) {
+                console.warn('Audio not available:', error);
+            }
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            
+            document.getElementById("loadingContainer").style.display = "none";
+
             const finalDay = 3;
             // Generate dynamic dialogue based on performance
             if (perfectRoles.length === 4) {
@@ -424,7 +490,7 @@
                         // Need host to update the scores
                         let updatedRoomData = null;
                         document.getElementById("loadingContainer").style.display = "flex";
-                        document.getElementById("loadingMessage").textContent = "Loading...";
+                        document.getElementById("loadingMessage").textContent = "Waiting for host to finish the game...";
                         if (isHost === "1") {
                             await appendDayScore(roomId, dayScore);
                             await progressDay(roomId, true);
@@ -457,19 +523,21 @@
                             finalDialogue = [
                                 "Unfortunately, your team was unable to stop the AI.",
                                 "With less than half the possible points, the facility is lost.",
-                                "Perhaps next time, you'll be able to work together more effectively."
+                                "Perhaps next time, you'll be able to work together more effectively.",
+                                "Thanks for playing!"
                             ];
                         } else if (percent < 80) {
                             finalDialogue = [
                                 "You just barely managed to hold things together.",
                                 "It wasn't a perfect run, but you did enough to scrape by.",
-                                "The AI is contained... for now. But there's plenty of room for improvement."
+                                "The AI is contained... for now. But there's plenty of room for improvement.",
+                                "Thanks for playing!"
                             ];
                         } else {
                             finalDialogue = [
                                 "Congratulations! Your team performed exceptionally well.",
-                                "With over 80% of the possible points, you've outsmarted the AI and saved the facility.",
-                                "Outstanding teamwork and skill!"
+                                "With over 80% of the possible points, you've outsmarted the AI and saved the facility. Outstanding teamwork and skill!",
+                                "Thanks for playing!"
                             ];
                         }
                         await typewriter.showSequence(finalDialogue, {
@@ -481,6 +549,8 @@
                 }   
             });
         }
+
+
 
         // Set up real-time listener for game info updates
         const unsubscribe = listenToRoom(roomId, async (roomData) => {

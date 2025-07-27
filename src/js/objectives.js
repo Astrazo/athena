@@ -27,9 +27,9 @@ export function setCurrentObjective(roomName, roomData = null, currentRole = nul
     if (roomData && currentRole) {
         const currentDay = roomData["currentDay"];
         const localUserId = localStorage.getItem("connectedUserId");
-        const enablerComplete = roomData["roomPlayers"][localUserId]["enablerComplete"];
-        const enabledComplete = roomData["roomPlayers"][localUserId]["enabledComplete"];
         const enabledPossible = roomData["roomPlayers"][localUserId]["enabledValue"] != null;
+        const enablerComplete = localStorage.getItem("enablerComplete");
+        const enabledComplete = localStorage.getItem("enabledComplete");
 
         // Check if both tasks are complete - if so, player should return to situation room
         if (enabledComplete && enablerComplete) {

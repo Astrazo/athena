@@ -1,3 +1,36 @@
+// Browser Navigation Restrictions
+// Simple and effective back/forward button blocking
+(function() {
+    // Force forward navigation to prevent back button
+    window.history.forward();
+    
+    function noBack() {
+        window.history.forward();
+    }
+    
+    // Call noBack on page load and various events
+    window.addEventListener('load', noBack);
+    window.addEventListener('pageshow', noBack);
+    window.addEventListener('focus', noBack);
+    
+    // Disable refresh shortcuts and show popup
+    document.addEventListener('keydown', function(e) {
+        // Prevent F5, Ctrl+R, Ctrl+Shift+R (refresh)
+        if (e.key === 'F5' || 
+            (e.ctrlKey && e.key === 'r') || 
+            (e.ctrlKey && e.shiftKey && e.key === 'R')) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Prevent Alt+Left/Right (back/forward)
+        if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+})();
+
 import { initializeApp } from "firebase/app";
 import {
     getFirestore, collection, doc, addDoc, updateDoc,
@@ -508,13 +541,34 @@ export async function generatePuzzle(actionsContainer, currentDay, roomName, cur
         submitButton.disabled = true;
         submitButton.textContent = "Processing...";
         
-        // Show feedback
-        const feedbackMessages = isCorrect ? puzzleData["feedback"]["correct"] : puzzleData["feedback"]["incorrect"];
-
-        // Determine which puzzle to set co complete
+        // Determine which puzzle type was completed
         const puzzleCompletionType = puzzleType === "enabler" ? "enablerComplete" : "enabledComplete";
         
-        await typewriter.showSequence(feedbackMessages, {
+        // Get current completion status
+        const localUserId = localStorage.getItem("connectedUserId");
+        const currentEnablerComplete = roomData["roomPlayers"][localUserId]["enablerComplete"];
+        const currentEnabledComplete = roomData["roomPlayers"][localUserId]["enabledComplete"];
+
+        // Now update local storage too based on what task was just completed
+        localStorage.setItem("enablerComplete", "enabler" === puzzleType);
+        localStorage.setItem("enabledComplete", "enabled" === puzzleType);
+        
+        // Determine completion status after this puzzle is completed
+        const willBeEnablerComplete = puzzleType === "enabler" ? true : currentEnablerComplete;
+        const willBeEnabledComplete = puzzleType === "enabled" ? true : currentEnabledComplete;
+        
+        // Check if both tasks will be complete after this puzzle
+        const bothTasksComplete = willBeEnablerComplete && willBeEnabledComplete;
+        
+        // Determine completion message
+        const baseDialogue = isCorrect ? puzzleData["feedback"]["correct"].slice(0, -1) : puzzleData["feedback"]["incorrect"].slice(0, -1);
+        const completionMessage = bothTasksComplete 
+            ? "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
+            : "You should investigate other rooms in case you can assist further.";
+
+        // Here do the split of the last line again from default Dialogue, 
+        
+        await typewriter.showSequence([...baseDialogue, completionMessage], {
             onContinue:  async () => {
                 // Mark puzzle as complete
                 const userId = localStorage.getItem("connectedUserId");

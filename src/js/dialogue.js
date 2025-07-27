@@ -12,7 +12,7 @@ export const dialogue = {
                 ],
                 "enabler-complete": [
                     "You’ve already identified the rogue IP and sent it to the Network Engineer for urgent review.",
-                    "The IDS has quieted — no further intrusions have been detected from that address.",
+                    "The IDS has quieted. No further intrusions have been detected from that address.",
                     "You should investigate some other rooms in case you can assist further."
                 ]
             },
@@ -21,11 +21,11 @@ export const dialogue = {
                     "The Data Scientist flagged a specific user for unusual activity.",
                     "Your job: dig into the login logs and determine if this user’s account has been hijacked.",
                     "If the behavior checks out, you can clear it.",
-                    "If not — you need to flag it for immediate lockdown before the AI spreads deeper."
+                    "If not, you need to flag it for immediate lockdown before the AI spreads deeper."
                 ],
                 "enabled-complete": [
                     "You’ve already reviewed the login logs and flagged the suspicious user account.",
-                    "The abnormal access pattern matched a classic account compromise — it’s now under lockdown.",
+                    "The abnormal access pattern matched a classic account compromise. It’s now under lockdown.",
                     "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
                 ],
                 "enabled-not-available": [
@@ -59,13 +59,13 @@ export const dialogue = {
                 "enabled-complete": [
                     "You've already traced the suspicious IP across the internal network.",
                     "Every system it touched has been flagged and logged.",
-                    "There’s nothing more to pull from this trace—your part in the assessment is done.",
+                    "There’s nothing more to pull from this trace. Your part in the assessment is done.",
                     "Hopefully that map gives the others a fighting chance.",
                     "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up."
                 ],
                 "enabled-not-available": [
                     "You start parsing the traffic logs, looking for suspicious cross-network activity.",
-                    "A few odd patterns emerge, but none have a confirmed source — it's all guesswork without a flagged IP.",
+                    "A few odd patterns emerge, but none have a confirmed source. It's all guesswork without a flagged IP.",
                     "You'll need to wait for the Cybersecurity Analyst to confirm the threat origin before you can act."
                 ]
             }
@@ -139,7 +139,7 @@ export const dialogue = {
             "developer-hub": {
                 "enabler": [
                     "You enter the Developer Hub, now locked down under containment protocols.",
-                    "Build systems are under siege — the AI is launching internal attacks and sabotaging developer tools.",
+                    "Build systems are under siege. The AI is launching internal attacks and sabotaging developer tools.",
                     "Firewall logs show erratic behavior from multiple endpoints. One of the service accounts has been hijacked.",
                     "You need to trace the breach and flag the compromised machine before the AI spreads further."
                 ],
@@ -182,8 +182,8 @@ export const dialogue = {
             },
             "server-room": {
                 "enabled": [
-                    "You enter the Server Room — several monitoring scripts are still firing false positives or delayed alerts.",
-                    "The Data Scientist just flagged an engineered feature as invalid — it’s leaking post-event data into real-time systems.",
+                    "You enter the Server Room. Several monitoring scripts are still firing false positives or delayed alerts.",
+                    "The Data Scientist just flagged an engineered feature as invalid.  It’s leaking post-event data into real-time systems.",
                     "You need to patch the script that’s using this feature before it spreads faulty alerts across the network."
                 ],
                 "enabled-complete": [
@@ -267,7 +267,7 @@ export const dialogue = {
         "ca": {
             "server-room": {
                 "enabler": [
-                    "You enter the Server Room — security dashboards are reporting anomalies in access logs.",
+                    "You enter the Server Room. Security dashboards are reporting anomalies in access logs.",
                     "A service account appears to be under AI control, bypassing traditional detection with near-perfect logins.",
                     "It’s compromising endpoint integrity and likely exfiltrating sensitive logs or credentials.",
                     "Time to identify the account before the Data Scientist gets fed garbage telemetry."
@@ -280,9 +280,9 @@ export const dialogue = {
             },
             "command-centre": {
                 "enabled": [
-                    "You step into the Command Centre and pull the active config for `log_api` which is the service running on port 8080.",
+                    "You step into the Command Centre and pull the active config for `log_api` which is the service running on the port sent over by the Network Engineer.",
                     "The AI used this exact vector to pull sensitive logs without triggering a firewall block.",
-                    "There are multiple ways to patch this — but only one prevents this specific data exposure path."
+                    "There are multiple ways to patch this, but only one prevents this specific data exposure path."
                 ],
                 "enabled-complete": [
                     "You already patched the exposed `log_api` service and restricted its network access.",
@@ -300,7 +300,7 @@ export const dialogue = {
             "command-centre": {
                 "enabler": [
                     "You return to the Command Centre and access firewall logs tied to a suspicious early-morning alert.",
-                    "One of the open ports shows a large outbound data transfer — far outside protocol norms.",
+                    "One of the open ports shows a large outbound data transfer far outside protocol norms.",
                     "The AI likely used this path to bypass containment layers.",
                     "You need to identify the breach vector and notify the Cybersecurity Analyst to perform mitigation."
                 ],
@@ -324,7 +324,7 @@ export const dialogue = {
                 ],
                 "enabled-not-available": [
                     "You access the command terminal for managing firewall rules.",
-                    "But there’s no specific exploit signature provided yet — you don’t know what pattern to filter.",
+                    "But there’s no specific exploit signature provided yet so you don’t know what pattern to filter.",
                     "You back out for now, waiting on the Software Engineer to complete their schema trace."
                 ]
             }
@@ -333,7 +333,7 @@ export const dialogue = {
             "research-lab": {
                 "enabler": [
                     "You arrive in the Research Lab and access the classification module’s database logs.",
-                    "A warning catches your eye — invalid `user_id`s are being inserted but aren’t triggering schema rejections.",
+                    "A warning catches your eye. Invalid `user_id`s are being inserted but aren’t triggering schema rejections.",
                     "The AI may be exploiting weak foreign key constraints to poison downstream systems.",
                     "You’ll need to trace the exploit and forward a correction to the Network Engineer."
                 ],
@@ -346,7 +346,7 @@ export const dialogue = {
             "developer-hub": {
                 "enabled": [
                     "You enter the Developer Hub, where AI-modified logic is interfering with database-based access filters.",
-                    "The Data Scientist sent over the faulty decision logic — it’s bypassing malicious inputs.",
+                    "The Data Scientist sent over the faulty decision logic. It’s somehow bypassing malicious inputs.",
                     "You suspect the flaw lies in a misconfigured table schema that’s letting the AI exploit weak relationships.",
                     "It’s your job to isolate and patch the structural issue before more bad data leaks through."
                 ],
@@ -357,7 +357,7 @@ export const dialogue = {
                 ],
                "enabled-not-available": [
                     "You log into the internal schema management dashboard.",
-                    "But the corrupted model logic hasn’t yet been isolated — you don’t know what to patch.",
+                    "But the corrupted model logic hasn’t yet been isolated so you don’t know what to patch.",
                     "You back out for now, waiting on the Data Scientist to complete their trace."
                 ]
             }
@@ -366,7 +366,7 @@ export const dialogue = {
             "developer-hub": {
                 "enabler": [
                     "You enter the Developer Hub and pull the AI’s decision tree from the most recent build.",
-                    "Your anomaly detection models are now misfiring — triggering no alerts on compromised data.",
+                    "Your anomaly detection models are now misfiring, triggering no alerts on compromised data.",
                     "One of the AI's logic conditions has likely been inverted or tampered with.",
                     "Your job is to find the faulty rule and forward it to the Software Engineer for code correction."
                 ],
@@ -378,10 +378,10 @@ export const dialogue = {
             },
             "research-lab": {
                 "enabled": [
-                    "You return to the Research Lab — the real-time training stream is acting strangely.",
+                    "You return to the Research Lab to see that the real-time training stream is acting strangely.",
                     "Your pipeline is picking up contradictions: inputs flagged as 'malicious' show no actual signs of threat.",
                     "The Cybersecurity Analyst just flagged the an account as the likely AI access vector.",
-                    "You suspect one of your recent training samples has been poisoned — and it’s biasing your entire model."
+                    "You suspect one of your recent training samples has been poisoned, and it’s biasing your entire model."
                 ],
                 "enabled-complete": [
                     "You already removed the poisoned sample tied to the compromised account.",
