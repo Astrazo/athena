@@ -5,15 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Athena</title>
     <link rel="icon" href="data:,">
-  <script type="module" crossorigin src="/athena/assets/situationRoom-BC0sxWsL.js"></script>
-  <link rel="modulepreload" crossorigin href="/athena/assets/main-3GqDBcTq.js">
-  <link rel="modulepreload" crossorigin href="/athena/assets/typewriter-CCdU_-e1.js">
-  <link rel="stylesheet" crossorigin href="/athena/assets/main-D0TiZtJm.css">
+  <script type="module" crossorigin src="/athena/assets/situationRoom-OPF_3oYe.js"></script>
+  <link rel="modulepreload" crossorigin href="/athena/assets/main-kJiNQ_X-.js">
+  <link rel="modulepreload" crossorigin href="/athena/assets/objectives-CwcHldjI.js">
+  <link rel="modulepreload" crossorigin href="/athena/assets/typewriter-KOhSjPsI.js">
+  <link rel="modulepreload" crossorigin href="/athena/assets/toast-Ch3uAxuw.js">
+  <link rel="stylesheet" crossorigin href="/athena/assets/main-Bh_IRuan.css">
 </head>
 <body>
     <!-- Game Info Display -->
-    <div id="gameInfo" class="game-info">
+    <div id="gameInfo" class="game-info game-panel">
         <div id="roomName">Room: Loading...</div>
+        <div id="currentDay">Day: Loading...</div>
         <div id="playerCount">Players: Loading...</div>
         <div id="yourName">You: Loading...</div>
         <div id="playerList" class="player-list">
@@ -24,16 +27,22 @@
 
     <div class="menu-container">
         <h1 id="lobbyHeader">Situation Room</h1>
-        <h2 id="lobbySubheader">Pick a room to explore</h2>
         <div class="button-container">
-            <button id="serverBtn" class="std-button role-button" style="width: 250px;">Server Room</button>
-            <button id="researchBtn" class="std-button role-button" style="width: 250px;">Research Lab</button>
-            <button id="commandBtn" class="std-button role-button" style="width: 250px;">Command Centre</button>
-            <button id="developerBtn" class="std-button role-button" style="width: 250px;">Developer Hub</button>
+            <button id="serverBtn" class="std-button role-button" style="width: 250px;">Enter<br>Server Room</button>
+            <button id="researchBtn" class="std-button role-button" style="width: 250px;">Enter<br>Research Lab</button>
+            <button id="commandBtn" class="std-button role-button" style="width: 250px;">Enter<br>Command Centre</button>
+            <button id="developerBtn" class="std-button role-button" style="width: 250px;">Enter<br>Developer Hub</button>
         </div>
     </div>
     <div id="loadingContainer" class="loading-container" style="display: none;">
         <div class="loading-spinner"></div>
+        <div id="loadingMessage" class="loading-message">Loading...</div>
+    </div>
+    
+    <!-- Objective Display -->
+    <div id="objectiveDisplay" class="objective-display game-panel">
+        <h3>Objective</h3>
+        <p>Loading objective...</p>
     </div>
 
 </body>
