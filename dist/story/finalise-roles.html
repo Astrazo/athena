@@ -5,28 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Athena</title>
     <link rel="icon" href="data:,">
-  <script type="module" crossorigin src="/athena/assets/finaliseRoles-C02GEAh6.js"></script>
-  <link rel="modulepreload" crossorigin href="/athena/assets/main-3GqDBcTq.js">
-  <link rel="modulepreload" crossorigin href="/athena/assets/typewriter-CCdU_-e1.js">
-  <link rel="stylesheet" crossorigin href="/athena/assets/main-D0TiZtJm.css">
+  <script type="module" crossorigin src="/athena/assets/finaliseRoles-CXh2kfWL.js"></script>
+  <link rel="modulepreload" crossorigin href="/athena/assets/main-fhajF75_.js">
+  <link rel="modulepreload" crossorigin href="/athena/assets/typewriter-KOhSjPsI.js">
+  <link rel="modulepreload" crossorigin href="/athena/assets/objectives-BzP7pnAo.js">
+  <link rel="modulepreload" crossorigin href="/athena/assets/toast-Ch3uAxuw.js">
+  <link rel="stylesheet" crossorigin href="/athena/assets/main-DQBMH0wm.css">
 </head>
 <body>
     <!-- Game Info Display -->
-    <div id="gameInfo" class="game-info">
+    <div id="gameInfo" class="game-info game-panel">
         <div id="roomName">Room: Loading...</div>
         <div id="playerCount">Players: Loading...</div>
         <div id="yourName">You: Loading...</div>
     </div>
 
     <div class="menu-container">
-        <h1 id="lobbyHeader">Team Assembly Complete</h1>
-        <div id="playerList" class="player-list">
+        <h1 id="lobbyHeader">Briefing Room</h1>
+        <div id="playerList" class="player-list game-style" style="margin-bottom: 24px;">
             <h3>Team Composition</h3>
             <ul id="players"></ul>
         </div>
     </div>
     <div id="loadingContainer" class="loading-container" style="display: none;">
         <div class="loading-spinner"></div>
+        <div id="loadingMessage" class="loading-message">Waiting for host to start the mission...</div>
     </div>
 
 </body>

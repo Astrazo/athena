@@ -5,35 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Athena</title>
     <link rel="icon" href="data:,">
-  <script type="module" crossorigin src="/athena/assets/roleSelect-BwmhP_0c.js"></script>
-  <link rel="modulepreload" crossorigin href="/athena/assets/main-3GqDBcTq.js">
-  <link rel="modulepreload" crossorigin href="/athena/assets/typewriter-CCdU_-e1.js">
-  <link rel="stylesheet" crossorigin href="/athena/assets/main-D0TiZtJm.css">
+  <script type="module" crossorigin src="/athena/assets/roleSelect-DcHpEGV8.js"></script>
+  <link rel="modulepreload" crossorigin href="/athena/assets/main-fhajF75_.js">
+  <link rel="modulepreload" crossorigin href="/athena/assets/typewriter-KOhSjPsI.js">
+  <link rel="modulepreload" crossorigin href="/athena/assets/objectives-BzP7pnAo.js">
+  <link rel="stylesheet" crossorigin href="/athena/assets/main-DQBMH0wm.css">
 </head>
 
 <body>
     <!-- Game Info Display -->
-    <div id="gameInfo" class="game-info">
+    <div id="gameInfo" class="game-info game-panel">
         <div id="roomName">Room: Loading...</div>
         <div id="playerCount">Players: Loading...</div>
         <div id="yourName">You: Loading...</div>
     </div>
 
-    <div class="menu-container">
-        <h1>Welcome to the Digital Escape Room</h1>
-        <div class="button-container">
-            <button id="dsBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Data Scientist</button>
-            <button id="seBtn" class="std-button role-button" style="width: 250px;">Software Engineer</button>
-            <button id="neBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Network Engineer</button>
-            <button id="caBtn" class="std-button role-button" style="width: 250px;">Cybersecurity Analyst</button>
+    <div class="menu-container role-select-container">
+        <h1>Briefing Room</h1>
+        <div class="button-container" id="roleButtons">
+            <button id="dsBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Data<br>Scientist</button>
+            <button id="seBtn" class="std-button role-button" style="width: 250px;">Software<br>Engineer</button>
+            <button id="neBtn" class="std-button role-button" style="width: 250px; max-width: 100%;">Network<br>Engineer</button>
+            <button id="caBtn" class="std-button role-button" style="width: 250px;">Cybersecurity<br>Analyst</button>
         </div>
-    </div>
-    
-    <div class="menu-container">
         <div id="waitingSection" style="display: none;">
-            <div id="spinner" class="loading-spinner"></div>
-            <p id="waitingText">Waiting for others to choose their role...</p>
-            <button id="changeMindBtn" class="std-button" style="margin-top: 20px;">Change Your Mind</button>
+            <div id="rolePlayerList" class="player-list game-style">
+                <h3>Team Selection</h3>
+                <ul id="rolePlayers"></ul>
+                <button id="changeMindBtn" class="std-button" style="margin-top: 20px;">Change Your Mind</button>
+            </div>
         </div>
     </div>
 

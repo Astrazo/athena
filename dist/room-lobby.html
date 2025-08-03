@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Room Lobby - Athena</title>
     <link rel="icon" href="data:,">
-  <script type="module" crossorigin src="/athena/assets/roomLobby-BAMu1PXH.js"></script>
-  <link rel="modulepreload" crossorigin href="/athena/assets/main-3GqDBcTq.js">
-  <link rel="stylesheet" crossorigin href="/athena/assets/main-D0TiZtJm.css">
+  <script type="module" crossorigin src="/athena/assets/roomLobby-CnJR4DpI.js"></script>
+  <link rel="modulepreload" crossorigin href="/athena/assets/main-fhajF75_.js">
+  <link rel="modulepreload" crossorigin href="/athena/assets/objectives-BzP7pnAo.js">
+  <link rel="modulepreload" crossorigin href="/athena/assets/toast-Ch3uAxuw.js">
+  <link rel="stylesheet" crossorigin href="/athena/assets/main-DQBMH0wm.css">
 </head>
 <body>
     <!-- Game Info Display -->
-    <div id="gameInfo" class="game-info">
+    <div id="gameInfo" class="game-info game-panel">
         <div id="roomName">Room: Loading...</div>
         <div id="playerCount">Players: Loading...</div>
         <div id="yourName">You: Loading...</div>
@@ -19,19 +21,21 @@
 
     <div class="menu-container">
         <h1 id="lobbyHeader"></h1>
-        <div id="playerList" class="player-list">
-            <h3>Players</h3>
-            <ul id="players"></ul>
-        </div>
-
-        <div class="button-container">
-            <button id="readyUp" class="std-button" style="width: 200px; max-width: 100%;">Ready Up</button>
-            <button id="leaveRoom" class="std-button" style="width: 200px;">Leave Room</button>
+        <div style="height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div id="playerList" class="player-list game-style">
+                <h3>Players</h3>
+                <ul id="players"></ul>
+                <div class="button-container" style="margin-top: 24px; justify-content: center;">
+                    <button id="readyUp" class="std-button" style="width: 200px; max-width: 100%;">Ready Up</button>
+                    <button id="leaveRoom" class="std-button" style="width: 200px;">Leave Room</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="loadingContainer" class="loading-container" style="display: none;">
         <div class="loading-spinner"></div>
+        <div id="loadingMessage" class="loading-message">Loading...</div>
     </div>
 
 </body>

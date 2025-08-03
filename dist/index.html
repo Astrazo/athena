@@ -5,18 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Athena</title>
     <link rel="icon" href="data:,">
-  <script type="module" crossorigin src="/athena/assets/main-DqV40s18.js"></script>
-  <link rel="modulepreload" crossorigin href="/athena/assets/main-3GqDBcTq.js">
-  <link rel="stylesheet" crossorigin href="/athena/assets/main-D0TiZtJm.css">
+  <script type="module" crossorigin src="/athena/assets/main-DxsQxQPv.js"></script>
+  <link rel="modulepreload" crossorigin href="/athena/assets/main-fhajF75_.js">
+  <link rel="stylesheet" crossorigin href="/athena/assets/main-DQBMH0wm.css">
 </head>
 <body>
     <div class="menu-container">
         <h1>Athena</h1>
-        <button class="std-button" onclick="window.location.href='create-room.html'">Create Room</button>
-        <button class="std-button" id="joinRoomBtn">Join Room</button>
+        <div class="subtitle">Digital Escape Room</div>
+        <div class="description">
+            <p>Welcome to the Athena Digital Escape Room. Work with your team to solve the puzzles required and save the facility from a rogue AI.</p>
+            <p>Remember to choose your role wisely! Each team member will be required to solve unique puzzles based on their role's real-world skillset.</p>
+        </div>
+        <div class="button-container">
+            <button class="std-button" onclick="window.location.href='create-room.html'">Create Room</button>
+            <button class="std-button" id="joinRoomBtn">Join Room</button>
+        </div>
+        <div class="tech-decoration">
+            <div class="tech-line"></div>
+            <div class="tech-dot"></div>
+            <div class="tech-line"></div>
+        </div>
     </div>
     <div id="loadingContainer" class="loading-container" style="display: none;">
         <div class="loading-spinner"></div>
+        <div id="loadingMessage" class="loading-message">Loading...</div>
     </div>
 </body>
 </html> 
