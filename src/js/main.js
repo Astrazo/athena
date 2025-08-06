@@ -287,7 +287,7 @@ export function isRoomActionableRightNow(currentDay, currentRole, roomName, enab
     }
 }
 
-export function generateActions(roomData, roomName, currentRole, actionsContainer) {
+export function generateActions(roomData, roomName, currentRole, actionsContainer, blockActions = false) {
     // Get current day
     const currentDay = roomData["currentDay"];
 
@@ -331,7 +331,7 @@ export function generateActions(roomData, roomName, currentRole, actionsContaine
 
             // If they're not in the correct room at the moment, all actions should be dead, so show the dialogue for that
             let finalActionText = actionText;
-            if (!isRoomActionable) {
+            if (!isRoomActionable || blockActions) {
                 finalActionText = roomActions["NO-ACTION"]
             }
 
@@ -342,7 +342,7 @@ export function generateActions(roomData, roomName, currentRole, actionsContaine
                     finalActionText
                 );
                 // If this button is the correct action to take, show the puzzle
-                if (actionKey === availableActions["CORRECT_ACTION"]) {
+                if (actionKey === availableActions["CORRECT_ACTION"] && !blockActions) {
                     console.log("Correct action clicked");
 
                     if (puzzleToGenerate != null) {
@@ -577,7 +577,7 @@ export async function generatePuzzle(actionsContainer, currentDay, roomName, cur
                 
                 // Replace the puzzleDiv with the action buttons
                 actionsContainer.innerHTML = "";
-                generateActions(roomData, roomName, currentRole, actionsContainer)
+                generateActions(roomData, roomName, currentRole, actionsContainer, true)
 
                 // Construct diciontary with results to append to puzzleAnswers
                 const results = {
