@@ -9,7 +9,7 @@ export const roomObjectives = {
         description: "Choose your role for this mission."
     },
     "finalise-roles": {
-        title: "Team Finalization",
+        title: "Team Finalisation",
         description: "Review your team composition and confirm all roles."
     }
 };
@@ -19,7 +19,7 @@ export function setCurrentObjective(roomName, roomData = null, currentRole = nul
     // For non-game rooms, use predefined objectives
     if (roomObjectives[roomName]) {
         const objective = roomObjectives[roomName];
-        updateObjectiveDisplay('Objective', objective.description);
+        updateObjectiveDisplay('Objective', objective["description"]);
         return;
     }
 
@@ -28,8 +28,8 @@ export function setCurrentObjective(roomName, roomData = null, currentRole = nul
         const currentDay = roomData["currentDay"];
         const localUserId = localStorage.getItem("connectedUserId");
         const enabledPossible = roomData["roomPlayers"][localUserId]["enabledValue"] != null;
-        const enablerComplete = localStorage.getItem("enablerComplete");
-        const enabledComplete = localStorage.getItem("enabledComplete");
+        const enablerComplete = localStorage.getItem("enablerComplete") === "true";
+        const enabledComplete = localStorage.getItem("enabledComplete") === "true";
 
         // Check if both tasks are complete - if so, player should return to situation room
         if (enabledComplete && enablerComplete) {

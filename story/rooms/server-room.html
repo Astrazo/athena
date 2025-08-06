@@ -233,9 +233,10 @@
         function getCompletionMessage() {
             if (enabledComplete && enablerComplete) {
                 // Update objective immediately when both tasks are complete
-                updateObjective('Objective', "Return to situation room and wait.");
+                setCurrentObjective("Objective", "Return to situation room and wait.");
                 return "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up.";
             } else {
+                setCurrentObjective("Objective", "Explore other rooms.");
                 return "You should investigate some other rooms in case you can assist further.";
             }
         }

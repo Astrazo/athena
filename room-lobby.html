@@ -121,7 +121,7 @@
                     });
 
                     // Check if there's 4 players, and they're all ready
-                    const allReady = playersArray.length >= 4 && 
+                    const allReady = playersArray.length >= 1 && 
                                    playersArray.every(player => player["readyStatus"] === 1);
                     
                     // If all ready, start the countdown
@@ -186,6 +186,11 @@
                                 if (overlay) {
                                     overlay.remove();
                                 }
+
+                                // Reset local storage here before moving into role select
+                                localStorage.setItem("enablerComplete", "false");
+                                localStorage.setItem("enabledComplete", "false");
+
                                 console.log("Game has commenced.")
                                 window.location.href = "story/role-select.html";
                             } else {
