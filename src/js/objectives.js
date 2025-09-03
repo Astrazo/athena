@@ -1,4 +1,6 @@
 // Simple objective system based on room actionability
+import { isRoomActionableRightNow } from './main.js';
+
 export const roomObjectives = {
     "lobby": {
         title: "Team Assembly",
@@ -37,18 +39,16 @@ export function setCurrentObjective(roomName, roomData = null, currentRole = nul
             return;
         }
 
-        // Import the function from main.js
-        import('./main.js').then(({ isRoomActionableRightNow }) => {
-            const [isActionable] = isRoomActionableRightNow(
-                currentDay, currentRole, roomName, enablerComplete, enabledComplete, enabledPossible
-            );
+        // Use the statically imported function
+        const [isActionable] = isRoomActionableRightNow(
+            currentDay, currentRole, roomName, enablerComplete, enabledComplete, enabledPossible
+        );
 
-            if (isActionable) {
-                updateObjectiveDisplay('Objective', "Choose an action to complete this task.");
-            } else {
-                updateObjectiveDisplay('Objective', "Explore other rooms.");
-            }
-        });
+        if (isActionable) {
+            updateObjectiveDisplay('Objective', "Choose an action to complete this task.");
+        } else {
+            updateObjectiveDisplay('Objective', "Explore other rooms.");
+        }
     } else {
         // Fallback for when we don't have room data
         updateObjectiveDisplay('Objective', "Explore other rooms.");
