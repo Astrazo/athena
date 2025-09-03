@@ -31,12 +31,13 @@
     });
 })();
 
-import { initializeApp } from "firebase/app";
-import {
+// Use global Firebase object instead of ES6 imports
+const { initializeApp } = window.firebase;
+const {
     getFirestore, collection, doc, addDoc, updateDoc,
     query, where, orderBy, getDocs, arrayUnion, arrayRemove, getDoc, onSnapshot, deleteDoc, deleteField,
     increment
-} from "firebase/firestore";
+} = window.firebase.firestore;
 import { roomActions } from "./room-actions.js";
 import { roomPuzzles } from "./room-puzzles.js";
 import { enablerMap } from "./enabler-map.js";

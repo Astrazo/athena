@@ -29,6 +29,12 @@
         <div class="loading-spinner"></div>
         <div id="loadingMessage" class="loading-message">Loading...</div>
     </div>
+    <div class="version-number">v0.5.4</div>
+    
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore-compat.js"></script>
+    
     <script type="module">
         import { loadRooms } from "./src/js/main.js";
         document.getElementById("joinRoomBtn").addEventListener("click", async () => {
@@ -46,6 +52,5 @@
         
 
     </script>
-    <div class="version-number">v0.5.4</div>
 </body>
 </html> 

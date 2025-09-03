@@ -18,6 +18,12 @@ export default defineConfig({
         researchLab: resolve(__dirname, 'story/rooms/research-lab.html'),
         serverRoom: resolve(__dirname, 'story/rooms/server-room.html'),
       },
+      output: {
+        // Force single bundle to avoid import path issues
+        manualChunks: () => 'main',
+        chunkFileNames: 'assets/[name].js',
+        entryFileNames: 'assets/[name].js',
+      },
     },
   },
 });
