@@ -6,6 +6,10 @@
     <title>Athena</title>
     <link rel="stylesheet" href="src/styles/styles.css">
     <link rel="icon" href="data:,">
+    
+    <!-- Firebase CDN - Load in head to ensure it's available -->
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <div class="menu-container">
@@ -31,26 +35,40 @@
     </div>
     <div class="version-number">v0.5.4</div>
     
-    <!-- Firebase CDN -->
-    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore-compat.js"></script>
-    
     <script type="module">
-        import { loadRooms } from "./src/js/main.js";
-        document.getElementById("joinRoomBtn").addEventListener("click", async () => {
-            // Show spinner
-            document.getElementById("loadingContainer").style.display = "flex";
-            try {
-                const rooms = await loadRooms(undefined, undefined, 0);
-                localStorage.setItem("availableRooms", JSON.stringify(rooms));
-                window.location.href = "room-select.html";
-            } catch (err) {
-                console.error("Error loading rooms:", err);
-                localStorage.removeItem("availableRooms");
-            }
-        });
+        // Wait for Firebase to be fully loaded
+        function waitForFirebase() {
+            return new Promise((resolve) => {
+                if (window.firebase && window.firebase.firestore) {
+                    resolve();
+                } else {
+                    // Check every 100ms for Firebase to be ready
+                    const interval = setInterval(() => {
+                        if (window.firebase && window.firebase.firestore) {
+                            clearInterval(interval);
+                            resolve();
+                        }
+                    }, 100);
+                }
+            });
+        }
         
-
+        // Wait for Firebase, then import and run
+        waitForFirebase().then(async () => {
+            const { loadRooms } = await import("./src/js/main.js");
+            document.getElementById("joinRoomBtn").addEventListener("click", async () => {
+                // Show spinner
+                document.getElementById("loadingContainer").style.display = "flex";
+                try {
+                    const rooms = await loadRooms(undefined, undefined, 0);
+                    localStorage.setItem("availableRooms", JSON.stringify(rooms));
+                    window.location.href = "room-select.html";
+                } catch (err) {
+                    console.error("Error loading rooms:", err);
+                    localStorage.removeItem("availableRooms");
+                }
+            });
+        });
     </script>
 </body>
 </html> 
