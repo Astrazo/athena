@@ -36,38 +36,19 @@
     <div class="version-number">v0.5.4</div>
     
     <script type="module">
-        // Wait for Firebase to be fully loaded
-        function waitForFirebase() {
-            return new Promise((resolve) => {
-                if (window.firebase && window.firebase.firestore) {
-                    resolve();
-                } else {
-                    // Check every 100ms for Firebase to be ready
-                    const interval = setInterval(() => {
-                        if (window.firebase && window.firebase.firestore) {
-                            clearInterval(interval);
-                            resolve();
-                        }
-                    }, 100);
-                }
-            });
-        }
+        import { loadRooms } from "./src/js/main.js";
         
-        // Wait for Firebase, then import and run
-        waitForFirebase().then(async () => {
-            const { loadRooms } = await import("./src/js/main.js");
-            document.getElementById("joinRoomBtn").addEventListener("click", async () => {
-                // Show spinner
-                document.getElementById("loadingContainer").style.display = "flex";
-                try {
-                    const rooms = await loadRooms(undefined, undefined, 0);
-                    localStorage.setItem("availableRooms", JSON.stringify(rooms));
-                    window.location.href = "room-select.html";
-                } catch (err) {
-                    console.error("Error loading rooms:", err);
-                    localStorage.removeItem("availableRooms");
-                }
-            });
+        document.getElementById("joinRoomBtn").addEventListener("click", async () => {
+            // Show spinner
+            document.getElementById("loadingContainer").style.display = "flex";
+            try {
+                const rooms = await loadRooms(undefined, undefined, 0);
+                localStorage.setItem("availableRooms", JSON.stringify(rooms));
+                window.location.href = "room-select.html";
+            } catch (err) {
+                console.error("Error loading rooms:", err);
+                localStorage.removeItem("availableRooms");
+            }
         });
     </script>
 </body>

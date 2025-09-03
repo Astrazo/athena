@@ -39,28 +39,9 @@
     </div>
 
     <script type="module">
-        // Wait for Firebase to be fully loaded
-        function waitForFirebase() {
-            return new Promise((resolve) => {
-                if (window.firebase && window.firebase.firestore) {
-                    resolve();
-                } else {
-                    // Check every 100ms for Firebase to be ready
-                    const interval = setInterval(() => {
-                        if (window.firebase && window.firebase.firestore) {
-                            clearInterval(interval);
-                            resolve();
-                        }
-                    }, 100);
-                }
-            });
-        }
-        
-        // Wait for Firebase, then import and run
-        waitForFirebase().then(async () => {
-            const { loadRooms, removeUserFromRoom, updatePlayer, listenToRoom, deleteRoom } = await import("./src/js/main.js");
-            const { setCurrentObjective } = await import("./src/js/objectives.js");
-            const toast = await import("./src/js/toast.js");
+        import { loadRooms, removeUserFromRoom, updatePlayer, listenToRoom, deleteRoom } from "./src/js/main.js";
+        import { setCurrentObjective } from "./src/js/objectives.js";
+        import toast from "./src/js/toast.js";
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
@@ -344,7 +325,6 @@
                 console.error("Error leaving room:", error);
                 alert("Failed to leave room. Please try again.");
             }
-        });
         });
     </script>
 </body>

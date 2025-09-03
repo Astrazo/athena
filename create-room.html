@@ -34,28 +34,9 @@
     </div>
 
     <script type="module">
-        // Wait for Firebase to be fully loaded
-        function waitForFirebase() {
-            return new Promise((resolve) => {
-                if (window.firebase && window.firebase.firestore) {
-                    resolve();
-                } else {
-                    // Check every 100ms for Firebase to be ready
-                    const interval = setInterval(() => {
-                        if (window.firebase && window.firebase.firestore) {
-                            clearInterval(interval);
-                            resolve();
-                        }
-                    }, 100);
-                }
-            });
-        }
-        
-        // Wait for Firebase, then import and run
-        waitForFirebase().then(async () => {
-            const { createRoom, createUser, addUserToRoom, loadRooms } = await import("./src/js/main.js");
+        import { createRoom, createUser, addUserToRoom, loadRooms } from "./src/js/main.js";
 
-            document.getElementById("createRoomForm").addEventListener("submit", async function(e) {
+        document.getElementById("createRoomForm").addEventListener("submit", async function(e) {
             e.preventDefault();
             
             const roomName = document.getElementById("roomName").value.trim();
@@ -100,7 +81,6 @@
                 errorMessage.textContent = "Error: " + err.message;
                 errorMessage.style.display = "block";
             }
-        });
         });
     </script>
 </body>

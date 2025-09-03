@@ -35,26 +35,7 @@
     </div>
 
     <script type="module">
-        // Wait for Firebase to be fully loaded
-        function waitForFirebase() {
-            return new Promise((resolve) => {
-                if (window.firebase && window.firebase.firestore) {
-                    resolve();
-                } else {
-                    // Check every 100ms for Firebase to be ready
-                    const interval = setInterval(() => {
-                        if (window.firebase && window.firebase.firestore) {
-                            clearInterval(interval);
-                            resolve();
-                        }
-                    }, 100);
-                }
-            });
-        }
-        
-        // Wait for Firebase, then import and run
-        waitForFirebase().then(async () => {
-            const { createUser, addUserToRoom, listenToAllRooms, loadRooms } = await import("./src/js/main.js");
+        import { createUser, addUserToRoom, listenToAllRooms, loadRooms } from "./src/js/main.js";
     
         const noRoomsDiv = document.getElementById("noRooms");
         const roomContentDiv = document.getElementById("roomContent");
@@ -155,7 +136,6 @@
             if (unsubscribe) {
                 unsubscribe();
             }
-        });
         });
     </script>
 </body>

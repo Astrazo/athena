@@ -44,32 +44,13 @@
     </div>
 
     <script type="module">
-        // Wait for Firebase to be fully loaded
-        function waitForFirebase() {
-            return new Promise((resolve) => {
-                if (window.firebase && window.firebase.firestore) {
-                    resolve();
-                } else {
-                    // Check every 100ms for Firebase to be ready
-                    const interval = setInterval(() => {
-                        if (window.firebase && window.firebase.firestore) {
-                            clearInterval(interval);
-                            resolve();
-                        }
-                    }, 100);
-                }
-            });
-        }
-        
-        // Wait for Firebase, then import and run
-        waitForFirebase().then(async () => {
-            const { updatePlayer, listenToRoom, generateActions, updateRoleList, navigateToRoom } = await import("../../src/js/main.js");
-            const TypewriterDialogue = await import("../../src/js/typewriter.js");
-            const { dialogue } = await import("../../src/js/dialogue.js");
-            const { roomActions } = await import("../../src/js/room-actions.js");
-            const { setCurrentObjective, updateObjective } = await import("../../src/js/objectives.js");
-            const { enablerMap } = await import("../../src/js/enabler-map.js");
-            const toast = await import("../../src/js/toast.js");
+        import { updatePlayer, listenToRoom, generateActions, updateRoleList, navigateToRoom } from "../../src/js/main.js";
+        import TypewriterDialogue from "../../src/js/typewriter.js";
+        import { dialogue } from "../../src/js/dialogue.js";
+        import { roomActions } from "../../src/js/room-actions.js";
+        import { setCurrentObjective, updateObjective } from "../../src/js/objectives.js";
+        import { enablerMap } from "../../src/js/enabler-map.js";
+        import toast from "../../src/js/toast.js";
 
             // Get room data from localStorage
             const roomId = localStorage.getItem("connectedRoomId");
@@ -333,8 +314,7 @@
                     unsubscribe();
                 }
             });
-        });
-    </script>
+        </script>
 </body>
 </html>
 
