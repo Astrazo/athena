@@ -6,6 +6,10 @@
     <title>Create Room - Athena</title>
     <link rel="stylesheet" href="src/styles/styles.css">
     <link rel="icon" href="data:,">
+    
+    <!-- Firebase CDN - Load in head to ensure it's available -->
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <button class="back-button" onclick="window.location.href='index.html'">← Back</button>
@@ -30,9 +34,28 @@
     </div>
 
     <script type="module">
-        import { createRoom, createUser, addUserToRoom, loadRooms } from "./src/js/main.js";
+        // Wait for Firebase to be fully loaded
+        function waitForFirebase() {
+            return new Promise((resolve) => {
+                if (window.firebase && window.firebase.firestore) {
+                    resolve();
+                } else {
+                    // Check every 100ms for Firebase to be ready
+                    const interval = setInterval(() => {
+                        if (window.firebase && window.firebase.firestore) {
+                            clearInterval(interval);
+                            resolve();
+                        }
+                    }, 100);
+                }
+            });
+        }
+        
+        // Wait for Firebase, then import and run
+        waitForFirebase().then(async () => {
+            const { createRoom, createUser, addUserToRoom, loadRooms } = await import("./src/js/main.js");
 
-        document.getElementById("createRoomForm").addEventListener("submit", async function(e) {
+            document.getElementById("createRoomForm").addEventListener("submit", async function(e) {
             e.preventDefault();
             
             const roomName = document.getElementById("roomName").value.trim();
@@ -77,6 +100,7 @@
                 errorMessage.textContent = "Error: " + err.message;
                 errorMessage.style.display = "block";
             }
+        });
         });
     </script>
 </body>

@@ -33,11 +33,14 @@
 
 // Use global Firebase object instead of ES6 imports
 const { initializeApp } = window.firebase;
+const firestore = window.firebase.firestore;
 const {
-    getFirestore, collection, doc, addDoc, updateDoc,
+    collection, doc, addDoc, updateDoc,
     query, where, orderBy, getDocs, arrayUnion, arrayRemove, getDoc, onSnapshot, deleteDoc, deleteField,
     increment
-} = window.firebase.firestore;
+} = firestore;
+// In compat mode, getFirestore returns the firestore instance directly
+const getFirestore = () => firestore;
 import { roomActions } from "./room-actions.js";
 import { roomPuzzles } from "./room-puzzles.js";
 import { enablerMap } from "./enabler-map.js";
@@ -53,7 +56,7 @@ const firebaseConfig = {
     appId: "1:571762315023:web:09aea3b0fdf575ab79387a"
 };
 const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+const db  = getFirestore();
 
 export async function createRoom(name) {
     const docRef = await addDoc(collection(db, "rooms"), {

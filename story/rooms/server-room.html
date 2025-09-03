@@ -6,6 +6,10 @@
     <title>Athena</title>
     <link rel="stylesheet" href="../../src/styles/styles.css">
     <link rel="icon" href="data:,">
+    
+    <!-- Firebase CDN - Load in head to ensure it's available -->
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <button id="back" class="back-button">← Back to Situation Room</button>
@@ -40,275 +44,295 @@
     </div>
 
     <script type="module">
-        import { updatePlayer, listenToRoom, generateActions, updateRoleList, navigateToRoom } from "../../src/js/main.js";
-        import TypewriterDialogue from "../../src/js/typewriter.js";
-        import { dialogue } from "../../src/js/dialogue.js";
-        import { roomActions } from "../../src/js/room-actions.js";
-        import { setCurrentObjective, updateObjective } from "../../src/js/objectives.js";
-        import { enablerMap } from "../../src/js/enabler-map.js";
-        import toast from "../../src/js/toast.js";
-
-        // Get room data from localStorage
-        const roomId = localStorage.getItem("connectedRoomId");
-        const localUserId = localStorage.getItem("connectedUserId");
-        const roomName = localStorage.getItem("connectedRoomName");
-        const username = localStorage.getItem("connectedUsername");
-        const userRole = localStorage.getItem("connectedUserRole");
-        let enablerComplete = null;
-        let enabledComplete = null;
-        let enabledPossible = null;
-        let currentDay = 0;
-        let previousEnabledValue = null;
-
-        // Local, global, trackers 
-        let isInitialLoad = true;
-        let currentRoomData = null;
+        // Wait for Firebase to be fully loaded
+        function waitForFirebase() {
+            return new Promise((resolve) => {
+                if (window.firebase && window.firebase.firestore) {
+                    resolve();
+                } else {
+                    // Check every 100ms for Firebase to be ready
+                    const interval = setInterval(() => {
+                        if (window.firebase && window.firebase.firestore) {
+                            clearInterval(interval);
+                            resolve();
+                        }
+                    }, 100);
+                }
+            });
+        }
         
-        // Setup back button
-        document.getElementById("back").addEventListener("click", () => {
-            navigateToRoom("Situation Room")
-        });
-        // Function to update game info
-        function updateGameInfo(roomData) {
-            if (roomData) {
-                // Update general room info
-                document.getElementById("roomName").textContent = `Room: ${roomData["roomName"]}`;
-                document.getElementById("currentDay").textContent = `Day: ${roomData["currentDay"]}`;
-                const playersArray = roomData["roomPlayers"] ? Object.values(roomData["roomPlayers"]) : [];
-                document.getElementById("playerCount").textContent = `Players: ${playersArray.length}/4`;
-                document.getElementById("yourName").textContent = "";
+        // Wait for Firebase, then import and run
+        waitForFirebase().then(async () => {
+            const { updatePlayer, listenToRoom, generateActions, updateRoleList, navigateToRoom } = await import("../../src/js/main.js");
+            const TypewriterDialogue = await import("../../src/js/typewriter.js");
+            const { dialogue } = await import("../../src/js/dialogue.js");
+            const { roomActions } = await import("../../src/js/room-actions.js");
+            const { setCurrentObjective, updateObjective } = await import("../../src/js/objectives.js");
+            const { enablerMap } = await import("../../src/js/enabler-map.js");
+            const toast = await import("../../src/js/toast.js");
 
-                // Figure out what puzzle status the player has 
-                enablerComplete = roomData["roomPlayers"][localUserId]["enablerComplete"];
-                enabledComplete = roomData["roomPlayers"][localUserId]["enabledComplete"];
-                const currentEnabledValue = roomData["roomPlayers"][localUserId]["enabledValue"];
+            // Get room data from localStorage
+            const roomId = localStorage.getItem("connectedRoomId");
+            const localUserId = localStorage.getItem("connectedUserId");
+            const roomName = localStorage.getItem("connectedRoomName");
+            const username = localStorage.getItem("connectedUsername");
+            const userRole = localStorage.getItem("connectedUserRole");
+            let enablerComplete = null;
+            let enabledComplete = null;
+            let enabledPossible = null;
+            let currentDay = 0;
+            let previousEnabledValue = null;
 
-                // Can they complete the enabled puzzle yet?
-                enabledPossible = currentEnabledValue != null;
-                 
-                // Grab current day
-                currentDay = roomData["currentDay"];
-
-                // Check if enabledValue just changed from null to a value
-                if (currentEnabledValue !== null && currentEnabledValue != previousEnabledValue) {
-                    // Only show toast if we haven't shown it for this enabledValue
-                    if (!localStorage.getItem('enabledValueToastShown')) {
-                        showEnabledValueToast().catch(error => {
-                            console.warn('Error showing enabled value toast:', error);
-                        });
-                        localStorage.setItem('enabledValueToastShown', 'true');
-                    }
-                }
-
-                // Clear the flag when enabledValue goes back to null (new day)
-                if (currentEnabledValue === null && previousEnabledValue !== null) {
-                    localStorage.removeItem('enabledValueToastShown');
-                }
-
-                // Update previous value for next comparison
-                previousEnabledValue = currentEnabledValue;
-            }
-        }
-
-        // Function to show toast when enabledValue is received
-        async function showEnabledValueToast() {
-            console.log('showEnabledValueToast called');
-            const roleNames = {
-                "ds": "Data Scientist",
-                "se": "Software Engineer", 
-                "ne": "Network Engineer",
-                "ca": "Cybersecurity Analyst"
-            };
-
-            // Get who enabled this player based on enabler map
-            const enablerRole = enablerMap[currentDay][userRole];
-            const enablerName = roleNames[enablerRole];
-
-            toast.success(`The ${enablerName} has sent you some information to be used in another room.`);
+            // Local, global, trackers 
+            let isInitialLoad = true;
+            let currentRoomData = null;
             
-            // Play notification sound when receiving enabled value
-            try {
-                console.log('Importing audio module...');
-                const { playNotification } = await import("../../src/js/audio.js");
-                console.log('Audio module imported, playing notification...');
-                playNotification();
-            } catch (error) {
-                console.warn('Audio not available:', error);
-            }
-            
-            // Check if player is in the correct room for their enabled puzzle
-            if (isInEnabledPuzzleRoom()) {
-                // Trigger dialogue for enabled puzzle
-                triggerEnabledDialogue();
-            }
-        }
+            // Setup back button
+            document.getElementById("back").addEventListener("click", () => {
+                navigateToRoom("Situation Room")
+            });
+            // Function to update game info
+            function updateGameInfo(roomData) {
+                if (roomData) {
+                    // Update general room info
+                    document.getElementById("roomName").textContent = `Room: ${roomData["roomName"]}`;
+                    document.getElementById("currentDay").textContent = `Day: ${roomData["currentDay"]}`;
+                    const playersArray = roomData["roomPlayers"] ? Object.values(roomData["roomPlayers"]) : [];
+                    document.getElementById("playerCount").textContent = `Players: ${playersArray.length}/4`;
+                    document.getElementById("yourName").textContent = "";
 
-        // Function to determine if player is in the room where their enabled puzzle is located
-        function isInEnabledPuzzleRoom() {
-            const enabledPuzzleRoom = getEnabledPuzzleRoom();
-            return enabledPuzzleRoom === "server-room";
-        }
+                    // Figure out what puzzle status the player has 
+                    enablerComplete = roomData["roomPlayers"][localUserId]["enablerComplete"];
+                    enabledComplete = roomData["roomPlayers"][localUserId]["enabledComplete"];
+                    const currentEnabledValue = roomData["roomPlayers"][localUserId]["enabledValue"];
 
-        // Function to get the room where the player's enabled puzzle is located
-        function getEnabledPuzzleRoom() {
-            const enabledPuzzleRooms = {
-                1: {
-                    "ca": "research-lab",
-                    "ne": "developer-hub", 
-                    "se": "server-room",
-                    "ds": "command-centre"
-                },
-                2: {
-                    "ca": "command-centre",
-                    "ne": "server-room",
-                    "se": "research-lab", 
-                    "ds": "command-centre"
-                },
-                3: {
-                    "ca": "command-centre",
-                    "ne": "server-room",
-                    "se": "developer-hub",
-                    "ds": "research-lab"
-                }
-            };
-            
-            return enabledPuzzleRooms[currentDay]?.[userRole] || null;
-        }
+                    // Can they complete the enabled puzzle yet?
+                    enabledPossible = currentEnabledValue != null;
+                     
+                    // Grab current day
+                    currentDay = roomData["currentDay"];
 
-        // Function to trigger dialogue for enabled puzzle
-        function triggerEnabledDialogue() {
-            const dialogueToShow = dialogue?.[currentDay]?.[userRole]?.["server-room"];
-            
-            if (dialogueToShow && dialogueToShow["enabled"]) {
-                typewriter.showSequence(dialogueToShow["enabled"]);
-            }
-        }
-
-        // 
-        function handleDialogue() {
-            if (isInitialLoad) {
-                // First, see if for this day, this role is supposed to be in this room
-                const dialogueToShow = dialogue?.[currentDay]?.[userRole]?.["server-room"] || null;
-
-                // If nothing has been returned, that means the user is in the wrong room
-                if (dialogueToShow === null) {
-                    typewriter.showSequence(dialogue["WRONG-ROOM"]);
-                }
-                // Otherwise, show the dialogue
-                else {
-                    // If the user has an enabler task in here
-                    if (dialogueToShow["enabler"]) {
-                        // Has it been completed already?
-                        if (!enablerComplete) {
-                            typewriter.showSequence(dialogueToShow["enabler"]);
-                        }
-                        else {
-                            // For enabler-complete, check if both tasks are done
-                            const baseDialogue = dialogueToShow["enabler-complete"].slice(0, -1); // Remove the last line
-                            const completionMessage = getCompletionMessage();
-                            typewriter.showSequence([...baseDialogue, completionMessage]);
+                    // Check if enabledValue just changed from null to a value
+                    if (currentEnabledValue !== null && currentEnabledValue != previousEnabledValue) {
+                        // Only show toast if we haven't shown it for this enabledValue
+                        if (!localStorage.getItem('enabledValueToastShown')) {
+                            showEnabledValueToast().catch(error => {
+                                console.warn('Error showing enabled value toast:', error);
+                            });
+                            localStorage.setItem('enabledValueToastShown', 'true');
                         }
                     }
-                    else if (dialogueToShow["enabled"]) {
-                        if (enabledPossible && !enabledComplete){
-                            typewriter.showSequence(dialogueToShow["enabled"])
-                        }
-                        else if (enabledComplete) {
-                            // For enabled-complete, check if both tasks are done
-                            const baseDialogue = dialogueToShow["enabled-complete"].slice(0, -1); // Remove the last line
-                            const completionMessage = getCompletionMessage();
-                            typewriter.showSequence([...baseDialogue, completionMessage]);
-                        }
-                        else {
-                            typewriter.showSequence(dialogueToShow["enabled-not-available"])
-                        }
+
+                    // Clear the flag when enabledValue goes back to null (new day)
+                    if (currentEnabledValue === null && previousEnabledValue !== null) {
+                        localStorage.removeItem('enabledValueToastShown');
                     }
+
+                    // Update previous value for next comparison
+                    previousEnabledValue = currentEnabledValue;
                 }
-
-                isInitialLoad = false;
             }
-        }
 
-        // Helper function to determine the correct completion message
-        function getCompletionMessage() {
-            if (enabledComplete && enablerComplete) {
-                // Update objective immediately when both tasks are complete
-                setCurrentObjective("Objective", "Return to situation room and wait.");
-                return "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up.";
-            } else {
-                setCurrentObjective("Objective", "Explore other rooms.");
-                return "You should investigate some other rooms in case you can assist further.";
-            }
-        }
+            // Function to show toast when enabledValue is received
+            async function showEnabledValueToast() {
+                console.log('showEnabledValueToast called');
+                const roleNames = {
+                    "ds": "Data Scientist",
+                    "se": "Software Engineer", 
+                    "ne": "Network Engineer",
+                    "ca": "Cybersecurity Analyst"
+                };
 
-        // Set up real-time listener for game info updates
-        const unsubscribe = listenToRoom(roomId, (roomData) => {
-            if (roomData) {
-                console.log("Room updated.")
-                currentRoomData = roomData;
-                updateGameInfo(roomData);
-                updateRoleList(roomData, document.getElementById("players"));
+                // Get who enabled this player based on enabler map
+                const enablerRole = enablerMap[currentDay][userRole];
+                const enablerName = roleNames[enablerRole];
+
+                toast.success(`The ${enablerName} has sent you some information to be used in another room.`);
                 
-                // Always update the objective when room data changes
-                setCurrentObjective("server-room", roomData, localStorage.getItem("connectedUserRole"));
+                // Play notification sound when receiving enabled value
+                try {
+                    console.log('Importing audio module...');
+                    const { playNotification } = await import("../../src/js/audio.js");
+                    console.log('Audio module imported, playing notification...');
+                    playNotification();
+                } catch (error) {
+                    console.warn('Audio not available:', error);
+                }
+                
+                // Check if player is in the correct room for their enabled puzzle
+                if (isInEnabledPuzzleRoom()) {
+                    // Trigger dialogue for enabled puzzle
+                    triggerEnabledDialogue();
+                }
+            }
 
-                // Only run this stuff it it's in the initiload load
+            // Function to determine if player is in the room where their enabled puzzle is located
+            function isInEnabledPuzzleRoom() {
+                const enabledPuzzleRoom = getEnabledPuzzleRoom();
+                return enabledPuzzleRoom === "server-room";
+            }
+
+            // Function to get the room where the player's enabled puzzle is located
+            function getEnabledPuzzleRoom() {
+                const enabledPuzzleRooms = {
+                    1: {
+                        "ca": "research-lab",
+                        "ne": "developer-hub", 
+                        "se": "server-room",
+                        "ds": "command-centre"
+                    },
+                    2: {
+                        "ca": "command-centre",
+                        "ne": "server-room",
+                        "se": "research-lab", 
+                        "ds": "command-centre"
+                    },
+                    3: {
+                        "ca": "command-centre",
+                        "ne": "server-room",
+                        "se": "developer-hub",
+                        "ds": "research-lab"
+                    }
+                };
+                
+                return enabledPuzzleRooms[currentDay]?.[userRole] || null;
+            }
+
+            // Function to trigger dialogue for enabled puzzle
+            function triggerEnabledDialogue() {
+                const dialogueToShow = dialogue?.[currentDay]?.[userRole]?.["server-room"];
+                
+                if (dialogueToShow && dialogueToShow["enabled"]) {
+                    typewriter.showSequence(dialogueToShow["enabled"]);
+                }
+            }
+
+            // 
+            function handleDialogue() {
                 if (isInitialLoad) {
-                    // Load in actions this role can do during this run
-                    generateActions(
-                        roomData, 
-                        "server-room", 
-                        localStorage.getItem("connectedUserRole"), 
-                        document.getElementById("availableActions")
-                    );
+                    // First, see if for this day, this role is supposed to be in this room
+                    const dialogueToShow = dialogue?.[currentDay]?.[userRole]?.["server-room"] || null;
 
-                    // Show dialogue
-                    handleDialogue();
+                    // If nothing has been returned, that means the user is in the wrong room
+                    if (dialogueToShow === null) {
+                        typewriter.showSequence(dialogue["WRONG-ROOM"]);
+                    }
+                    // Otherwise, show the dialogue
+                    else {
+                        // If the user has an enabler task in here
+                        if (dialogueToShow["enabler"]) {
+                            // Has it been completed already?
+                            if (!enablerComplete) {
+                                typewriter.showSequence(dialogueToShow["enabler"]);
+                            }
+                            else {
+                                // For enabler-complete, check if both tasks are done
+                                const baseDialogue = dialogueToShow["enabler-complete"].slice(0, -1); // Remove the last line
+                                const completionMessage = getCompletionMessage();
+                                typewriter.showSequence([...baseDialogue, completionMessage]);
+                            }
+                        }
+                        else if (dialogueToShow["enabled"]) {
+                            if (enabledPossible && !enabledComplete){
+                                typewriter.showSequence(dialogueToShow["enabled"])
+                            }
+                            else if (enabledComplete) {
+                                // For enabled-complete, check if both tasks are done
+                                const baseDialogue = dialogueToShow["enabled-complete"].slice(0, -1); // Remove the last line
+                                const completionMessage = getCompletionMessage();
+                                typewriter.showSequence([...baseDialogue, completionMessage]);
+                            }
+                            else {
+                                typewriter.showSequence(dialogueToShow["enabled-not-available"])
+                            }
+                        }
+                    }
 
                     isInitialLoad = false;
                 }
-            } else {
-                console.error("Room not found");
-                window.location.href = "../index.html";
             }
-        });
 
-        // Initial update with stored data
-        //updateGameInfo({ roomName: roomName, roomPlayers: roomData.roomPlayers });
+            // Helper function to determine the correct completion message
+            function getCompletionMessage() {
+                if (enabledComplete && enablerComplete) {
+                    // Update objective immediately when both tasks are complete
+                    setCurrentObjective("Objective", "Return to situation room and wait.");
+                    return "You feel like you've done all you can for today, return to the situation room and wait for your teammates to finish up.";
+                } else {
+                    setCurrentObjective("Objective", "Explore other rooms.");
+                    return "You should investigate some other rooms in case you can assist further.";
+                }
+            }
 
-        // Show welcome dialogue when page loads
-        /*document.addEventListener('DOMContentLoaded', () => {
-            typewriter.showSequence([
-                "Welcome to the situation room.",
-                "Please pick a room to explore."
-            ], {
-                speed: 40
-            });
-        });*/
+            // Set up real-time listener for game info updates
+            const unsubscribe = listenToRoom(roomId, (roomData) => {
+                if (roomData) {
+                    console.log("Room updated.")
+                    currentRoomData = roomData;
+                    updateGameInfo(roomData);
+                    updateRoleList(roomData, document.getElementById("players"));
+                    
+                    // Always update the objective when room data changes
+                    setCurrentObjective("server-room", roomData, localStorage.getItem("connectedUserRole"));
 
-        // Start game button listener
-        /*document.getElementById("startGameBtn").addEventListener("click", () => {
-            typewriter.show("Initiating mission sequence...", {
-                onComplete: () => {
-                    setTimeout(() => {
-                        // Here you would redirect to the first puzzle/room
-                        // For now, we'll just show a placeholder message
-                        typewriter.show("Mission sequence initiated. First puzzle loading...", {
-                            onComplete: () => {
-                                // Placeholder - replace with actual puzzle page
-                                alert("Puzzle system coming soon!");
-                            }
-                        });
-                    }, 1000);
+                    // Only run this stuff it it's in the initiload load
+                    if (isInitialLoad) {
+                        // Load in actions this role can do during this run
+                        generateActions(
+                            roomData, 
+                            "server-room", 
+                            localStorage.getItem("connectedUserRole"), 
+                            document.getElementById("availableActions")
+                        );
+
+                        // Show dialogue
+                        handleDialogue();
+
+                        isInitialLoad = false;
+                    }
+                } else {
+                    console.error("Room not found");
+                    window.location.href = "../index.html";
                 }
             });
-        });*/
 
-        // Clean up listener when leaving the page
-        window.addEventListener("beforeunload", () => {
-            if (unsubscribe) {
-                unsubscribe();
-            }
+            // Initial update with stored data
+            //updateGameInfo({ roomName: roomName, roomPlayers: roomData.roomPlayers });
+
+            // Show welcome dialogue when page loads
+            /*document.addEventListener('DOMContentLoaded', () => {
+                typewriter.showSequence([
+                    "Welcome to the situation room.",
+                    "Please pick a room to explore."
+                ], {
+                    speed: 40
+                });
+            });*/
+
+            // Start game button listener
+            /*document.getElementById("startGameBtn").addEventListener("click", () => {
+                typewriter.show("Initiating mission sequence...", {
+                    onComplete: () => {
+                        setTimeout(() => {
+                            // Here you would redirect to the first puzzle/room
+                            // For now, we'll just show a placeholder message
+                            typewriter.show("Mission sequence initiated. First puzzle loading...", {
+                                onComplete: () => {
+                                    // Placeholder - replace with actual puzzle page
+                                    alert("Puzzle system coming soon!");
+                                }
+                            });
+                        }, 1000);
+                    }
+                });
+            });*/
+
+            // Clean up listener when leaving the page
+            window.addEventListener("beforeunload", () => {
+                if (unsubscribe) {
+                    unsubscribe();
+                }
+            });
         });
     </script>
 </body>

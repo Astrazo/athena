@@ -6,6 +6,10 @@
     <title>Athena</title>
     <link rel="stylesheet" href="../src/styles/styles.css">
     <link rel="icon" href="data:,">
+    
+    <!-- Firebase CDN - Load in head to ensure it's available -->
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore-compat.js"></script>
 </head>
 
 <body>
@@ -34,9 +38,28 @@
     </div>
 
     <script type="module">
-        import { updatePlayer, listenToRoom } from "../src/js/main.js";
-        import TypewriterDialogue from "../src/js/typewriter.js";
-        import { setCurrentObjective } from "../src/js/objectives.js";
+        // Wait for Firebase to be fully loaded
+        function waitForFirebase() {
+            return new Promise((resolve) => {
+                if (window.firebase && window.firebase.firestore) {
+                    resolve();
+                } else {
+                    // Check every 100ms for Firebase to be ready
+                    const interval = setInterval(() => {
+                        if (window.firebase && window.firebase.firestore) {
+                            clearInterval(interval);
+                            resolve();
+                        }
+                    }, 100);
+                }
+            });
+        }
+        
+        // Wait for Firebase, then import and run
+        waitForFirebase().then(async () => {
+            const { updatePlayer, listenToRoom } = await import("../src/js/main.js");
+            const TypewriterDialogue = await import("../src/js/typewriter.js");
+            const { setCurrentObjective } = await import("../src/js/objectives.js");
 
         // Get room data from localStorage
         const roomId = localStorage.getItem("connectedRoomId");
@@ -272,7 +295,7 @@
                 unsubscribe();
             }
         });
-
+        });
     </script>
 </body>
 </html>
